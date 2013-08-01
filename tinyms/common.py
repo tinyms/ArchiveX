@@ -155,7 +155,6 @@ class Postgres():
             names.append(col.name)
         return names
 
-
 class Utils():
     @staticmethod
     def text_read(file_nme):
@@ -264,3 +263,4 @@ class Utils():
     @staticmethod
     def matrix_reverse(arr):
         return [[r[col] for r in arr] for col in range(len(arr[0]))]
+
