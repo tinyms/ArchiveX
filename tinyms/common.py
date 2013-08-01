@@ -15,16 +15,42 @@ class Postgres():
     PASSWORD = ""
 
     @staticmethod
+    #Connect to Postgres Database
     def open():
         return psycopg2.connect(database=Postgres.DATABASE_NAME,
                                 user=Postgres.USER_NAME,
                                 password=Postgres.PASSWORD)
 
     @staticmethod
+    #Insert,Update,Delete
     def update(sql, params):
-        pass
+        try:
+            cnn = Postgres.open()
+            cur = cnn.cursor()
+            cur.execute(sql, params)
+            cnn.commit()
+        except psycopg2.DatabaseError as e:
+            print("Error %s" % e)
+        finally:
+            if cnn:
+                cnn.close()
 
     @staticmethod
+    #Batch Insert,Update,Delete
+    def update_many(sql, arr_params):
+        try:
+            cnn = Postgres.open()
+            cur = cnn.cursor()
+            cur.executemany(sql, arr_params)
+            cnn.commit()
+        except psycopg2.DatabaseError as e:
+            print("Error %s" % e)
+        finally:
+            if cnn:
+                cnn.close()
+
+    @staticmethod
+    #Query DataSet
     def many(sql, params, callback=None):
         dataset = list()
         cnn = None
@@ -47,6 +73,7 @@ class Postgres():
         return dataset
 
     @staticmethod
+    #First Row Data
     def row(sql, params, callback=None):
         items = Postgres.many(sql, params, callback)
         if len(items) > 0:
@@ -54,6 +81,7 @@ class Postgres():
         return None
 
     @staticmethod
+    #First Column Data
     def col(sql, params, callback=None):
         items = Postgres.many(sql, params, callback)
         cols = list()
@@ -64,6 +92,7 @@ class Postgres():
         return cols
 
     @staticmethod
+    #First Row And First Column
     def one(sql, params, callback=None):
         first_col = Postgres.col(sql, params, callback)
         if len(first_col) > 0:
@@ -71,6 +100,7 @@ class Postgres():
         return None
 
     @staticmethod
+    #Store Proc, Return Single Result
     def proc_one(name, params, callback=None):
         first_col = Postgres.proc_many(name, params, callback)
         if len(first_col) > 0:
@@ -78,6 +108,7 @@ class Postgres():
         return None
 
     @staticmethod
+    #Store Proc, Return DataSet
     def proc_many(name, params, callback=None):
         dataset = list()
         cnn = None
@@ -99,6 +130,7 @@ class Postgres():
         return dataset
 
     @staticmethod
+    #Return all cols name from current Query cursor
     def col_names(cur):
         names = list()
         for col in cur.description:
