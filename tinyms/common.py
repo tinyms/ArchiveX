@@ -22,18 +22,36 @@ class Postgres():
                                 password=Postgres.PASSWORD)
 
     @staticmethod
-    #Insert,Update,Delete
-    def update(sql, params):
+    def update(sql, params, return_col_name = None):
+
+        """
+        for Insert,Update,Delete
+        :param sql:
+        :param params:
+        :param return_col_name: last insert row id etc.
+        :return:
+        """
+        if return_col_name:
+            sql += " RETURNING %s" % return_col_name
+        cnn = None
         try:
             cnn = Postgres.open()
             cur = cnn.cursor()
             cur.execute(sql, params)
+            if return_col_name:
+                result = cur.fetchone()[0]
+            else:
+                result = True
             cnn.commit()
         except psycopg2.DatabaseError as e:
             print("Error %s" % e)
+            cnn.rollback()
+            result = False
         finally:
             if cnn:
                 cnn.close()
+
+        return result
 
     @staticmethod
     #Batch Insert,Update,Delete
