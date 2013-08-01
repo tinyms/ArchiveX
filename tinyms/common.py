@@ -8,6 +8,7 @@ import urllib.parse
 import psycopg2
 import psycopg2.extras
 
+
 class Postgres():
     DATABASE_NAME = ""
     USER_NAME = ""
@@ -20,24 +21,90 @@ class Postgres():
                                 password=Postgres.PASSWORD)
 
     @staticmethod
-    def update(sql,params):
+    def update(sql, params):
         pass
 
     @staticmethod
-    def many(sql,params):
-        pass
+    def many(sql, params, callback=None):
+        dataset = list()
+        cnn = None
+        try:
+            cnn = Postgres.open()
+            cur = cnn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cur.execute(sql, params)
+            rows = cur.fetchall()
+            for row in rows:
+                c = row.copy()
+                if callback:
+                    callback(c)
+                dataset.append(c)
+            cur.close()
+        except psycopg2.DatabaseError as e:
+            print("Error %s" % e)
+        finally:
+            if cnn:
+                cnn.close()
+        return dataset
 
     @staticmethod
-    def row(sql,params):
-        pass
+    def row(sql, params, callback=None):
+        items = Postgres.many(sql, params, callback)
+        if len(items) > 0:
+            return items[0]
+        return None
 
     @staticmethod
-    def col(sql,params):
-        pass
+    def col(sql, params, callback=None):
+        items = Postgres.many(sql, params, callback)
+        cols = list()
+        for item in items:
+            values = [i for i in item.values()]
+            if len(values) > 0:
+                cols.append(values[0])
+        return cols
 
     @staticmethod
-    def one(sql,params):
-        pass
+    def one(sql, params, callback=None):
+        first_col = Postgres.col(sql, params, callback)
+        if len(first_col) > 0:
+            return first_col[0]
+        return None
+
+    @staticmethod
+    def proc_one(name, params, callback=None):
+        first_col = Postgres.proc_many(name, params, callback)
+        if len(first_col) > 0:
+            return first_col[0]
+        return None
+
+    @staticmethod
+    def proc_many(name, params, callback=None):
+        dataset = list()
+        cnn = None
+        try:
+            cnn = Postgres.open()
+            cur = cnn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            rows = cur.callproc(name, params)
+            for row in rows:
+                c = row.copy()
+                if callback:
+                    callback(c)
+                dataset.append(c)
+            cur.close()
+        except psycopg2.DatabaseError as e:
+            print("Error %s" % e)
+        finally:
+            if cnn:
+                cnn.close()
+        return dataset
+
+    @staticmethod
+    def col_names(cur):
+        names = list()
+        for col in cur.description:
+            names.append(col.name)
+        return names
+
 
 class Utils():
     @staticmethod
