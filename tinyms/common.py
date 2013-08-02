@@ -4,6 +4,7 @@ import os, sys, re
 import hashlib, json
 import urllib.request
 import urllib.parse
+from imp import find_module,load_module,acquire_lock,release_lock
 
 import psycopg2
 import psycopg2.extras
@@ -264,3 +265,61 @@ class Utils():
     def matrix_reverse(arr):
         return [[r[col] for r in arr] for col in range(len(arr[0]))]
 
+class Plugin():
+
+    ObjectPool = dict()
+
+    @staticmethod
+    def get(type_,class_full_name = ""):
+        """
+        get plugin class object instance
+        :param type_: extends plugin interface
+        :param class_full_name: class name with module name
+        :return: a object
+        """
+        if not class_full_name:
+            return Plugin.ObjectPool[type_]
+        else:
+            arr = Plugin.ObjectPool[type_]
+            for t in arr:
+                if t.__str__().find(class_full_name) != -1:
+                    return t
+
+    @staticmethod
+    def load():
+        Plugin.ObjectPool.clear()
+        path = os.path.join(os.getcwd(), "plugins")
+        wid = os.walk(path)
+        plugins = []
+        print("Search plugins modules..")
+        for rootDir,pathList,fileList in wid:
+            if rootDir.find("__pycache__") != -1:
+                continue
+            for file in fileList:
+                #re \\.py[c]?$
+                if file.endswith(".py") or file.endswith(".pyc") or file != "__init__.py":
+                    plugins.append((os.path.splitext(file)[0],rootDir))
+
+        print(plugins)
+        print("Instance all plugin class.")
+        for (name,dir) in plugins:
+            try:
+                acquire_lock()
+                file, filename, desc = find_module(name, [dir])
+                prev = sys.modules.get(name)
+                if prev:
+                    del sys.modules[name]
+                module_ = load_module(name, file, filename, desc)
+            finally:
+                if file:
+                    file.close()
+                release_lock()
+
+            if hasattr(module_, "__plugin__"):
+                attrs = [getattr(module_, x) for x in module_.__plugin__]
+                for attr in attrs:
+                    if not Plugin.ObjectPool.get(attr):
+                        Plugin.ObjectPool[attr.__base__] = [attr()]
+                    else:
+                        Plugin.ObjectPool[attr.__base__].append(attr())
+        print("Plugin init completed.")
