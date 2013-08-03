@@ -1,27 +1,23 @@
 __author__ = 'tinyms'
 
 from tornado.ioloop import IOLoop
-from tornado.web import RequestHandler,Application
+from tornado.web import Application
 import webbrowser,os,sys
 
-from tinyms.model import ArchiveXConfig
 from tinyms.common import Plugin
-
-class DefaultHandler(RequestHandler):
-    def get(self):
-        self.redirect("/static/index.html")
-
-settings = {
-    "static_path" : os.path.join(os.getcwd(), "static")
-}
+from tinyms.point import WebConfig
 
 Plugin.load()
-test = Plugin.get(object,"archivex_config.Test")
-test.hello("my plugin.")
+web_configs = Plugin.get(WebConfig)
 
-app = Application([
-    (r"/",DefaultHandler),
-],**settings)
+ws_settings = dict()
+ws_url_patterns = list()
+
+for web_config in web_configs:
+    web_config.settings(ws_settings)
+    web_config.url_mapping(ws_url_patterns)
+
+app = Application(ws_url_patterns,**ws_settings)
 
 if __name__ == "__main__":
     # webbrowser.open_new_tab("http://localhost:%i" % ArchiveXConfig.Port)
