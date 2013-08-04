@@ -1,7 +1,7 @@
 __author__ = 'tinyms'
 
 #for plugin to extends
-class WebConfig():
+class IWebConfig():
 
     def settings(self,ws_setting):
         """
@@ -18,3 +18,9 @@ class WebConfig():
         :return:
         """
         return
+
+class IAjax():
+    def client_javascript_object_name(self):
+        return "client_javascript_object_name"
+
+class IApi():pass
