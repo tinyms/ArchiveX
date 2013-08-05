@@ -5,7 +5,9 @@ from tornado.web import RequestHandler
 from tinyms.common import Plugin
 from tinyms.point import IAjax,IApi
 
-class ApiHandler(RequestHandler):
+class IRequest(RequestHandler):pass
+
+class ApiHandler(IRequest):
 
     def get(self,class_full_name,method_name):
         self.req(class_full_name,method_name)
@@ -33,7 +35,7 @@ class ApiHandler(RequestHandler):
             result = func(**func_params)
             self.write(json.dumps(result))
 
-class AjaxHandler(RequestHandler):
+class AjaxHandler(IRequest):
 
     def get(self,class_full_name):
         self.set_header("Content-Type","text/javascript;charset=utf-8")
@@ -80,7 +82,7 @@ class AjaxHandler(RequestHandler):
         if func_return_data_type == "json":
             self.set_header("Content-Type","text/json;charset=utf-8")
         elif func_return_data_type == "script":
-            self.set_header("Content-Type","text/script;charset=utf-8")
+            self.set_header("Content-Type","text/javascript;charset=utf-8")
         elif func_return_data_type == "html":
             self.set_header("Content-Type","text/html;charset=utf-8")
         if not class_full_name:

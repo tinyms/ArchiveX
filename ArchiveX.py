@@ -2,7 +2,7 @@ __author__ = 'tinyms'
 
 from tornado.ioloop import IOLoop
 from tornado.web import Application
-import webbrowser,sys
+import sys,os,webbrowser
 
 from tinyms.common import Plugin
 from tinyms.point import IWebConfig
@@ -12,6 +12,8 @@ Plugin.load()
 web_configs = Plugin.get(IWebConfig)
 
 ws_settings = dict()
+ws_settings["static_path"] = os.path.join(os.getcwd(), "static")
+
 ws_url_patterns = [
     (r"/ajax/(.*).js",AjaxHandler),
     (r"/api/(.*)/(.*)",ApiHandler)

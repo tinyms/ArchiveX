@@ -1,12 +1,13 @@
 __author__ = 'tinyms'
 
-__plugin__=['AjaxTest']
+__export__=['AjaxTest']
 
+import json
 from tinyms.point import IAjax
 
 class AjaxTest(IAjax):
 
-    __export__=["abc"]
+    __export__=["console"]
 
     def __init__(self):
         pass
@@ -14,6 +15,6 @@ class AjaxTest(IAjax):
     def client_javascript_object_name(self):
         return "test_AjaxTest"
 
-    def abc(self,**dict):
-        print(dict)
-        pass
+    def console(self,**dict_):
+        print(dict_)
+        return json.dumps(dict_)

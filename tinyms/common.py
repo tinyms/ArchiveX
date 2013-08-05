@@ -315,8 +315,8 @@ class Plugin():
                     file.close()
                 release_lock()
 
-            if hasattr(module_, "__plugin__"):
-                attrs = [getattr(module_, x) for x in module_.__plugin__]
+            if hasattr(module_, "__export__"):
+                attrs = [getattr(module_, x) for x in module_.__export__]
                 for attr in attrs:
                     if not Plugin.ObjectPool.get(attr):
                         Plugin.ObjectPool[attr.__base__] = [attr()]
