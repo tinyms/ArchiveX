@@ -20,7 +20,13 @@ class IWebConfig():
         return
 
 class IAjax():
-    def client_javascript_object_name(self):
-        return "client_javascript_object_name"
 
-class IApi():pass
+    def request(self,tornado_httpreq):
+        self.req = tornado_httpreq
+
+    def client_javascript_object_name(self):
+        return "client_javascript_object_name_not_assign"
+
+class IApi():
+    def req(self,tornado_httpreq):
+        self.request = tornado_httpreq

@@ -14,5 +14,6 @@ class AjaxTest(IAjax):
     def client_javascript_object_name(self):
         return "test_AjaxTest"
 
-    def abc(self,arg1,arg2,arg3,req):
+    def abc(self,**dict):
+        print(dict)
         pass
