@@ -14,8 +14,8 @@ class Welcome(IWebConfig):
 
 class WelcomeHandler(IRequest):
     def get(self):
-        web_page = urllib.request.urlopen("http://trade.500.com/bjdc/",timeout=15)
-        html = web_page.read()
-        html = html.decode('gb18030')
-        Utils.text_write("cache",[html])
+        # web_page = urllib.request.urlopen("http://trade.500.com/bjdc/",timeout=15)
+        # html = web_page.read()
+        # html = html.decode('gb18030')
+        # Utils.text_write("cache",[html])
         self.redirect("/static/index.html")

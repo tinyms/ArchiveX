@@ -2,21 +2,116 @@
 <html>
 <head>
     <title>Welcome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <script src="jslib/json2.js" type="text/javascript"></script>
     <script src="jslib/jquery-1.10.2.min.js" type="text/javascript"></script>
     <script src="/ajax/test.AjaxTest.js" type="text/javascript"></script>
+    <link href="jslib/bootstrap3/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="jslib/bootstrap3/js/bootstrap.min.js"></script>
+    <script src="jslib/jsonTable.js"></script>
+    <style type="text/css">
+        #match_grid_panel{
+            margin-top: 15px;
+        }
+    </style>
     <script type="text/javascript">
-        $(document).ready(function(){
-            $("#test").click(function(){
-                test_AjaxTest.console({"name":"杰克"},function(b,data){
+        $(document).ready(function () {
+            $("#test").click(function () {
+                test_AjaxTest.console({"name": "杰克"}, function (b, data) {
                     console.log(b);
                     console.log(data);
-                },"json")
+                }, "json")
             });
         });
     </script>
 </head>
 <body>
- <input id="test" value="Test" type="button"/>
+<div class="page-header"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6">
+            <div class="input-group">
+                <input type="text" class="form-control">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">Go!</button>
+                      </span>
+            </div>
+            <!-- /input-group -->
+        </div>
+        <div class="col-lg-3">
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row" id="match_grid_panel">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+            <div class="panel">
+                <div class="panel-heading">比赛场次</div>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>赛事</th>
+                        <th>球差</th>
+                        <th>预测</th>
+                        <th>赛果</th>
+                        <th>初盘(威廉)</th>
+                        <th>对阵球队</th>
+                        <th>比分</th>
+                        <th>比赛日期</th>
+                        <th>#</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>@mdo</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-xs">析</button>
+                            <button type="button" class="btn btn-default btn-xs">欧</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jacob</td>
+                        <td>Thornton</td>
+                        <td>@fat</td>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>@mdo</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-xs">析</button>
+                            <button type="button" class="btn btn-default btn-xs">欧</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Larry</td>
+                        <td>the Bird</td>
+                        <td>@twitter</td>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>@mdo</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-xs">析</button>
+                            <button type="button" class="btn btn-default btn-xs">欧</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-1"></div>
+    </div>
+</div>
 </body>
 </html>
