@@ -1,5 +1,6 @@
 .idea
 cache_web_pages
+cache
 *.py[cod]
 
 # C extensions
