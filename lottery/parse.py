@@ -21,7 +21,6 @@ class MatchAnalyze():
         Utils.mkdirs("cache_web_pages")
         data = list()
         for url in urls:
-            soup = None
             if cached:
                 Helper.web_page_download(url,cached)
                 soup = Helper.soup(Helper.cache_file_name(url))
@@ -31,8 +30,10 @@ class MatchAnalyze():
                 print("Soup None.")
                 continue
             trNodes = soup.find_all("tr")
+            season_no = Utils.md5(url)
             for tr in trNodes:
                 match_item = dict()
+                match_item["season_no"] = season_no
                 linkNodes = tr.find_all("a")
                 for link in linkNodes:
                     href = link["href"]
@@ -47,17 +48,51 @@ class MatchAnalyze():
                         match_item["match_id"] = Utils.parse_int_array(href)[1]
                 if match_item.get("match_id"):
                     data.append(match_item)
-        print(data)
         return data
+
     @staticmethod
     def parse(matchs_data):
         MatchAnalyze.batch_download_data_pages(matchs_data)
         for row in matchs_data:
             MatchAnalyze.parse_odds(row,Helper.cache_file_name("http://odds.500.com/fenxi/ouzhi-%i" % row["match_id"]))
             MatchAnalyze.parse_baseface(row,Helper.cache_file_name("http://odds.500.com/fenxi/shuju-%i" % row["match_id"]))
-            pass
-        print(matchs_data)
+            MatchAnalyze.detect_result(row)
 
+        #remove formule object.
+        for row in matchs_data:
+            row.pop("formula_last_mid")
+            row.pop("formula_total")
+            row.pop("formula_last10")
+            row.pop("formula_last6")
+            row.pop("formula_last4")
+        print(matchs_data)
+    #赛果预测
+    @staticmethod
+    def detect_result(match):
+        scores = []
+        #scores += match["formula_total"].to_results()
+        scores += match["formula_last10"].to_results()
+        scores += match["formula_last6"].to_results()
+        scores += match["formula_last4"].to_results()
+        avg_balls = (match["formula_last10"].avg_balls + match["formula_last6"].avg_balls + match["formula_last4"].avg_balls)/3
+        num = round(avg_balls,2)
+        #scores += match["formula_last_mid"].to_results()
+        #r = Result(scores,match["odds"])
+        #match["result"]=r.detect(match["formula_last4"])
+        diff = abs(num)
+        match["ball_diff"]=diff
+        if diff>=0 and diff<=0.25:
+            match["detect_result"]= "1"
+        elif diff>0.25 and diff < 0.75:
+            if num > 0:
+                match["detect_result"]= "31"
+            else:
+                match["detect_result"]= "10"
+        elif diff >= 0.75:
+            if num > 0:
+                match["detect_result"]= "3"
+            else:
+                match["detect_result"]= "0"
     @staticmethod
     def parse_baseface(row, f_name):
         row["last_mix_total_10"] = ""
@@ -295,34 +330,34 @@ class MatchAnalyze():
             tr = parser.find("tr",id="tr_"+tr_id)
             if tr:
                 nums = Utils.parse_float_array(tr.get_text())
-                nums = ["%.2f" % num for num in nums]
+                #nums = ["%.2f" % num for num in nums]
                 if len(nums) > 3:
                     if tr_id == "293":
-                        row["Odds_WL"] = " ".join(nums[0:3])
+                        row["Odds_WL"] = nums[0:3]
                     elif tr_id == "5":
-                        row["Odds_AM"] = " ".join(nums[0:3])
+                        row["Odds_AM"] = nums[0:3]
                     elif tr_id == "2":
-                        row["Odds_LB"] = " ".join(nums[0:3])
+                        row["Odds_LB"] = nums[0:3]
                     elif tr_id == "3":
-                        row["Odds_365"] = " ".join(nums[0:3])
+                        row["Odds_365"] = nums[0:3]
                     elif tr_id == "9":
-                        row["Odds_YSB"] = " ".join(nums[0:3])
+                        row["Odds_YSB"] = nums[0:3]
 
             tr = parser.find("tr",id="tr2_"+tr_id)
             if tr:
                 nums = Utils.parse_float_array(tr.get_text())
-                nums = ["%.2f" % num for num in nums]
+                #nums = ["%.2f" % num for num in nums]
                 if len(nums) > 3:
                     if tr_id == "293":
-                        row["Odds_WL_Change"] = " ".join(nums[0:3])
+                        row["Odds_WL_Change"] = nums[0:3]
                     elif tr_id == "5":
-                        row["Odds_AM_Change"] = " ".join(nums[0:3])
+                        row["Odds_AM_Change"] = nums[0:3]
                     elif tr_id == "2":
-                        row["Odds_LB_Change"] = " ".join(nums[0:3])
+                        row["Odds_LB_Change"] = nums[0:3]
                     elif tr_id == "3":
-                        row["Odds_365_Change"] = " ".join(nums[0:3])
+                        row["Odds_365_Change"] = nums[0:3]
                     elif tr_id == "9":
-                        row["Odds_YSB_Change"] = " ".join(nums[0:3])
+                        row["Odds_YSB_Change"] = nums[0:3]
     @staticmethod
     def parse_match_date(parser):
         div = parser.find("div", class_="against_m")
