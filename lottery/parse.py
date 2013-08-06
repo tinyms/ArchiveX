@@ -54,10 +54,12 @@ class MatchAnalyze():
         MatchAnalyze.batch_download_data_pages(matchs_data)
         for row in matchs_data:
             MatchAnalyze.parse_odds(row,Helper.cache_file_name("http://odds.500.com/fenxi/ouzhi-%i" % row["match_id"]))
+            MatchAnalyze.parse_baseface(row,Helper.cache_file_name("http://odds.500.com/fenxi/shuju-%i" % row["match_id"]))
             pass
         print(matchs_data)
 
-    def parse_baseface(self, row, f_name):
+    @staticmethod
+    def parse_baseface(row, f_name):
         row["last_mix_total_10"] = ""
         row["last_10_text_style"] = ""
         row["last_6_text_style"] = ""
@@ -74,12 +76,12 @@ class MatchAnalyze():
         parser = Helper.soup(f_name)
         if not parser:
             return
-        row["match_date"] = self.parse_match_date(parser)
+        row["match_date"] = MatchAnalyze.parse_match_date(parser)
 
         ########################进球数比较引擎数据构造块#######################
 
         #球队主客混合平均进球数
-        avg_balls = self.parse_balls_io_total_10(parser)
+        avg_balls = MatchAnalyze.parse_balls_io_total_10(parser)
         if len(avg_balls)==4:
             defence_main=Helper.zero_div(avg_balls[0],avg_balls[1])
             defence_client=Helper.zero_div(avg_balls[2],avg_balls[3])
@@ -95,8 +97,8 @@ class MatchAnalyze():
             row["last_mix_total_10"] = "(%s)/(%s)" % (win,lost)
 
         #分主客区段平均进球数
-        main_data = self.count_team_battle_balls_io("team_zhanji2_1",parser)
-        client_data = self.count_team_battle_balls_io("team_zhanji2_0",parser)
+        main_data = MatchAnalyze.count_team_battle_balls_io("team_zhanji2_1",parser)
+        client_data = MatchAnalyze.count_team_battle_balls_io("team_zhanji2_0",parser)
 
         #视图数据
         row["last_4_status_text_style"] = "(%s)/(%s)" % ("".join(main_data["status"]),"".join(client_data["status"]))
@@ -119,20 +121,23 @@ class MatchAnalyze():
         row["formula_last_mid"].client_force = client_data["last_mid"]["win"]
         row["formula_last_mid"].client_defence = client_data["last_mid"]["percentage"]
         ########################结束##########################################
-    def parse_balls_io_total_10(self,parser):
+
+    @staticmethod
+    def parse_balls_io_total_10(parser):
         if not parser:
             return []
         div = parser.find("div",id="team_zhanji_1")
         io_balls = []
         if div:
             txt = div.get_text()
-            io_balls = self.parse_balls_io(txt)
+            io_balls = MatchAnalyze.parse_balls_io(txt)
         div = parser.find("div",id="team_zhanji_0")
         if div:
             txt = div.get_text()
-            io_balls += self.parse_balls_io(txt)
+            io_balls += MatchAnalyze.parse_balls_io(txt)
         return [(i/10) for i in io_balls]
-    def parse_balls_io(self,text):
+    @staticmethod
+    def parse_balls_io(text):
         p = re.compile("进\\d+球失\\d+球",re.M)
         items = p.findall(text)
         if len(items)>0:
@@ -140,7 +145,8 @@ class MatchAnalyze():
             return Utils.parse_int_array(item)
         return []
     #分段计算平均进球数
-    def count_team_avgballs_section(self,balls_arr,win_avg,lost_avg):
+    @staticmethod
+    def count_team_avgballs_section(balls_arr,win_avg,lost_avg):
         avg = dict()
         size = len(balls_arr)
         win = 0.0
@@ -175,22 +181,23 @@ class MatchAnalyze():
         avg["lost"] = round(lost,1) #平均丢球数
         avg["percentage"] = round(Helper.zero_div(win,lost),1) #进失球比率
         return avg
-    def count_team_battle_balls_io(self,div_id,parser):
+    @staticmethod
+    def count_team_battle_balls_io(div_id,parser):
         r = dict()
         is_main_team = True
         if div_id == "team_zhanji2_0":
             is_main_team = False
         #主/客场最近10场对战数据
-        total_10_balls_io = self.parse_team_battle_balls_io_nums(div_id,parser,is_main_team)
+        total_10_balls_io = MatchAnalyze.parse_team_battle_balls_io_nums(div_id,parser,is_main_team)
         r["status"] = "".join(total_10_balls_io["310"][0:6])
         #主/客平均进球数
         win_avg = Helper.zero_div(sum([balls["win"] for balls in total_10_balls_io["scores"]]),10)
         #主/客平均丢球数
         lost_avg = Helper.zero_div(sum([balls["lost"] for balls in total_10_balls_io["scores"]]),10)
 
-        r["last_10"] = self.count_team_avgballs_section(total_10_balls_io["scores"],win_avg,lost_avg)
-        r["last_6"] = self.count_team_avgballs_section(total_10_balls_io["scores"][0:6],win_avg,lost_avg)
-        r["last_4"] = self.count_team_avgballs_section(total_10_balls_io["scores"][0:4],win_avg,lost_avg)
+        r["last_10"] = MatchAnalyze.count_team_avgballs_section(total_10_balls_io["scores"],win_avg,lost_avg)
+        r["last_6"] = MatchAnalyze.count_team_avgballs_section(total_10_balls_io["scores"][0:6],win_avg,lost_avg)
+        r["last_4"] = MatchAnalyze.count_team_avgballs_section(total_10_balls_io["scores"][0:4],win_avg,lost_avg)
 
         #掐头去尾
         copy = total_10_balls_io["scores"][:]
@@ -206,7 +213,8 @@ class MatchAnalyze():
         avg["percentage"] = Helper.zero_div(avg["win"],avg["lost"])
         r["last_mid"] = avg
         return r
-    def get_status_num_style(self, src):
+    @staticmethod
+    def get_status_num_style(src):
         if src.find("h_red.png") != -1:
             return "3"
         elif src.find("m_green.png") != -1:
@@ -214,7 +222,8 @@ class MatchAnalyze():
         elif src.find("l_blue.png") != -1:
             return "0"
         return ""
-    def parse_team_battle_balls_io_nums(self,div_id,parser,is_main=True):
+    @staticmethod
+    def parse_team_battle_balls_io_nums(div_id,parser,is_main=True):
         r = dict()
         r["310"] = list()
         scores = list()
@@ -222,9 +231,9 @@ class MatchAnalyze():
         if history_battle_data_panel:
             imgs = history_battle_data_panel.find_all("img")
             for img in imgs:
-                r["310"].append(self.get_status_num_style(img["src"]))
+                r["310"].append(MatchAnalyze.get_status_num_style(img["src"]))
             aList = history_battle_data_panel.find_all("a")
-            results = self.parse_history_battle_links(aList,10)
+            results = MatchAnalyze.parse_history_battle_links(aList,10)
             for score in results:
                 if len(score)==2:
                     s = dict()
@@ -240,20 +249,22 @@ class MatchAnalyze():
         r["scores"] = scores
         return r
     #解析根据Limit数限定的历史战绩比分集合(N:M,..)
-    def parse_history_battle_links(self,links,limit=10):
+    @staticmethod
+    def parse_history_battle_links(links,limit=10):
         items = []
         count = 0;
         for a in links:
             if a["href"].find("shuju-") != -1:
                 if count == limit:
                     break
-                nums = self.parse_history_score(a.get_text())
+                nums = MatchAnalyze.parse_history_score(a.get_text())
                 items.append(nums)
                 count += 1
         return items
 
     #解析单个历史战绩比分 N:M
-    def parse_history_score(self,text):
+    @staticmethod
+    def parse_history_score(text):
         p = re.compile("\\d{1,2}:\\d{1,2}",re.M)
         items = p.findall(text)
         if len(items)>0:
