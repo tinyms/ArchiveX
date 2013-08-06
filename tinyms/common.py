@@ -1,10 +1,10 @@
 __author__ = 'tinyms'
 
-import os, sys, re
+import os, sys, re, codecs
 import hashlib, json
 import urllib.request
 import urllib.parse
-from imp import find_module,load_module,acquire_lock,release_lock
+from imp import find_module, load_module, acquire_lock, release_lock
 
 import psycopg2
 import psycopg2.extras
@@ -23,7 +23,7 @@ class Postgres():
                                 password=Postgres.PASSWORD)
 
     @staticmethod
-    def update(sql, params, return_col_name = None):
+    def update(sql, params, return_col_name=None):
 
         """
         for Insert,Update,Delete
@@ -156,6 +156,7 @@ class Postgres():
             names.append(col.name)
         return names
 
+
 class Utils():
     @staticmethod
     def text_read(file_nme):
@@ -166,7 +167,7 @@ class Utils():
 
     @staticmethod
     def text_write(f_name, lines=[], suffix="\n"):
-        f = open(f_name, "w+")
+        f = codecs.open(f_name, "w+", "utf-8")
         for line in lines:
             f.write(line + suffix)
         f.close()
@@ -265,12 +266,12 @@ class Utils():
     def matrix_reverse(arr):
         return [[r[col] for r in arr] for col in range(len(arr[0]))]
 
-class Plugin():
 
+class Plugin():
     ObjectPool = dict()
 
     @staticmethod
-    def get(type_,class_full_name = ""):
+    def get(type_, class_full_name=""):
         """
         get plugin class object instance
         :param type_: extends plugin interface
@@ -292,17 +293,19 @@ class Plugin():
         wid = os.walk(path)
         plugins = []
         print("Search plugins modules..")
-        for rootDir,pathList,fileList in wid:
+        for rootDir, pathList, fileList in wid:
             if rootDir.find("__pycache__") != -1:
                 continue
             for file in fileList:
-                #re \\.py[c]?$
-                if file.endswith(".py") or file.endswith(".pyc") or file != "__init__.py":
-                    plugins.append((os.path.splitext(file)[0],rootDir))
+                if file.find("__init__.py") != -1:
+                    continue
+                    #re \\.py[c]?$
+                if file.endswith(".py") or file.endswith(".pyc"):
+                    plugins.append((os.path.splitext(file)[0], rootDir))
 
         print(plugins)
         print("Instance all plugin class.")
-        for (name,dir) in plugins:
+        for (name, dir) in plugins:
             try:
                 acquire_lock()
                 file, filename, desc = find_module(name, [dir])
