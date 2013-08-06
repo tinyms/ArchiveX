@@ -1,7 +1,11 @@
 __author__ = 'tinyms'
 
-import os, sys, re, codecs
-import hashlib, json
+import os
+import sys
+import re
+import codecs
+import hashlib
+import json
 import urllib.request
 import urllib.parse
 from imp import find_module, load_module, acquire_lock, release_lock
@@ -159,10 +163,12 @@ class Postgres():
 
 class Utils():
     @staticmethod
-    def text_read(file_nme):
-        f = open(file_nme)
+    def text_read(f_name,join=True):
+        f = codecs.open(f_name,"r","utf-8")
         all = f.readlines()
         f.close()
+        if join:
+            return "".join(all)
         return all
 
     @staticmethod

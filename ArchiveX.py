@@ -1,12 +1,16 @@
 __author__ = 'tinyms'
 
+import sys
+import os
+import webbrowser
+
 from tornado.ioloop import IOLoop
 from tornado.web import Application
-import sys,os,webbrowser
 
 from tinyms.common import Plugin
 from tinyms.point import IWebConfig
 from tinyms.web import AjaxHandler,ApiHandler
+
 
 Plugin.load()
 web_configs = Plugin.get(IWebConfig)
