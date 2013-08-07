@@ -39,7 +39,7 @@ class MatchAnalyzeThread(threading.Thread):
                 print("Soup None.")
                 continue
             trNodes = soup.find_all("tr")
-            season_no = Utils.md5(url)
+            season_no = Utils.md5(Utils.trim(url))
             for tr in trNodes:
                 match_item = dict()
                 match_item["score"] = ""
