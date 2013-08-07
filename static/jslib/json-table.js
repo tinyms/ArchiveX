@@ -4,7 +4,9 @@
         var settings = $.extend({
             head: [],
             json: [],
-            render: function(field_name,field_val,row){return field_val;}
+            render: function (field_name, field_val, row) {
+                return field_val;
+            }
         }, options);
         this.data("settings", settings);
         var thead = $(this.selector + ' thead').append("<tr></tr>\n");
@@ -45,7 +47,7 @@
             }
 
             for (var j = 0; j < settings.json.length; j++) {
-                var cell_value = settings.render(settings.json[j],obj[i][settings.json[j]],obj[i])
+                var cell_value = settings.render(settings.json[j], obj[i][settings.json[j]], obj[i])
                 row += "<td>" + cell_value + "</td>";
             }
             row += "</tr>";

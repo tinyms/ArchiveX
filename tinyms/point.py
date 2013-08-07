@@ -2,15 +2,15 @@ __author__ = 'tinyms'
 
 #for plugin to extends
 class IWebConfig():
-
-    def settings(self,ws_setting):
+    def settings(self, ws_setting):
         """
         Append or modify tornado setting
         :param ws_setting: dict()
         :return:
         """
         return
-    def url_mapping(self,url_patterns):
+
+    def url_mapping(self, url_patterns):
         """
         Tornado url mapping
         Append (r'/some/any',RequestHandlerClass)
@@ -19,14 +19,15 @@ class IWebConfig():
         """
         return
 
-class IAjax():
 
-    def request(self,tornado_httpreq):
+class IAjax():
+    def request(self, tornado_httpreq):
         self.req = tornado_httpreq
 
     def client_javascript_object_name(self):
         return "client_javascript_object_name_not_assign"
 
+
 class IApi():
-    def request(self,tornado_httpreq):
+    def request(self, tornado_httpreq):
         self.req = tornado_httpreq

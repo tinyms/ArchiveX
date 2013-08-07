@@ -9,7 +9,7 @@ from tornado.web import Application
 
 from tinyms.common import Plugin
 from tinyms.point import IWebConfig
-from tinyms.web import AjaxHandler,ApiHandler
+from tinyms.web import AjaxHandler, ApiHandler
 
 
 Plugin.load()
@@ -19,18 +19,18 @@ ws_settings = dict()
 ws_settings["static_path"] = os.path.join(os.getcwd(), "static")
 
 ws_url_patterns = [
-    (r"/ajax/(.*).js",AjaxHandler),
+    (r"/ajax/(.*).js", AjaxHandler),
     #/api/module.class/method
-    (r"/api/(.*)/(.*)",ApiHandler)
+    (r"/api/(.*)/(.*)", ApiHandler)
 ]
 
 for web_config in web_configs:
-    if hasattr(web_config,"ws_settings"):
+    if hasattr(web_config, "ws_settings"):
         web_config.settings(ws_settings)
-    if hasattr(web_config,"url_mapping"):
+    if hasattr(web_config, "url_mapping"):
         web_config.url_mapping(ws_url_patterns)
 
-app = Application(ws_url_patterns,**ws_settings)
+app = Application(ws_url_patterns, **ws_settings)
 
 if __name__ == "__main__":
     webbrowser.open_new_tab("http://localhost:%i" % 8888)

@@ -3,37 +3,38 @@ __author__ = 'tinyms'
 import json
 from tornado.web import RequestHandler
 from tinyms.common import Plugin
-from tinyms.point import IAjax,IApi
+from tinyms.point import IAjax, IApi
 
-class IRequest(RequestHandler):pass
+
+class IRequest(RequestHandler): pass
+
 
 class ApiHandler(IRequest):
+    def get(self, class_full_name, method_name):
+        self.req(class_full_name, method_name)
 
-    def get(self,class_full_name,method_name):
-        self.req(class_full_name,method_name)
+    def post(self, class_full_name, method_name):
+        self.req(class_full_name, method_name)
 
-    def post(self,class_full_name,method_name):
-        self.req(class_full_name,method_name)
-
-    def req(self,class_full_name,method_name):
+    def req(self, class_full_name, method_name):
         """
         Url: localhost/api/module.class/method
         :param class_full_name:
         :return:
         """
         #ver = self.get_argument("ver")
-        print(class_full_name,method_name)
-        self.set_header("Content-Type","text/json;charset=utf-8")
+        print(class_full_name, method_name)
+        self.set_header("Content-Type", "text/json;charset=utf-8")
         if not class_full_name:
             self.write("Class Name Require.")
         else:
-            obj = Plugin.get(IApi,class_full_name)
+            obj = Plugin.get(IApi, class_full_name)
             if not obj:
                 self.write("Class Not Found.")
             else:
-                if hasattr(obj,"__export__"):
-                    if obj.__export__.count(method_name)>0:
-                        if hasattr(obj,method_name):
+                if hasattr(obj, "__export__"):
+                    if obj.__export__.count(method_name) > 0:
+                        if hasattr(obj, method_name):
                             func = obj.__getattribute__(method_name)
                             func_params = json.loads(self.get_argument("params"))
                             obj.request(self)
@@ -42,20 +43,20 @@ class ApiHandler(IRequest):
                         else:
                             self.write("The method `%s` not found." % method_name)
 
-class AjaxHandler(IRequest):
 
-    def get(self,class_full_name):
-        self.set_header("Content-Type","text/javascript;charset=utf-8")
+class AjaxHandler(IRequest):
+    def get(self, class_full_name):
+        self.set_header("Content-Type", "text/javascript;charset=utf-8")
         if not class_full_name:
             self.write("alert('Class Name Require.')")
         else:
-            obj = Plugin.get(IAjax,class_full_name)
+            obj = Plugin.get(IAjax, class_full_name)
             if not obj:
                 self.write("alert('Class Not Found.')")
             else:
-                if hasattr(obj,"__export__"):
+                if hasattr(obj, "__export__"):
                     if len(obj.__export__) > 0:
-                        if not hasattr(obj,"client_javascript_object_name"):
+                        if not hasattr(obj, "client_javascript_object_name"):
                             print("client javascript object name not assign.")
                             return
                         client_js_object_name = obj.client_javascript_object_name()
@@ -86,26 +87,26 @@ class AjaxHandler(IRequest):
                 else:
                     self.write("console.log('Attr `__export__` Not exist');")
 
-    def post(self,class_full_name):
+    def post(self, class_full_name):
 
         func_return_data_type = self.get_argument("__data_type__")
         if func_return_data_type == "json":
-            self.set_header("Content-Type","text/json;charset=utf-8")
+            self.set_header("Content-Type", "text/json;charset=utf-8")
         elif func_return_data_type == "script":
-            self.set_header("Content-Type","text/javascript;charset=utf-8")
+            self.set_header("Content-Type", "text/javascript;charset=utf-8")
         elif func_return_data_type == "html":
-            self.set_header("Content-Type","text/html;charset=utf-8")
+            self.set_header("Content-Type", "text/html;charset=utf-8")
 
         if not class_full_name:
             self.write("Class Name Require.")
         else:
-            obj = Plugin.get(IAjax,class_full_name)
+            obj = Plugin.get(IAjax, class_full_name)
             if not obj:
                 self.write("Class Not Found.")
             else:
                 func_name = self.get_argument("__func_name__")
                 func_params = json.loads(self.get_argument("__func_dict_params__"))
-                if hasattr(obj,func_name):
+                if hasattr(obj, func_name):
                     obj.request(self)
                     func = obj.__getattribute__(func_name)
                     result = func(**func_params)

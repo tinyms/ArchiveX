@@ -1,7 +1,7 @@
 __author__ = 'tinyms'
-__export__ = ["Welcome","MatchAnalyze"]
+__export__ = ["Welcome", "MatchAnalyze"]
 
-import os,json
+import os, json
 from tinyms.web import IRequest
 from tinyms.common import Utils
 from tinyms.point import IWebConfig, IApi
@@ -13,16 +13,17 @@ class Welcome(IWebConfig):
         url_patterns.append((r"/", WelcomeHandler))
         pass
 
+
 class WelcomeHandler(IRequest):
     def get(self):
         self.redirect("/static/index.html")
 
 #/api/welcome.MatchAnalyze/method
 class MatchAnalyze(IApi):
-    __export__ = ["run","result"]
+    __export__ = ["run", "result"]
     thread = None
 
-    def result(self,**p):
+    def result(self, **p):
         msg = dict()
         if not p["url"]:
             msg["msg"] = "NotBlank"

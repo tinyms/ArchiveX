@@ -1,9 +1,9 @@
 __author__ = 'tinyms'
 
 import sys
-import os,threading
+import os, threading
 import re
-import random,json
+import random, json
 import urllib.request
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
@@ -13,28 +13,32 @@ from bs4 import BeautifulSoup
 from tinyms.common import Utils
 from lottery.formula import Formula
 
+
 class MatchAnalyzeThread(threading.Thread):
     IS_RUNNING = False
+
     def __init__(self):
         threading.Thread.__init__(self)
         self.urls = list()
         self.cached = False
+
     def run(self):
         MatchAnalyzeThread.IS_RUNNING = True
-        ds = MatchAnalyzeThread.extract_matchs(self.urls,self.cached)
+        ds = MatchAnalyzeThread.extract_matchs(self.urls, self.cached)
         MatchAnalyzeThread.parse(ds)
         MatchAnalyzeThread.IS_RUNNING = False
+
     @staticmethod
-    def extract_matchs(urls,cached=False):
+    def extract_matchs(urls, cached=False):
         #make dir
         Utils.mkdirs("cache_web_pages")
         data = list()
         for url in urls:
             if cached:
-                Helper.web_page_download(url,cached)
+                Helper.web_page_download(url, cached)
                 soup = Helper.soup(Helper.cache_file_name(url))
             else:
-                soup = Helper.soup(url,False)
+                soup = Helper.soup(url, False)
             if not soup:
                 print("Soup None.")
                 continue
@@ -52,7 +56,7 @@ class MatchAnalyzeThread(threading.Thread):
                         match_item["season_name"] = Utils.trim(link.get_text())
                     elif href.find("teamid") != -1:
                         if match_item.get("team_names"):
-                            match_item["team_names"] += " VS "+Utils.trim(link.get_text())
+                            match_item["team_names"] += " VS " + Utils.trim(link.get_text())
                         else:
                             match_item["team_names"] = Utils.trim(link.get_text())
                     elif href.find("/fenxi/shuju") != -1:
@@ -65,8 +69,10 @@ class MatchAnalyzeThread(threading.Thread):
     def parse(matchs_data):
         MatchAnalyzeThread.batch_download_data_pages(matchs_data)
         for row in matchs_data:
-            MatchAnalyzeThread.parse_odds(row,Helper.cache_file_name("http://odds.500.com/fenxi/ouzhi-%i" % row["match_id"]))
-            MatchAnalyzeThread.parse_baseface(row,Helper.cache_file_name("http://odds.500.com/fenxi/shuju-%i" % row["match_id"]))
+            MatchAnalyzeThread.parse_odds(row, Helper.cache_file_name(
+                "http://odds.500.com/fenxi/ouzhi-%i" % row["match_id"]))
+            MatchAnalyzeThread.parse_baseface(row, Helper.cache_file_name(
+                "http://odds.500.com/fenxi/shuju-%i" % row["match_id"]))
             MatchAnalyzeThread.detect_result(row)
 
         #remove formule object.
@@ -79,8 +85,9 @@ class MatchAnalyzeThread(threading.Thread):
         print(matchs_data)
         if len(matchs_data) > 0:
             file_name = "cache_web_pages/%s.json" % matchs_data[0]["season_no"]
-            Utils.text_write(file_name,[json.dumps(matchs_data)])
-    #赛果预测
+            Utils.text_write(file_name, [json.dumps(matchs_data)])
+
+        #赛果预测
     @staticmethod
     def detect_result(match):
         scores = []
@@ -88,25 +95,27 @@ class MatchAnalyzeThread(threading.Thread):
         scores += match["formula_last10"].to_results()
         scores += match["formula_last6"].to_results()
         scores += match["formula_last4"].to_results()
-        avg_balls = (match["formula_last10"].avg_balls + match["formula_last6"].avg_balls + match["formula_last4"].avg_balls)/3
-        num = round(avg_balls,2)
+        avg_balls = (match["formula_last10"].avg_balls + match["formula_last6"].avg_balls + match[
+            "formula_last4"].avg_balls) / 3
+        num = round(avg_balls, 2)
         #scores += match["formula_last_mid"].to_results()
         #r = Result(scores,match["odds"])
         #match["result"]=r.detect(match["formula_last4"])
         diff = abs(num)
-        match["ball_diff"]=diff
-        if diff>=0 and diff<=0.25:
-            match["detect_result"]= "1"
-        elif diff>0.25 and diff < 0.75:
+        match["ball_diff"] = diff
+        if diff >= 0 and diff <= 0.25:
+            match["detect_result"] = "1"
+        elif diff > 0.25 and diff < 0.75:
             if num > 0:
-                match["detect_result"]= "31"
+                match["detect_result"] = "31"
             else:
-                match["detect_result"]= "10"
+                match["detect_result"] = "10"
         elif diff >= 0.75:
             if num > 0:
-                match["detect_result"]= "3"
+                match["detect_result"] = "3"
             else:
-                match["detect_result"]= "0"
+                match["detect_result"] = "0"
+
     @staticmethod
     def parse_baseface(row, f_name):
         row["last_mix_total_10"] = ""
@@ -131,9 +140,9 @@ class MatchAnalyzeThread(threading.Thread):
 
         #球队主客混合平均进球数
         avg_balls = MatchAnalyzeThread.parse_balls_io_total_10(parser)
-        if len(avg_balls)==4:
-            defence_main=Helper.zero_div(avg_balls[0],avg_balls[1])
-            defence_client=Helper.zero_div(avg_balls[2],avg_balls[3])
+        if len(avg_balls) == 4:
+            defence_main = Helper.zero_div(avg_balls[0], avg_balls[1])
+            defence_client = Helper.zero_div(avg_balls[2], avg_balls[3])
 
             #本赛季
             row["formula_total"].main_force = avg_balls[0]
@@ -141,22 +150,28 @@ class MatchAnalyzeThread(threading.Thread):
             row["formula_total"].main_defence = defence_main
             row["formula_total"].client_defence = defence_client
 
-            win = "%.1f,%.1f" % (avg_balls[0],defence_main)
-            lost = "%.1f,%.1f" % (avg_balls[2],defence_client)
-            row["last_mix_total_10"] = "(%s)/(%s)" % (win,lost)
+            win = "%.1f,%.1f" % (avg_balls[0], defence_main)
+            lost = "%.1f,%.1f" % (avg_balls[2], defence_client)
+            row["last_mix_total_10"] = "(%s)/(%s)" % (win, lost)
 
         #分主客区段平均进球数
-        main_data = MatchAnalyzeThread.count_team_battle_balls_io("team_zhanji2_1",parser)
-        client_data = MatchAnalyzeThread.count_team_battle_balls_io("team_zhanji2_0",parser)
+        main_data = MatchAnalyzeThread.count_team_battle_balls_io("team_zhanji2_1", parser)
+        client_data = MatchAnalyzeThread.count_team_battle_balls_io("team_zhanji2_0", parser)
 
         #视图数据
-        row["last_4_status_text_style"] = "(%s)/(%s)" % ("".join(main_data["status"]),"".join(client_data["status"]))
-        row["last_10_text_style"] = "(%.1f,%.1f)/(%.1f,%.1f)" % (main_data["last_10"]["win"],main_data["last_10"]["percentage"],client_data["last_10"]["win"],client_data["last_10"]["percentage"])
-        row["last_6_text_style"] = "(%.1f,%.1f)/(%.1f,%.1f)" % (main_data["last_6"]["win"],main_data["last_6"]["percentage"],client_data["last_6"]["win"],client_data["last_6"]["percentage"])
-        row["last_4_text_style"] = "(%.1f,%.1f)/(%.1f,%.1f)" % (main_data["last_4"]["win"],main_data["last_4"]["percentage"],client_data["last_4"]["win"],client_data["last_4"]["percentage"])
+        row["last_4_status_text_style"] = "(%s)/(%s)" % ("".join(main_data["status"]), "".join(client_data["status"]))
+        row["last_10_text_style"] = "(%.1f,%.1f)/(%.1f,%.1f)" % (
+        main_data["last_10"]["win"], main_data["last_10"]["percentage"], client_data["last_10"]["win"],
+        client_data["last_10"]["percentage"])
+        row["last_6_text_style"] = "(%.1f,%.1f)/(%.1f,%.1f)" % (
+        main_data["last_6"]["win"], main_data["last_6"]["percentage"], client_data["last_6"]["win"],
+        client_data["last_6"]["percentage"])
+        row["last_4_text_style"] = "(%.1f,%.1f)/(%.1f,%.1f)" % (
+        main_data["last_4"]["win"], main_data["last_4"]["percentage"], client_data["last_4"]["win"],
+        client_data["last_4"]["percentage"])
 
         #区段比较数据
-        for last_n in [10,6,4]:
+        for last_n in [10, 6, 4]:
             formula_key = "formula_last%i" % last_n
             data_key = "last_%i" % last_n
             row[formula_key].main_force = main_data[data_key]["win"]
@@ -164,7 +179,7 @@ class MatchAnalyzeThread(threading.Thread):
             row[formula_key].client_force = client_data[data_key]["win"]
             row[formula_key].client_defence = client_data[data_key]["percentage"]
             pass
-        #掐头去尾中间比较数据
+            #掐头去尾中间比较数据
         row["formula_last_mid"].main_force = main_data["last_mid"]["win"]
         row["formula_last_mid"].main_defence = main_data["last_mid"]["percentage"]
         row["formula_last_mid"].client_force = client_data["last_mid"]["win"]
@@ -175,27 +190,29 @@ class MatchAnalyzeThread(threading.Thread):
     def parse_balls_io_total_10(parser):
         if not parser:
             return []
-        div = parser.find("div",id="team_zhanji_1")
+        div = parser.find("div", id="team_zhanji_1")
         io_balls = []
         if div:
             txt = div.get_text()
             io_balls = MatchAnalyzeThread.parse_balls_io(txt)
-        div = parser.find("div",id="team_zhanji_0")
+        div = parser.find("div", id="team_zhanji_0")
         if div:
             txt = div.get_text()
             io_balls += MatchAnalyzeThread.parse_balls_io(txt)
-        return [(i/10) for i in io_balls]
+        return [(i / 10) for i in io_balls]
+
     @staticmethod
     def parse_balls_io(text):
-        p = re.compile("进\\d+球失\\d+球",re.M)
+        p = re.compile("进\\d+球失\\d+球", re.M)
         items = p.findall(text)
-        if len(items)>0:
+        if len(items) > 0:
             item = items[0]
             return Utils.parse_int_array(item)
         return []
-    #分段计算平均进球数
+
+        #分段计算平均进球数
     @staticmethod
-    def count_team_avgballs_section(balls_arr,win_avg,lost_avg):
+    def count_team_avgballs_section(balls_arr, win_avg, lost_avg):
         avg = dict()
         size = len(balls_arr)
         win = 0.0
@@ -204,17 +221,17 @@ class MatchAnalyzeThread(threading.Thread):
             w = b["win"]
             l = b["lost"]
 
-            if l==0 and w > 0:
+            if l == 0 and w > 0:
                 lost -= 0.5
-            if w==l and w > 0:
+            if w == l and w > 0:
                 win += 0.5
                 lost -= 1
 
-            if Helper.zero_div(w,win_avg) >= 1.5:
+            if Helper.zero_div(w, win_avg) >= 1.5:
                 win += win_avg * 1.5
             else:
                 win += w
-            if Helper.zero_div(l,lost_avg) >= 1.5:
+            if Helper.zero_div(l, lost_avg) >= 1.5:
                 lost += lost_avg * 1.5
             else:
                 lost += l
@@ -226,27 +243,30 @@ class MatchAnalyzeThread(threading.Thread):
             win /= size
             lost /= size
 
-        avg["win"] = round(win,1) #平均进球数
-        avg["lost"] = round(lost,1) #平均丢球数
-        avg["percentage"] = round(Helper.zero_div(win,lost),1) #进失球比率
+        avg["win"] = round(win, 1) #平均进球数
+        avg["lost"] = round(lost, 1) #平均丢球数
+        avg["percentage"] = round(Helper.zero_div(win, lost), 1) #进失球比率
         return avg
+
     @staticmethod
-    def count_team_battle_balls_io(div_id,parser):
+    def count_team_battle_balls_io(div_id, parser):
         r = dict()
         is_main_team = True
         if div_id == "team_zhanji2_0":
             is_main_team = False
-        #主/客场最近10场对战数据
-        total_10_balls_io = MatchAnalyzeThread.parse_team_battle_balls_io_nums(div_id,parser,is_main_team)
+            #主/客场最近10场对战数据
+        total_10_balls_io = MatchAnalyzeThread.parse_team_battle_balls_io_nums(div_id, parser, is_main_team)
         r["status"] = "".join(total_10_balls_io["310"][0:6])
         #主/客平均进球数
-        win_avg = Helper.zero_div(sum([balls["win"] for balls in total_10_balls_io["scores"]]),10)
+        win_avg = Helper.zero_div(sum([balls["win"] for balls in total_10_balls_io["scores"]]), 10)
         #主/客平均丢球数
-        lost_avg = Helper.zero_div(sum([balls["lost"] for balls in total_10_balls_io["scores"]]),10)
+        lost_avg = Helper.zero_div(sum([balls["lost"] for balls in total_10_balls_io["scores"]]), 10)
 
-        r["last_10"] = MatchAnalyzeThread.count_team_avgballs_section(total_10_balls_io["scores"],win_avg,lost_avg)
-        r["last_6"] = MatchAnalyzeThread.count_team_avgballs_section(total_10_balls_io["scores"][0:6],win_avg,lost_avg)
-        r["last_4"] = MatchAnalyzeThread.count_team_avgballs_section(total_10_balls_io["scores"][0:4],win_avg,lost_avg)
+        r["last_10"] = MatchAnalyzeThread.count_team_avgballs_section(total_10_balls_io["scores"], win_avg, lost_avg)
+        r["last_6"] = MatchAnalyzeThread.count_team_avgballs_section(total_10_balls_io["scores"][0:6], win_avg,
+                                                                     lost_avg)
+        r["last_4"] = MatchAnalyzeThread.count_team_avgballs_section(total_10_balls_io["scores"][0:4], win_avg,
+                                                                     lost_avg)
 
         #掐头去尾
         copy = total_10_balls_io["scores"][:]
@@ -254,14 +274,15 @@ class MatchAnalyzeThread(threading.Thread):
         mid_lost = [w["lost"] for w in copy]
         mid_win.sort()
         mid_lost.sort()
-        avg = {"win":0.0,"lost":0.0,"percentage":0.0}
-        if len(mid_win)>3:
-            avg["win"] = sum(mid_win[1:-1])/(len(mid_win)-2)
-        if len(mid_lost)>3:
-            avg["lost"] = sum(mid_lost[1:-1])/(len(mid_lost)-2)
-        avg["percentage"] = Helper.zero_div(avg["win"],avg["lost"])
+        avg = {"win": 0.0, "lost": 0.0, "percentage": 0.0}
+        if len(mid_win) > 3:
+            avg["win"] = sum(mid_win[1:-1]) / (len(mid_win) - 2)
+        if len(mid_lost) > 3:
+            avg["lost"] = sum(mid_lost[1:-1]) / (len(mid_lost) - 2)
+        avg["percentage"] = Helper.zero_div(avg["win"], avg["lost"])
         r["last_mid"] = avg
         return r
+
     @staticmethod
     def get_status_num_style(src):
         if src.find("h_red.png") != -1:
@@ -271,8 +292,9 @@ class MatchAnalyzeThread(threading.Thread):
         elif src.find("l_blue.png") != -1:
             return "0"
         return ""
+
     @staticmethod
-    def parse_team_battle_balls_io_nums(div_id,parser,is_main=True):
+    def parse_team_battle_balls_io_nums(div_id, parser, is_main=True):
         r = dict()
         r["310"] = list()
         scores = list()
@@ -282,9 +304,9 @@ class MatchAnalyzeThread(threading.Thread):
             for img in imgs:
                 r["310"].append(MatchAnalyzeThread.get_status_num_style(img["src"]))
             aList = history_battle_data_panel.find_all("a")
-            results = MatchAnalyzeThread.parse_history_battle_links(aList,10)
+            results = MatchAnalyzeThread.parse_history_battle_links(aList, 10)
             for score in results:
-                if len(score)==2:
+                if len(score) == 2:
                     s = dict()
                     if is_main:
                         s["win"] = score[0]
@@ -297,9 +319,10 @@ class MatchAnalyzeThread(threading.Thread):
                 pass
         r["scores"] = scores
         return r
-    #解析根据Limit数限定的历史战绩比分集合(N:M,..)
+
+        #解析根据Limit数限定的历史战绩比分集合(N:M,..)
     @staticmethod
-    def parse_history_battle_links(links,limit=10):
+    def parse_history_battle_links(links, limit=10):
         items = []
         count = 0;
         for a in links:
@@ -314,12 +337,13 @@ class MatchAnalyzeThread(threading.Thread):
     #解析单个历史战绩比分 N:M
     @staticmethod
     def parse_history_score(text):
-        p = re.compile("\\d{1,2}:\\d{1,2}",re.M)
+        p = re.compile("\\d{1,2}:\\d{1,2}", re.M)
         items = p.findall(text)
-        if len(items)>0:
+        if len(items) > 0:
             r = items[0]
             return Utils.parse_int_array(r)
         return list()
+
     @staticmethod
     def parse_odds(row, f_name):
         row["Odds_WL"] = ""
@@ -339,9 +363,9 @@ class MatchAnalyzeThread(threading.Thread):
             return
 
         #获取各大菠菜公司的初盘
-        tr_ids = ["293","5","2","3","9"]
+        tr_ids = ["293", "5", "2", "3", "9"]
         for tr_id in tr_ids:
-            tr = parser.find("tr",id="tr_"+tr_id)
+            tr = parser.find("tr", id="tr_" + tr_id)
             if tr:
                 nums = Utils.parse_float_array(tr.get_text())
                 #nums = ["%.2f" % num for num in nums]
@@ -357,7 +381,7 @@ class MatchAnalyzeThread(threading.Thread):
                     elif tr_id == "9":
                         row["Odds_YSB"] = nums[0:3]
 
-            tr = parser.find("tr",id="tr2_"+tr_id)
+            tr = parser.find("tr", id="tr2_" + tr_id)
             if tr:
                 nums = Utils.parse_float_array(tr.get_text())
                 #nums = ["%.2f" % num for num in nums]
@@ -372,6 +396,7 @@ class MatchAnalyzeThread(threading.Thread):
                         row["Odds_365_Change"] = nums[0:3]
                     elif tr_id == "9":
                         row["Odds_YSB_Change"] = nums[0:3]
+
     @staticmethod
     def parse_match_date(parser):
         div = parser.find("div", class_="against_m")
@@ -400,30 +425,31 @@ class MatchAnalyzeThread(threading.Thread):
                 executor.submit(Helper.web_page_download, url)
             executor.shutdown()
 
+
 class Helper():
     @staticmethod
-    def web_page_download(url,cached=True):
+    def web_page_download(url, cached=True):
         while True:
             try:
                 f = Helper.cache_file_name(url)
                 if os.path.exists(f):
                     break
                 else:
-                    web_page = urllib.request.urlopen(url,timeout=15)
+                    web_page = urllib.request.urlopen(url, timeout=15)
                     html = web_page.read()
                     html = html.decode('gb18030')
                     if cached:
                         local_file = Helper.cache_file_name(url)
-                        Utils.text_write(local_file,[html])
+                        Utils.text_write(local_file, [html])
                 break
             except urllib.error.URLError as ex:
-                info=sys.exc_info()
-                print(info[0],":",info[1], ex)
+                info = sys.exc_info()
+                print(info[0], ":", info[1], ex)
                 continue
         print("%s have downloaded" % url)
 
     @staticmethod
-    def soup(uri,local=True):
+    def soup(uri, local=True):
         soup = None
         if local and os.path.exists(uri):
             html = Utils.text_read(uri)
@@ -431,35 +457,35 @@ class Helper():
         else:
             while True:
                 try:
-                    web_page = urllib.request.urlopen(uri,timeout=15)
+                    web_page = urllib.request.urlopen(uri, timeout=15)
                     html = web_page.read()
                     html = html.decode('gb18030')
                     soup = BeautifulSoup(html)
                     break
                 except urllib.error.URLError as ex:
-                    info=sys.exc_info()
-                    print(info[0],":",info[1], ex)
+                    info = sys.exc_info()
+                    print(info[0], ":", info[1], ex)
                     continue
         return soup
 
     @staticmethod
     def url_with_params(url):
         r1 = urllib.parse.urlsplit(str(url))
-        if r1.query!="":
+        if r1.query != "":
             return True
         return False
 
     @staticmethod
-    def zero_div(a,b,extra=0.01):
+    def zero_div(a, b, extra=0.01):
         try:
-            r = a/b
+            r = a / b
         except ZeroDivisionError:
-            r = a/(b+extra)
-        return round(r,2)
+            r = a / (b + extra)
+        return round(r, 2)
 
     @staticmethod
     def cache_file_name(url):
         return "cache_web_pages/%s" % Utils.md5(url)
 
-# data = MatchAnalyzeThread.extract_matchs(["http://live.500.com/zucai.php?e=13100"])
-# MatchAnalyzeThread.parse(data)
+        # data = MatchAnalyzeThread.extract_matchs(["http://live.500.com/zucai.php?e=13100"])
+        # MatchAnalyzeThread.parse(data)

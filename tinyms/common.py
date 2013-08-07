@@ -163,8 +163,8 @@ class Postgres():
 
 class Utils():
     @staticmethod
-    def text_read(f_name,join=True):
-        f = codecs.open(f_name,"r","utf-8")
+    def text_read(f_name, join=True):
+        f = codecs.open(f_name, "r", "utf-8")
         all = f.readlines()
         f.close()
         if join:
