@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 from bs4 import BeautifulSoup
 
 from tinyms.common import Utils
-from formula import Formula
+from lottery.formula import Formula
 
 class MatchAnalyzeThread(threading.Thread):
     IS_RUNNING = False

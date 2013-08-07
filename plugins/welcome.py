@@ -1,7 +1,8 @@
 __author__ = 'tinyms'
-__export__ = ["Welcome"]
+__export__ = ["Welcome","MatchAnalyze"]
 
 from tinyms.web import IRequest
+from tinyms.common import Utils
 from tinyms.point import IWebConfig, IApi
 from lottery.parse import MatchAnalyzeThread
 
@@ -23,11 +24,17 @@ class MatchAnalyze(IApi):
 
     def run(self, **p):
         msg = dict()
+        if not p["url"]:
+            msg["msg"] = "NotBlank"
+            return msg
+        if not Utils.url_with_params(p["url"]):
+            msg["msg"] = "UrlRequireParams."
+            return msg
         if not MatchAnalyzeThread.IS_RUNNING:
             MatchAnalyze.thread = MatchAnalyzeThread()
             MatchAnalyze.thread.urls = [p["url"]]
             MatchAnalyze.thread.start()
-            msg["msg"] = "启动分析成功"
+            msg["msg"] = "Started"
         else:
-            msg["msg"] = "分析进行中"
+            msg["msg"] = "Running"
         return msg

@@ -20,6 +20,7 @@ ws_settings["static_path"] = os.path.join(os.getcwd(), "static")
 
 ws_url_patterns = [
     (r"/ajax/(.*).js",AjaxHandler),
+    #/api/module.class/method
     (r"/api/(.*)/(.*)",ApiHandler)
 ]
 

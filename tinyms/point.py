@@ -28,5 +28,5 @@ class IAjax():
         return "client_javascript_object_name_not_assign"
 
 class IApi():
-    def req(self,tornado_httpreq):
-        self.request = tornado_httpreq
+    def request(self,tornado_httpreq):
+        self.req = tornado_httpreq
