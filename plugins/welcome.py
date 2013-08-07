@@ -1,21 +1,33 @@
 __author__ = 'tinyms'
 __export__ = ["Welcome"]
 
-import urllib.request
 from tinyms.web import IRequest
-from tinyms.point import IWebConfig
-from tinyms.common import Utils
+from tinyms.point import IWebConfig, IApi
+from lottery.parse import MatchAnalyzeThread
+
 
 class Welcome(IWebConfig):
-
-    def url_mapping(self,url_patterns):
-        url_patterns.append((r"/",WelcomeHandler))
+    def url_mapping(self, url_patterns):
+        url_patterns.append((r"/", WelcomeHandler))
         pass
+
 
 class WelcomeHandler(IRequest):
     def get(self):
-        # web_page = urllib.request.urlopen("http://trade.500.com/bjdc/",timeout=15)
-        # html = web_page.read()
-        # html = html.decode('gb18030')
-        # Utils.text_write("cache",[html])
         self.redirect("/static/index.html")
+
+#/api/welcome.MatchAnalyze/run
+class MatchAnalyze(IApi):
+    __export__ = ["run"]
+    thread = None
+
+    def run(self, **p):
+        msg = dict()
+        if not MatchAnalyzeThread.IS_RUNNING:
+            MatchAnalyze.thread = MatchAnalyzeThread()
+            MatchAnalyze.thread.urls = [p["url"]]
+            MatchAnalyze.thread.start()
+            msg["msg"] = "启动分析成功"
+        else:
+            msg["msg"] = "分析进行中"
+        return msg

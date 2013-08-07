@@ -1,9 +1,9 @@
 __author__ = 'tinyms'
 
 import sys
-import os
+import os,threading
 import re
-import random
+import random,json
 import urllib.request
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
@@ -13,8 +13,17 @@ from bs4 import BeautifulSoup
 from tinyms.common import Utils
 from formula import Formula
 
-
-class MatchAnalyze():
+class MatchAnalyzeThread(threading.Thread):
+    IS_RUNNING = False
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.urls = list()
+        self.cached = False
+    def run(self):
+        MatchAnalyzeThread.IS_RUNNING = True
+        ds = MatchAnalyzeThread.extract_matchs(self.urls,self.cached)
+        MatchAnalyzeThread.parse(ds)
+        MatchAnalyzeThread.IS_RUNNING = False
     @staticmethod
     def extract_matchs(urls,cached=False):
         #make dir
@@ -33,6 +42,8 @@ class MatchAnalyze():
             season_no = Utils.md5(url)
             for tr in trNodes:
                 match_item = dict()
+                match_item["score"] = ""
+                match_item["result"] = -1
                 match_item["season_no"] = season_no
                 linkNodes = tr.find_all("a")
                 for link in linkNodes:
@@ -52,11 +63,11 @@ class MatchAnalyze():
 
     @staticmethod
     def parse(matchs_data):
-        MatchAnalyze.batch_download_data_pages(matchs_data)
+        MatchAnalyzeThread.batch_download_data_pages(matchs_data)
         for row in matchs_data:
-            MatchAnalyze.parse_odds(row,Helper.cache_file_name("http://odds.500.com/fenxi/ouzhi-%i" % row["match_id"]))
-            MatchAnalyze.parse_baseface(row,Helper.cache_file_name("http://odds.500.com/fenxi/shuju-%i" % row["match_id"]))
-            MatchAnalyze.detect_result(row)
+            MatchAnalyzeThread.parse_odds(row,Helper.cache_file_name("http://odds.500.com/fenxi/ouzhi-%i" % row["match_id"]))
+            MatchAnalyzeThread.parse_baseface(row,Helper.cache_file_name("http://odds.500.com/fenxi/shuju-%i" % row["match_id"]))
+            MatchAnalyzeThread.detect_result(row)
 
         #remove formule object.
         for row in matchs_data:
@@ -66,6 +77,9 @@ class MatchAnalyze():
             row.pop("formula_last6")
             row.pop("formula_last4")
         print(matchs_data)
+        if len(matchs_data) > 0:
+            file_name = "cache_web_pages/%s.json" % matchs_data[0]["season_no"]
+            Utils.text_write(file_name,[json.dumps(matchs_data)])
     #赛果预测
     @staticmethod
     def detect_result(match):
@@ -111,12 +125,12 @@ class MatchAnalyze():
         parser = Helper.soup(f_name)
         if not parser:
             return
-        row["match_date"] = MatchAnalyze.parse_match_date(parser)
+        row["match_date"] = MatchAnalyzeThread.parse_match_date(parser)
 
         ########################进球数比较引擎数据构造块#######################
 
         #球队主客混合平均进球数
-        avg_balls = MatchAnalyze.parse_balls_io_total_10(parser)
+        avg_balls = MatchAnalyzeThread.parse_balls_io_total_10(parser)
         if len(avg_balls)==4:
             defence_main=Helper.zero_div(avg_balls[0],avg_balls[1])
             defence_client=Helper.zero_div(avg_balls[2],avg_balls[3])
@@ -132,8 +146,8 @@ class MatchAnalyze():
             row["last_mix_total_10"] = "(%s)/(%s)" % (win,lost)
 
         #分主客区段平均进球数
-        main_data = MatchAnalyze.count_team_battle_balls_io("team_zhanji2_1",parser)
-        client_data = MatchAnalyze.count_team_battle_balls_io("team_zhanji2_0",parser)
+        main_data = MatchAnalyzeThread.count_team_battle_balls_io("team_zhanji2_1",parser)
+        client_data = MatchAnalyzeThread.count_team_battle_balls_io("team_zhanji2_0",parser)
 
         #视图数据
         row["last_4_status_text_style"] = "(%s)/(%s)" % ("".join(main_data["status"]),"".join(client_data["status"]))
@@ -165,11 +179,11 @@ class MatchAnalyze():
         io_balls = []
         if div:
             txt = div.get_text()
-            io_balls = MatchAnalyze.parse_balls_io(txt)
+            io_balls = MatchAnalyzeThread.parse_balls_io(txt)
         div = parser.find("div",id="team_zhanji_0")
         if div:
             txt = div.get_text()
-            io_balls += MatchAnalyze.parse_balls_io(txt)
+            io_balls += MatchAnalyzeThread.parse_balls_io(txt)
         return [(i/10) for i in io_balls]
     @staticmethod
     def parse_balls_io(text):
@@ -223,16 +237,16 @@ class MatchAnalyze():
         if div_id == "team_zhanji2_0":
             is_main_team = False
         #主/客场最近10场对战数据
-        total_10_balls_io = MatchAnalyze.parse_team_battle_balls_io_nums(div_id,parser,is_main_team)
+        total_10_balls_io = MatchAnalyzeThread.parse_team_battle_balls_io_nums(div_id,parser,is_main_team)
         r["status"] = "".join(total_10_balls_io["310"][0:6])
         #主/客平均进球数
         win_avg = Helper.zero_div(sum([balls["win"] for balls in total_10_balls_io["scores"]]),10)
         #主/客平均丢球数
         lost_avg = Helper.zero_div(sum([balls["lost"] for balls in total_10_balls_io["scores"]]),10)
 
-        r["last_10"] = MatchAnalyze.count_team_avgballs_section(total_10_balls_io["scores"],win_avg,lost_avg)
-        r["last_6"] = MatchAnalyze.count_team_avgballs_section(total_10_balls_io["scores"][0:6],win_avg,lost_avg)
-        r["last_4"] = MatchAnalyze.count_team_avgballs_section(total_10_balls_io["scores"][0:4],win_avg,lost_avg)
+        r["last_10"] = MatchAnalyzeThread.count_team_avgballs_section(total_10_balls_io["scores"],win_avg,lost_avg)
+        r["last_6"] = MatchAnalyzeThread.count_team_avgballs_section(total_10_balls_io["scores"][0:6],win_avg,lost_avg)
+        r["last_4"] = MatchAnalyzeThread.count_team_avgballs_section(total_10_balls_io["scores"][0:4],win_avg,lost_avg)
 
         #掐头去尾
         copy = total_10_balls_io["scores"][:]
@@ -266,9 +280,9 @@ class MatchAnalyze():
         if history_battle_data_panel:
             imgs = history_battle_data_panel.find_all("img")
             for img in imgs:
-                r["310"].append(MatchAnalyze.get_status_num_style(img["src"]))
+                r["310"].append(MatchAnalyzeThread.get_status_num_style(img["src"]))
             aList = history_battle_data_panel.find_all("a")
-            results = MatchAnalyze.parse_history_battle_links(aList,10)
+            results = MatchAnalyzeThread.parse_history_battle_links(aList,10)
             for score in results:
                 if len(score)==2:
                     s = dict()
@@ -292,7 +306,7 @@ class MatchAnalyze():
             if a["href"].find("shuju-") != -1:
                 if count == limit:
                     break
-                nums = MatchAnalyze.parse_history_score(a.get_text())
+                nums = MatchAnalyzeThread.parse_history_score(a.get_text())
                 items.append(nums)
                 count += 1
         return items
@@ -447,5 +461,5 @@ class Helper():
     def cache_file_name(url):
         return "cache_web_pages/%s" % Utils.md5(url)
 
-data = MatchAnalyze.extract_matchs(["http://live.500.com/zucai.php?e=13100"])
-MatchAnalyze.parse(data)
+# data = MatchAnalyzeThread.extract_matchs(["http://live.500.com/zucai.php?e=13100"])
+# MatchAnalyzeThread.parse(data)

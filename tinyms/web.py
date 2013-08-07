@@ -30,14 +30,16 @@ class ApiHandler(IRequest):
             if not obj:
                 self.write("Class Not Found.")
             else:
-                if hasattr(obj,method_name):
-                    func = obj.__getattribute__(method_name)
-                    func_params = json.loads(self.get_argument("dict_params"))
-                    obj.request(self)
-                    result = func(**func_params)
-                    self.write(json.dumps(result))
-                else:
-                    self.write("The method `%s` not found." % method_name)
+                if hasattr(obj,"__export__"):
+                    if obj.__export__.count(method_name)>0:
+                        if hasattr(obj,method_name):
+                            func = obj.__getattribute__(method_name)
+                            func_params = json.loads(self.get_argument("params"))
+                            obj.request(self)
+                            result = func(**func_params)
+                            self.write(json.dumps(result))
+                        else:
+                            self.write("The method `%s` not found." % method_name)
 
 class AjaxHandler(IRequest):
 
