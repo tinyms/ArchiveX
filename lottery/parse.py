@@ -102,7 +102,7 @@ class MatchAnalyzeThread(threading.Thread):
         #r = Result(scores,match["odds"])
         #match["result"]=r.detect(match["formula_last4"])
         diff = abs(num)
-        match["ball_diff"] = diff
+        match["ball_diff"] = num
         if diff >= 0 and diff <= 0.25:
             match["detect_result"] = "1"
         elif diff > 0.25 and diff < 0.75:

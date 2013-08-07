@@ -10,6 +10,8 @@
     <link href="jslib/bootstrap3/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <script src="jslib/bootstrap3/js/bootstrap.min.js"></script>
     <script src="jslib/json-table.js"></script>
+    <script src="jslib/jsrender.min.js"></script>
+    <script src="jslib/jquery.number.min.js"></script>
     <script src="jslib/lottery.js"></script>
     <style type="text/css">
         body {
@@ -67,7 +69,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h5 class="modal-title">百家欧赔</h5>
+                    <h5 class="modal-title">百家欧赔 - <span class="team_names_title"></span></h5>
                 </div>
                 <iframe id="extern_url_iframe" width="100%" height="650" style="border: 0px;"></iframe>
             </div>
@@ -80,10 +82,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h5 class="modal-title">基本面分析</h5>
+                    <h5 class="modal-title">基本面分析 - <span class="team_names_title"></span></h5>
                 </div>
-                <div class="modal-body">
-                    ZZZ..
+                <div class="modal-body" id="base_face_details">
+
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -91,5 +93,44 @@
         <!-- /.modal-dialog -->
     </div>
 </div>
+<script id="match_details_tpl" type="text/x-jsrender">
+    <table class="table table-hover table-condensed">
+        <tr>
+            <td>综合10场: {{:mix_10}}</td>
+        </tr>
+        <tr>
+            <td>主客10场: {{:last_10}}</td>
+        </tr>
+        <tr>
+            <td>主客06场: {{:last_6}}</td>
+        </tr>
+        <tr>
+            <td>主客04场: {{:last_4}}</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>球差: {{:ball_diff}} 预测: {{:detect_result}} 主客战绩: {{:last_battle}}</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+    <table class="table table-hover table-condensed">
+        <tr>
+            <th scope="col">公司</th>
+            <th scope="col">初赔</th>
+            <th scope="col">变赔</th>
+            <th scope="col">差异</th>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+</script>
 </body>
 </html>
