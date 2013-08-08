@@ -3,24 +3,60 @@
  * User: tinyms
  * Date: 13-8-7
  * Time: 上午11:07
- * To change this template use File | Settings | File Templates.
  */
 var timer, matchs_datasource = [];
-function set_team_names_title(names){
-    $(".team_names_title").each(function(i){
+function set_team_names_title(names) {
+    $(".team_names_title").each(function (i) {
         $(this).html(names);
     });
 }
+
+function odds_style(com_name, start, end) {
+    var item = {"com_name": com_name, "start": "", "end": "", "change": ""};
+    if ($.isArray(start)&&start.length != 3) {
+        return item;
+    }
+    var draw = start[1] - parseInt(start[1]);
+    if (draw > 0.4) {
+        draw = "<span style='color: red;'>" + start[1] + "</span>"
+    }
+    item.start = $.number(start[0], 2) + " " + draw + " " + $.number(start[2], 2);
+    if ($.isArray(end)&&end.length != 3) {
+        return item;
+    }
+    item.end = $.number(end[0], 2) + " " + $.number(end[1], 2) + " " + $.number(end[2], 2);
+    var diff_win = start[0] - end[0];
+    var diff_draw = start[1] - end[1];
+    var diff_lost = start[2] - end[2];
+    if(diff_win>0){
+        diff_win = "<span style='color: red;'>+"+$.number(diff_win, 2)+"</span>";
+    }else{
+        diff_win = "<span style='color: green;'>"+$.number(diff_win, 2)+"</span>";
+    }
+    if(diff_draw>0){
+        diff_draw = "<span style='color: red;'>+"+$.number(diff_draw, 2)+"</span>";
+    }else{
+        diff_draw = "<span style='color: green;'>"+$.number(diff_draw, 2)+"</span>";
+    }
+    if(diff_lost>0){
+        diff_lost = "<span style='color: red;'>+"+$.number(diff_lost, 2)+"</span>";
+    }else{
+        diff_lost = "<span style='color: green;'>"+$.number(diff_lost, 2)+"</span>";
+    }
+    item.change = diff_win + " " + diff_draw + " " + diff_lost;
+    return item;
+}
+
 function show_baseface(match_id) {
     var current = undefined;
-    for(var k=0;k<matchs_datasource.length;k++){
+    for (var k = 0; k < matchs_datasource.length; k++) {
         var row = matchs_datasource[k];
-        if(row.match_id==match_id){
+        if (row.match_id == match_id) {
             current = row;
             break;
         }
     }
-    if(current!=undefined){
+    if (current != undefined) {
         set_team_names_title(current.team_names);
         var detail = {}
         detail.mix_10 = current.last_mix_total_10;
@@ -30,27 +66,31 @@ function show_baseface(match_id) {
         detail.ball_diff = current.ball_diff;
         detail.last_battle = current.last_4_status_text_style;
         detail.detect_result = current.detect_result;
-        detail.wl = "";
-        detail.lb = "";
-        detail.yb = "";
-        detail.beta = "";
-        detail.ao_men = "";
-        var tpl = $.templates("#match_details_tpl")
-        var html = tpl.render(detail)
+
+        var odds = [];
+        odds[0]=odds_style("威廉",current.Odds_WL,current.Odds_WL_Change);
+        odds[1]=odds_style("立博",current.Odds_LB,current.Odds_LB_Change);
+        odds[2]=odds_style("易博",current.Odds_YSB,current.Odds_YSB_Change);
+        odds[3]=odds_style("贝塔",current.Odds_365,current.Odds_365_Change);
+        odds[4]=odds_style("澳门",current.Odds_AM,current.Odds_AM_Change);
+        detail.odds = odds;
+
+        var html = Mustache.render($("#match_details_tpl").html(),detail);
+        console.log(html);
         $("#base_face_details").html(html);
     }
     $("#DataParseDlg").modal({show: true, keyboard: true});
 }
 function show_odds_page(match_id) {
     var current = undefined;
-    for(var k=0;k<matchs_datasource.length;k++){
+    for (var k = 0; k < matchs_datasource.length; k++) {
         var row = matchs_datasource[k];
-        if(row.match_id==match_id){
+        if (row.match_id == match_id) {
             current = row;
             break;
         }
     }
-    if(current!=undefined){
+    if (current != undefined) {
         set_team_names_title(current.team_names);
         $("#extern_url_iframe").attr("src", "http://odds.500.com/fenxi/ouzhi-" + match_id + "-show-1#datatb");
         $("#OddsComWebPageDlg").modal({show: true, keyboard: true});
@@ -105,7 +145,7 @@ $(document).ready(function () {
             if (name == "result" && value == -1) {
                 return "";
             } else if (name == "Odds_WL") {
-                return $.number(value[0],2) + " " + $.number(value[1],2) + " " + $.number(value[2],2);
+                return $.number(value[0], 2) + " " + $.number(value[1], 2) + " " + $.number(value[2], 2);
             } else if (name == "match_id") {
                 var html = "";
                 html += "<button type='button' class='btn btn-primary btn-xs' onclick='show_baseface(" + value + ");'>析</button>";
