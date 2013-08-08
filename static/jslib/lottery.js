@@ -18,36 +18,49 @@ function odds_style(com_name, start, end) {
     }
     var draw = start[1] - parseInt(start[1]);
     if (draw > 0.4) {
-        draw = "<span style='color: red;'>" + start[1] + "</span>"
+        draw = "<span style='color: red;'>" + $.number(start[1], 2) + "</span>"
+    }else{
+        draw = $.number(start[1], 2);
     }
     item.start = $.number(start[0], 2) + " " + draw + " " + $.number(start[2], 2);
     if ($.isArray(end)&&end.length != 3) {
         return item;
     }
     item.end = $.number(end[0], 2) + " " + $.number(end[1], 2) + " " + $.number(end[2], 2);
-    var diff_win = start[0] - end[0];
-    var diff_draw = start[1] - end[1];
-    var diff_lost = start[2] - end[2];
+    var diff_win = end[0] - start[0];
+    var diff_draw = end[1] - start[1];
+    var diff_lost = end[2] - start[2];
     if(diff_win>0){
         diff_win = "<span style='color: red;'>+"+$.number(diff_win, 2)+"</span>";
-    }else{
+    }else if(diff_win<0){
         diff_win = "<span style='color: green;'>"+$.number(diff_win, 2)+"</span>";
+    }else{
+        diff_win = "+"+$.number(diff_win, 2);
     }
     if(diff_draw>0){
         diff_draw = "<span style='color: red;'>+"+$.number(diff_draw, 2)+"</span>";
-    }else{
+    }else if(diff_draw<0){
         diff_draw = "<span style='color: green;'>"+$.number(diff_draw, 2)+"</span>";
+    }else{
+        diff_draw = "+"+$.number(diff_draw, 2);
     }
     if(diff_lost>0){
         diff_lost = "<span style='color: red;'>+"+$.number(diff_lost, 2)+"</span>";
-    }else{
+    }else if(diff_lost<0){
         diff_lost = "<span style='color: green;'>"+$.number(diff_lost, 2)+"</span>";
+    }else{
+        diff_lost = "+"+$.number(diff_lost, 2);
     }
     item.change = diff_win + " " + diff_draw + " " + diff_lost;
     return item;
 }
-
-function show_baseface(match_id) {
+function hightlight_matchs_grid_row(btn){
+    $("#matchs_table tr").removeClass("success");
+    var tr = $(btn).parent().parent();
+    $(tr).addClass("success");
+}
+function show_baseface(self,match_id) {
+    hightlight_matchs_grid_row(self);
     var current = undefined;
     for (var k = 0; k < matchs_datasource.length; k++) {
         var row = matchs_datasource[k];
@@ -76,12 +89,11 @@ function show_baseface(match_id) {
         detail.odds = odds;
 
         var html = Mustache.render($("#match_details_tpl").html(),detail);
-        console.log(html);
         $("#base_face_details").html(html);
     }
     $("#DataParseDlg").modal({show: true, keyboard: true});
 }
-function show_odds_page(match_id) {
+function show_odds_page(self,match_id) {
     var current = undefined;
     for (var k = 0; k < matchs_datasource.length; k++) {
         var row = matchs_datasource[k];
@@ -148,8 +160,8 @@ $(document).ready(function () {
                 return $.number(value[0], 2) + " " + $.number(value[1], 2) + " " + $.number(value[2], 2);
             } else if (name == "match_id") {
                 var html = "";
-                html += "<button type='button' class='btn btn-primary btn-xs' onclick='show_baseface(" + value + ");'>析</button>";
-                html += " <button type='button' class='btn btn-default btn-xs' onclick='show_odds_page(" + value + ");'>欧</button>";
+                html += "<button type='button' class='btn btn-primary btn-xs' onclick='show_baseface(this," + value + ");'>析</button>";
+                html += " <button type='button' class='btn btn-default btn-xs' onclick='show_odds_page(this," + value + ");'>欧</button>";
                 return html;
             }
             return value;
