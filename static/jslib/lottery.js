@@ -119,16 +119,23 @@ $(document).ready(function () {
     $('#DataParseDlg').on('show', function () {
         $(this).css({
             'margin-top': function () {
-                alert(1);
                 return window.pageYOffset - ($(this).height() / 2);
             }
         });
     });
 
     $("#match_analyze_btn").click(function () {
+        $("#loading").show();
         var url = $("#season_url_edit").val();
         url = $.trim(url);
-        var params = {"url": url};
+        var state = $("#match_parse_action").prop("checked");
+        console.log(state);
+        if(state){
+            state = "Refresh";
+        }else{
+            state = "Parse";
+        }
+        var params = {"url": url,"act":state};
         $.post("/api/welcome.MatchAnalyze/run", {"params": JSON.stringify(params)}, function (data) {
             if (data.msg == "Started" || data.msg == "Running" || data.msg == "History") {
                 var mum_interval = 5 * 1000;
@@ -142,6 +149,7 @@ $(document).ready(function () {
                             //Do..
                             fill_datatable(data);
                             clearInterval(timer)
+                            $("#loading").hide();
                         }
                     }, "json");
                 }, mum_interval);//5秒

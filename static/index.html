@@ -38,6 +38,9 @@
         <div class="col-lg-3"></div>
         <div class="col-lg-6">
             <div class="input-group">
+                <span class="input-group-addon">
+                    <input type="checkbox" id="match_parse_action"/> 变赔
+                  </span>
                 <input type="text" class="form-control" id="season_url_edit">
                       <span class="input-group-btn">
                         <button class="btn btn-default" type="button" id="match_analyze_btn">Go!</button>
@@ -53,7 +56,7 @@
         <div class="col-lg-1"></div>
         <div class="col-lg-10">
             <div class="panel">
-                <div class="panel-heading">比赛场次</div>
+                <div class="panel-heading">比赛场次<img id="loading" src="images/loading.gif" style="border: 0px;width: 16px; display: none;"/></div>
                 <table class="table table-hover table-condensed" id="matchs_table">
                     <thead>
                     </thead>

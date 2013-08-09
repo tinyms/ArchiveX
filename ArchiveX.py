@@ -17,6 +17,7 @@ web_configs = Plugin.get(IWebConfig)
 
 ws_settings = dict()
 ws_settings["static_path"] = os.path.join(os.getcwd(), "static")
+ws_settings["debug"] = True
 
 ws_url_patterns = [
     (r"/ajax/(.*).js", AjaxHandler),
