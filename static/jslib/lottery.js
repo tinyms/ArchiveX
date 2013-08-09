@@ -90,6 +90,27 @@ function show_baseface(self,match_id) {
 
         var html = Mustache.render($("#match_details_tpl").html(),detail);
         $("#base_face_details").html(html);
+        var ctx = document.getElementById("team_force_chart").getContext("2d");
+        var chart_data = {
+            labels : ["近10场","近06场","近04场"],
+            datasets : [
+                {
+                    fillColor : "rgba(255,228,196,0.5)",
+                    strokeColor : "rgba(220,220,220,1)",
+                    pointColor : "rgba(220,220,220,1)",
+                    pointStrokeColor : "#fff",
+                    data : current.client_forces
+                },
+                {
+                    fillColor : "rgba(151,187,205,0.5)",
+                    strokeColor : "rgba(151,187,205,1)",
+                    pointColor : "rgba(151,187,205,1)",
+                    pointStrokeColor : "#fff",
+                    data : current.main_forces
+                }
+            ]
+        }
+        new Chart(ctx).Line(chart_data);
     }
     $("#DataParseDlg").modal({show: true, keyboard: true});
 }

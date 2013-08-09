@@ -12,6 +12,7 @@
     <script src="jslib/json-table.js"></script>
     <script src="jslib/mustache.js"></script>
     <script src="jslib/jquery.number.min.js"></script>
+    <script src="jslib/chart.min.js"></script>
     <script src="jslib/lottery.js"></script>
     <style type="text/css">
         body {
@@ -111,13 +112,12 @@
             <td>主客04场: {{last_4}}</td>
         </tr>
         <tr>
-            <td>&nbsp;</td>
+            <td><canvas id="team_force_chart"></canvas>
+            <div style="margin-top:3px;text-indent:20px;color:#CCCCCC;">蓝色主队,黄色客队</div>
+            </td>
         </tr>
         <tr>
             <td>球差: {{ball_diff}} 预测: {{detect_result}} 主客战绩: {{last_battle}}</td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
         </tr>
     </table>
     <table class="table table-hover table-condensed" style="width:570px;">

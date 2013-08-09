@@ -82,6 +82,17 @@ class MatchAnalyzeThread(threading.Thread):
             row.pop("formula_last10")
             row.pop("formula_last6")
             row.pop("formula_last4")
+            row["main_forces"] = list()
+            row["client_forces"] = list()
+            nums = Utils.parse_float_array(row["last_10_text_style"])
+            row["main_forces"].append(nums[0])
+            row["client_forces"].append(nums[2])
+            nums = Utils.parse_float_array(row["last_6_text_style"])
+            row["main_forces"].append(nums[0])
+            row["client_forces"].append(nums[2])
+            nums = Utils.parse_float_array(row["last_4_text_style"])
+            row["main_forces"].append(nums[0])
+            row["client_forces"].append(nums[2])
         print(matchs_data)
         if len(matchs_data) > 0:
             file_name = "cache_web_pages/%s.json" % matchs_data[0]["season_no"]
