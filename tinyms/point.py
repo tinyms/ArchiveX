@@ -1,5 +1,6 @@
 __author__ = 'tinyms'
-
+import json
+from tinyms.common import JsonEncoder
 #for plugin to extends
 class IWebConfig():
     def settings(self, ws_setting):
@@ -26,6 +27,9 @@ class IAjax():
 
     def client_javascript_object_name(self):
         return "client_javascript_object_name_not_assign"
+
+    def json(self,obj):
+        return json.dumps(obj,cls=JsonEncoder)
 
 
 class IApi():

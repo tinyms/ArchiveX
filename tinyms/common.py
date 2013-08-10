@@ -8,6 +8,7 @@ import hashlib
 import json
 import urllib.request
 import urllib.parse
+import decimal
 from imp import find_module, load_module, acquire_lock, release_lock
 
 import psycopg2
@@ -15,9 +16,9 @@ import psycopg2.extras
 
 
 class Postgres():
-    DATABASE_NAME = ""
-    USER_NAME = ""
-    PASSWORD = ""
+    DATABASE_NAME = "tinyms"
+    USER_NAME = "postgres"
+    PASSWORD = "1"
 
     @staticmethod
     #Connect to Postgres Database
@@ -74,7 +75,7 @@ class Postgres():
 
     @staticmethod
     #Query DataSet
-    def many(sql, params, callback=None):
+    def many(sql, params=(), callback=None):
         dataset = list()
         cnn = None
         try:
@@ -116,7 +117,7 @@ class Postgres():
 
     @staticmethod
     #First Row And First Column
-    def one(sql, params, callback=None):
+    def one(sql, params=(), callback=None):
         first_col = Postgres.col(sql, params, callback)
         if len(first_col) > 0:
             return first_col[0]
@@ -160,6 +161,11 @@ class Postgres():
             names.append(col.name)
         return names
 
+class JsonEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            return float(o)
+        super(JsonEncoder, self).default(o)
 
 class Utils():
     @staticmethod

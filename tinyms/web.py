@@ -2,7 +2,7 @@ __author__ = 'tinyms'
 
 import json
 from tornado.web import RequestHandler
-from tinyms.common import Plugin
+from tinyms.common import Plugin,JsonEncoder
 from tinyms.point import IAjax, IApi
 
 
@@ -39,7 +39,7 @@ class ApiHandler(IRequest):
                             func_params = json.loads(self.get_argument("params"))
                             obj.request(self)
                             result = func(**func_params)
-                            self.write(json.dumps(result))
+                            self.write(json.dumps(result,cls=JsonEncoder))
                         else:
                             self.write("The method `%s` not found." % method_name)
 

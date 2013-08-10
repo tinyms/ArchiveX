@@ -6,14 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <script src="jslib/json2.js" type="text/javascript"></script>
     <script src="jslib/jquery-1.10.2.min.js" type="text/javascript"></script>
-    <script src="/ajax/test.AjaxTest.js" type="text/javascript"></script>
-    <link href="jslib/bootstrap3/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <script src="jslib/bootstrap3/js/bootstrap.min.js"></script>
     <script src="jslib/json-table.js"></script>
     <script src="jslib/mustache.js"></script>
     <script src="jslib/jquery.number.min.js"></script>
     <script src="jslib/chart.min.js"></script>
+    <script src="/ajax/welcome.MatchHistoryQuery.js" type="text/javascript"></script>
     <script src="jslib/lottery.js"></script>
+    <link href="jslib/bootstrap3/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style type="text/css">
         body {
             margin: 0;
@@ -98,27 +98,32 @@
                                         <option value="31">31</option>
                                         <option value="10">10</option>
                                     </select>
+                                    方向:<select id="ref_win_direct" class="form-control" style="width: 85px;">
+                                        <option value="3" selected>主胜</option>
+                                        <option value="0">客胜</option>
+                                        <option value="1">平手</option>
+                                    </select>
                                     公司:<select id="ref_odds_companys" class="form-control" style="width: 85px;">
                                         <option value="wl" selected>威廉</option>
                                         <option value="lb">立博</option>
-                                        <option value="yb">易博</option>
+                                        <option value="ysb">易博</option>
                                         <option value="beta">贝塔</option>
-                                        <option value="ao_men">澳门</option>
+                                        <option value="am">澳门</option>
                                     </select>
                                     <input id="ref_odds_draw_ext" class="form-control" placeholder="平赔尾数" style="width: 100px"/>
-                                    <select id="ref_odds_change" class="form-control" style="width: 85px;">
+                                    <select id="ref_odds_change_direct" class="form-control" style="width: 85px;">
                                         <option value="gt" selected>升盘</option>
                                         <option value="lt">降盘</option>
                                     </select>
                                     <input id="ref_odds_draw_range" class="form-control" placeholder="幅度" style="width: 100px" value="0.2"/>
-                                    <button type="button" class="btn btn-default">查询</button>
+                                    <button type="button" class="btn btn-default" id="btn_history_relation_query">查询</button>
                                 </form>
                             </div>
                             <div style="margin-top: 5px;">
                                 <ul class="nav nav-tabs">
-                                    <li><a href="#query_result_win_tab" data-toggle="tab">胜</a></li>
-                                    <li><a href="#query_result_draw_tab" data-toggle="tab">平</a></li>
-                                    <li><a href="#query_result_lost_tab" data-toggle="tab">负</a></li>
+                                    <li><a href="#query_result_win_tab" data-toggle="tab">胜<span id="badge_win" class="badge pull-right">0</span></a></li>
+                                    <li><a href="#query_result_draw_tab" data-toggle="tab">平<span id="badge_draw" class="badge pull-right">0</span></a></li>
+                                    <li><a href="#query_result_lost_tab" data-toggle="tab">负<span id="badge_lost" class="badge pull-right">0</span></a></li>
                                 </ul>
                                 <div class="tab-content">
                                     <div class="tab-pane active" id="query_result_win_tab">

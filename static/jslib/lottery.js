@@ -4,7 +4,7 @@
  * Date: 13-8-7
  * Time: 上午11:07
  */
-var timer, matchs_datasource = [];
+var timer, matchs_datasource = [],history_relation_query_datasource=undefined;
 function set_team_names_title(names) {
     $(".team_names_title").each(function (i) {
         $(this).html(names);
@@ -13,53 +13,53 @@ function set_team_names_title(names) {
 
 function odds_style(com_name, start, end) {
     var item = {"com_name": com_name, "start": "", "end": "", "change": ""};
-    if ($.isArray(start)&&start.length != 3) {
+    if ($.isArray(start) && start.length != 3) {
         return item;
     }
     var draw = start[1] - parseInt(start[1]);
     if (draw > 0.4) {
         draw = "<span style='color: red;'>" + $.number(start[1], 2) + "</span>"
-    }else{
+    } else {
         draw = $.number(start[1], 2);
     }
     item.start = $.number(start[0], 2) + " " + draw + " " + $.number(start[2], 2);
-    if ($.isArray(end)&&end.length != 3) {
+    if ($.isArray(end) && end.length != 3) {
         return item;
     }
     item.end = $.number(end[0], 2) + " " + $.number(end[1], 2) + " " + $.number(end[2], 2);
     var diff_win = end[0] - start[0];
     var diff_draw = end[1] - start[1];
     var diff_lost = end[2] - start[2];
-    if(diff_win>0){
-        diff_win = "<span style='color: red;'>+"+$.number(diff_win, 2)+"</span>";
-    }else if(diff_win<0){
-        diff_win = "<span style='color: green;'>"+$.number(diff_win, 2)+"</span>";
-    }else{
-        diff_win = "+"+$.number(diff_win, 2);
+    if (diff_win > 0) {
+        diff_win = "<span style='color: red;'>+" + $.number(diff_win, 2) + "</span>";
+    } else if (diff_win < 0) {
+        diff_win = "<span style='color: green;'>" + $.number(diff_win, 2) + "</span>";
+    } else {
+        diff_win = "+" + $.number(diff_win, 2);
     }
-    if(diff_draw>0){
-        diff_draw = "<span style='color: red;'>+"+$.number(diff_draw, 2)+"</span>";
-    }else if(diff_draw<0){
-        diff_draw = "<span style='color: green;'>"+$.number(diff_draw, 2)+"</span>";
-    }else{
-        diff_draw = "+"+$.number(diff_draw, 2);
+    if (diff_draw > 0) {
+        diff_draw = "<span style='color: red;'>+" + $.number(diff_draw, 2) + "</span>";
+    } else if (diff_draw < 0) {
+        diff_draw = "<span style='color: green;'>" + $.number(diff_draw, 2) + "</span>";
+    } else {
+        diff_draw = "+" + $.number(diff_draw, 2);
     }
-    if(diff_lost>0){
-        diff_lost = "<span style='color: red;'>+"+$.number(diff_lost, 2)+"</span>";
-    }else if(diff_lost<0){
-        diff_lost = "<span style='color: green;'>"+$.number(diff_lost, 2)+"</span>";
-    }else{
-        diff_lost = "+"+$.number(diff_lost, 2);
+    if (diff_lost > 0) {
+        diff_lost = "<span style='color: red;'>+" + $.number(diff_lost, 2) + "</span>";
+    } else if (diff_lost < 0) {
+        diff_lost = "<span style='color: green;'>" + $.number(diff_lost, 2) + "</span>";
+    } else {
+        diff_lost = "+" + $.number(diff_lost, 2);
     }
     item.change = diff_win + " " + diff_draw + " " + diff_lost;
     return item;
 }
-function hightlight_matchs_grid_row(btn){
+function hightlight_matchs_grid_row(btn) {
     $("#matchs_table tr").removeClass("success");
     var tr = $(btn).parent().parent();
     $(tr).addClass("success");
 }
-function show_baseface(self,match_id) {
+function show_baseface(self, match_id) {
     hightlight_matchs_grid_row(self);
     var current = undefined;
     for (var k = 0; k < matchs_datasource.length; k++) {
@@ -81,33 +81,33 @@ function show_baseface(self,match_id) {
         detail.detect_result = current.detect_result;
 
         var odds = [];
-        odds[0]=odds_style("威廉",current.Odds_WL,current.Odds_WL_Change);
-        odds[1]=odds_style("立博",current.Odds_LB,current.Odds_LB_Change);
-        odds[2]=odds_style("易博",current.Odds_YSB,current.Odds_YSB_Change);
-        odds[3]=odds_style("贝塔",current.Odds_365,current.Odds_365_Change);
-        odds[4]=odds_style("澳门",current.Odds_AM,current.Odds_AM_Change);
+        odds[0] = odds_style("威廉", current.Odds_WL, current.Odds_WL_Change);
+        odds[1] = odds_style("立博", current.Odds_LB, current.Odds_LB_Change);
+        odds[2] = odds_style("易博", current.Odds_YSB, current.Odds_YSB_Change);
+        odds[3] = odds_style("贝塔", current.Odds_365, current.Odds_365_Change);
+        odds[4] = odds_style("澳门", current.Odds_AM, current.Odds_AM_Change);
         detail.odds = odds;
 
-        var html = Mustache.render($("#match_details_tpl").html(),detail);
+        var html = Mustache.render($("#match_details_tpl").html(), detail);
         $("#base_tab").html(html);
         $("#extern_url_iframe").attr("src", "http://odds.500.com/fenxi/ouzhi-" + match_id + "-show-1#datatb");
         var ctx = document.getElementById("team_force_chart").getContext("2d");
         var chart_data = {
-            labels : ["近10场","近06场","近04场"],
-            datasets : [
+            labels: ["近10场", "近06场", "近04场"],
+            datasets: [
                 {
-                    fillColor : "rgba(255,228,196,0.5)",
-                    strokeColor : "rgba(220,220,220,1)",
-                    pointColor : "rgba(220,220,220,1)",
-                    pointStrokeColor : "#fff",
-                    data : current.client_forces
+                    fillColor: "rgba(255,228,196,0.5)",
+                    strokeColor: "rgba(220,220,220,1)",
+                    pointColor: "rgba(220,220,220,1)",
+                    pointStrokeColor: "#fff",
+                    data: current.client_forces
                 },
                 {
-                    fillColor : "rgba(151,187,205,0.5)",
-                    strokeColor : "rgba(151,187,205,1)",
-                    pointColor : "rgba(151,187,205,1)",
-                    pointStrokeColor : "#fff",
-                    data : current.main_forces
+                    fillColor: "rgba(151,187,205,0.5)",
+                    strokeColor: "rgba(151,187,205,1)",
+                    pointColor: "rgba(151,187,205,1)",
+                    pointStrokeColor: "#fff",
+                    data: current.main_forces
                 }
             ]
         }
@@ -132,18 +132,41 @@ $(document).ready(function () {
         });
     });
 
+    $("#btn_history_relation_query").click(function () {
+        var params_ = {
+            "force": $("#ref_odds_force").val(),
+            "company": $("#ref_odds_companys").val(),
+            "draw_ext": $("#ref_odds_draw_ext").val(),
+            "draw_change_direct": $("#ref_odds_change_direct").val(),
+            "draw_range": $("#ref_odds_draw_range").val(),
+            "win_direct": $("#ref_win_direct").val()
+        };
+        WelcomeMatchHistoryQuery.find(params_,function(b,data){
+            if(b){
+                history_relation_query_datasource = data;
+                console.log(data);
+                $("#badge_win").html(data["win"]["total"])
+                $("#badge_draw").html(data["draw"]["total"])
+                $("#badge_lost").html(data["lost"]["total"])
+                $("#query_result_win_table").JsonTableUpdate({source:data["win"]["items"]})
+                $("#query_result_draw_table").JsonTableUpdate({source:data["draw"]["items"]})
+                $("#query_result_lost_table").JsonTableUpdate({source:data["lost"]["items"]})
+            }
+        },"json");
+    });
+
     $("#match_analyze_btn").click(function () {
         $("#loading").show();
         var url = $("#season_url_edit").val();
         url = $.trim(url);
         var state = $("#match_parse_action").prop("checked");
         console.log(state);
-        if(state){
+        if (state) {
             state = "Refresh";
-        }else{
+        } else {
             state = "Parse";
         }
-        var params = {"url": url,"act":state};
+        var params = {"url": url, "act": state};
         $.post("/api/welcome.MatchAnalyze/run", {"params": JSON.stringify(params)}, function (data) {
             if (data.msg == "Started" || data.msg == "Running" || data.msg == "History") {
                 var mum_interval = 5 * 1000;
@@ -182,4 +205,28 @@ $(document).ready(function () {
             return value;
         }
     });
+
+    // 查询表
+    var query_table_meta = {
+        head:['球差',"初赔","变赔","球队","赛事","#"],
+        json:['balls_diff','first','last','vs_team_names','evt_name','url_key'],
+        render:function(name,val,row){
+            console.log(row);
+            var com_code = $("#ref_odds_companys").val();
+            console.log(com_code);
+            if(name=="first"){
+                var odds = row["odds_"+com_code]
+                console.log(odds);
+                return $.number(odds[0],2)+" "+$.number(odds[1],2)+" "+$.number(odds[2],2);
+            }else if(name=="last"){
+                var odds = row["odds_"+com_code+"_c"]
+                return $.number(odds[0],2)+" "+$.number(odds[1],2)+" "+$.number(odds[2],2);
+            }
+            return val;
+        }
+    };
+
+    $("#query_result_win_table").JsonTable(query_table_meta);
+    $("#query_result_draw_table").JsonTable(query_table_meta);
+    $("#query_result_lost_table").JsonTable(query_table_meta);
 });
