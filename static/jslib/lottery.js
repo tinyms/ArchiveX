@@ -190,11 +190,11 @@ $(document).ready(function () {
 
     $("#matchs_table").JsonTable({
         head: ['赛事', '球差', '预测', '赛果', '初盘(威廉)', '对阵球队', '比分', '比赛日期', '#'],
-        json: ['season_name', 'ball_diff', 'detect_result', 'result',
+        json: ['season_name', 'ball_diff', 'detect_result', 'actual_result',
             'Odds_WL', 'team_names', 'score', 'match_date', 'match_id'],
         render: function (name, value, row) {
-            if (name == "result" && value == -1) {
-                return "";
+            if (name == "actual_result" && value == -1) {
+                return value;
             } else if (name == "Odds_WL") {
                 return $.number(value[0], 2) + " " + $.number(value[1], 2) + " " + $.number(value[2], 2);
             } else if (name == "match_id") {

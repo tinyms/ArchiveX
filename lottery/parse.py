@@ -50,6 +50,7 @@ class MatchAnalyzeThread(threading.Thread):
                 match_item["result"] = -1
                 match_item["season_no"] = season_no
                 linkNodes = tr.find_all("a")
+                alive_result = []
                 for link in linkNodes:
                     href = link["href"]
                     if href.find("seasonindex") != -1:
@@ -61,10 +62,47 @@ class MatchAnalyzeThread(threading.Thread):
                             match_item["team_names"] = Utils.trim(link.get_text())
                     elif href.find("/fenxi/shuju") != -1:
                         match_item["match_id"] = Utils.parse_int_array(href)[1]
+                        map_ = MatchAnalyzeThread.get_actual_result(link.get_text())
+                        match_item["score"] = "[%s]" % map_["exp"]
+                        match_item["actual_result"] = "%i" % map_["result"]
+                    elif href.find("detail.php?fid=") != -1 and link.string:
+                        nums = Utils.parse_int_array(link.get_text())
+                        if len(nums)!=0:
+                            alive_result.append(nums[0])
+                if len(alive_result) == 2:
+                    r = alive_result[0] - alive_result[1]
+                    if r > 0:
+                        result = 3
+                    elif r == 0:
+                        result = 1
+                    else:
+                        result = 0
+                    match_item["score"] = "[%i:%i]" % (alive_result[0],alive_result[1])
+                    match_item["actual_result"] = "%i" % result
                 if match_item.get("match_id"):
                     data.append(match_item)
         return data
-
+    @staticmethod
+    def get_actual_result(text):
+        map_ = {"exp":"","result":-1}
+        int_list = []
+        exp = re.compile("\\d+:\\d+")
+        items = exp.findall(text)
+        if len(items) > 0:
+            map_["exp"] = items[0]
+            exp = re.compile("\\d+")
+            nums = exp.findall(items[0])
+            for num in nums:
+                int_list.append(int(num))
+        if len(int_list) == 2:
+            result = int_list[0] - int_list[1]
+            if result > 0:
+                map_["result"] = 3
+            elif result < 0:
+                map_["result"] = 0
+            elif result == 0:
+                map_["result"] = 1
+        return map_
     @staticmethod
     def parse(matchs_data):
         MatchAnalyzeThread.batch_download_data_pages(matchs_data)
