@@ -89,7 +89,8 @@ function show_baseface(self,match_id) {
         detail.odds = odds;
 
         var html = Mustache.render($("#match_details_tpl").html(),detail);
-        $("#base_face_details").html(html);
+        $("#base_tab").html(html);
+        $("#extern_url_iframe").attr("src", "http://odds.500.com/fenxi/ouzhi-" + match_id + "-show-1#datatb");
         var ctx = document.getElementById("team_force_chart").getContext("2d");
         var chart_data = {
             labels : ["近10场","近06场","近04场"],
@@ -114,21 +115,7 @@ function show_baseface(self,match_id) {
     }
     $("#DataParseDlg").modal({show: true, keyboard: true});
 }
-function show_odds_page(self,match_id) {
-    var current = undefined;
-    for (var k = 0; k < matchs_datasource.length; k++) {
-        var row = matchs_datasource[k];
-        if (row.match_id == match_id) {
-            current = row;
-            break;
-        }
-    }
-    if (current != undefined) {
-        set_team_names_title(current.team_names);
-        $("#extern_url_iframe").attr("src", "http://odds.500.com/fenxi/ouzhi-" + match_id + "-show-1#datatb");
-        $("#OddsComWebPageDlg").modal({show: true, keyboard: true});
-    }
-}
+
 function fill_datatable(data) {
     matchs_datasource = data;
     $("#matchs_table").JsonTableUpdate({
@@ -190,7 +177,6 @@ $(document).ready(function () {
             } else if (name == "match_id") {
                 var html = "";
                 html += "<button type='button' class='btn btn-primary btn-xs' onclick='show_baseface(this," + value + ");'>析</button>";
-                html += " <button type='button' class='btn btn-default btn-xs' onclick='show_odds_page(this," + value + ");'>欧</button>";
                 return html;
             }
             return value;
