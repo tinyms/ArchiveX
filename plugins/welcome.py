@@ -95,14 +95,12 @@ class MatchAnalyze(IApi):
         msg = dict()
         act = p["act"];
         file = "cache_web_pages/%s.json" % Utils.md5(Utils.trim(p["url"]))
-        print(act)
-        if act=="Refresh":
+        if act=="Refresh" and os.path.exists(file):
             dataset = json.loads(Utils.text_read(file))
             for item in dataset:
                 id = item["match_id"]
                 odds_url_cache_file = "http://odds.500.com/fenxi/ouzhi-%i" % id
                 os.remove("cache_web_pages/"+Utils.md5(odds_url_cache_file))
-                print(odds_url_cache_file)
             os.remove(file)
 
         if os.path.exists(file):

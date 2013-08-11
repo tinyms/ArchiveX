@@ -14,15 +14,15 @@ from imp import find_module, load_module, acquire_lock, release_lock
 import psycopg2
 import psycopg2.extras
 
-
 class Postgres():
-    DATABASE_NAME = "tinyms"
+    DATABASE_NAME = "postgres"
     USER_NAME = "postgres"
-    PASSWORD = "1"
+    PASSWORD = ""
 
     @staticmethod
     #Connect to Postgres Database
     def open():
+        print(Postgres.PASSWORD)
         return psycopg2.connect(database=Postgres.DATABASE_NAME,
                                 user=Postgres.USER_NAME,
                                 password=Postgres.PASSWORD)
@@ -281,6 +281,13 @@ class Utils():
 
 class Plugin():
     ObjectPool = dict()
+
+    @staticmethod
+    def one(type_):
+        plugins = Plugin.get(type_)
+        if len(plugins)>0:
+            return plugins[0]
+        return None
 
     @staticmethod
     def get(type_, class_full_name=""):

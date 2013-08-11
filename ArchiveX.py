@@ -1,18 +1,28 @@
 __author__ = 'tinyms'
 
-import sys
-import os
+import os,sys
 import webbrowser
 
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 
-from tinyms.common import Plugin
-from tinyms.point import IWebConfig
+from tinyms.common import Plugin,Postgres
+from tinyms.point import IWebConfig,IDatabase
 from tinyms.web import AjaxHandler, ApiHandler
 
 
 Plugin.load()
+
+db_config = Plugin.one(IDatabase)
+
+if db_config:
+    if hasattr(db_config,"name"):
+        Postgres.DATABASE_NAME = db_config.name()
+    if hasattr(db_config,"user"):
+        Postgres.USER_NAME = db_config.user()
+    if hasattr(db_config,"password"):
+        Postgres.PASSWORD = db_config.password()
+
 web_configs = Plugin.get(IWebConfig)
 
 ws_settings = dict()
@@ -34,11 +44,18 @@ for web_config in web_configs:
 app = Application(ws_url_patterns, **ws_settings)
 
 if __name__ == "__main__":
-    webbrowser.open_new_tab("http://localhost:%i" % 8888)
+    port = 80
+    while True:
+        try:
+            app.listen(port)
+            break
+        except Exception as e:
+            print("%s" % e)
+            port += 1
+            continue
+    webbrowser.open_new_tab("http://localhost:%i" % port)
     try:
-        app.listen(8888)
         IOLoop.instance().start()
     except Exception as e:
         print("%s" % e)
         sys.exit(1)
-    pass

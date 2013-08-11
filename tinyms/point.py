@@ -2,6 +2,15 @@ __author__ = 'tinyms'
 import json
 from tinyms.common import JsonEncoder
 #for plugin to extends
+
+class IDatabase():
+    def name(self):
+        return "postgres"
+    def user(self):
+        return "postgres"
+    def password(self):
+        return ""
+
 class IWebConfig():
     def settings(self, ws_setting):
         """
