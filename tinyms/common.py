@@ -22,7 +22,6 @@ class Postgres():
     @staticmethod
     #Connect to Postgres Database
     def open():
-        print(Postgres.PASSWORD)
         return psycopg2.connect(database=Postgres.DATABASE_NAME,
                                 user=Postgres.USER_NAME,
                                 password=Postgres.PASSWORD)

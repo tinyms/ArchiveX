@@ -23,7 +23,6 @@ class ApiHandler(IRequest):
         :return:
         """
         #ver = self.get_argument("ver")
-        print(class_full_name, method_name)
         self.set_header("Content-Type", "text/json;charset=utf-8")
         if not class_full_name:
             self.write("Class Name Require.")

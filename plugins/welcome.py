@@ -32,12 +32,20 @@ class MatchHistoryQuery(IAjax):
         draw_ext = p["draw_ext"]
         draw_change_direct = p["draw_change_direct"]
         draw_range = p["draw_range"]
+        odds_win = p["odds_win"];
         sql = "select * from matchs where detect_result = '%s'" % force
         col = "Odds_%s" % company
 
         nums = Utils.parse_float_array(draw_ext)
         if len(nums)==1:
             sql += " AND (%s[2]-trunc(%s[2]))=%.2f" % (col,col,nums[0])
+
+        nums = Utils.parse_float_array(odds_win)
+        if len(nums)==1:
+            if win_direct == "3":
+                sql += " AND (%s[1]>%.2f AND %s[1]<%.2f)" % (col,nums[0]-0.2,col,nums[0]+0.2)
+            else:
+                sql += " AND (%s[3]>%.2f AND %s[3]<%.2f)" % (col,nums[0]-0.2,col,nums[0]+0.2)
 
         nums = Utils.parse_float_array(draw_range)
         if len(nums)==1 and nums[0]>0:
@@ -54,12 +62,11 @@ class MatchHistoryQuery(IAjax):
             sql += " AND %s[1]-%s[3]>0"  % (col,col)
         else:
             sql += " AND %s[1]-%s[3]=0" % (col,col)
-
+        print(sql)
         result = dict()
         result["win"] = self.count_matchs(sql,3)
         result["draw"] = self.count_matchs(sql,1)
         result["lost"] = self.count_matchs(sql,0)
-        print(result)
         return self.json(result)
 
     def count_matchs(self,sql,act_result):

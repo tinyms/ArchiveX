@@ -4,7 +4,7 @@
  * Date: 13-8-7
  * Time: 上午11:07
  */
-var timer, matchs_datasource = [],history_relation_query_datasource=undefined;
+var timer, matchs_datasource = [], history_relation_query_datasource = undefined;
 function set_team_names_title(names) {
     $(".team_names_title").each(function (i) {
         $(this).html(names);
@@ -112,6 +112,32 @@ function show_baseface(self, match_id) {
             ]
         }
         new Chart(ctx).Line(chart_data);
+        $("#ref_odds_force").val(current.detect_result);
+        $("#ref_odds_companys").val("beta");
+        var first = current.Odds_365;
+        if (first.length == 3) {
+            var draw = first[1] - parseInt(first[1]);
+            $("#ref_odds_draw_ext").val($.number(draw, 2));
+            var direct = "3";
+            var diff = first[0] - first[2];
+            if (diff > 0) {
+                direct = "0"
+            } else if (diff == 0) {
+                direct = "1";
+            }
+            var diff2 = "gt";
+            if (current.Odds_365_Change[1] - first[1] < 0) {
+                diff2 = "lt";
+            }
+            $("#ref_odds_change_direct").val(diff2);
+            $("#ref_win_direct").val(direct);
+            if(direct=="3"){
+                $("#ref_odds_win").val($.number(first[0], 1));
+            }else if(direct=="0"){
+                $("#ref_odds_win").val($.number(first[2], 1));
+            }
+            history_query();
+        }
     }
     $("#DataParseDlg").modal({show: true, keyboard: true});
 }
@@ -121,6 +147,29 @@ function fill_datatable(data) {
     $("#matchs_table").JsonTableUpdate({
         source: matchs_datasource
     });
+}
+function history_query(){
+    var params_ = {
+            "force": $("#ref_odds_force").val(),
+            "company": $("#ref_odds_companys").val(),
+            "draw_ext": $("#ref_odds_draw_ext").val(),
+            "draw_change_direct": $("#ref_odds_change_direct").val(),
+            "draw_range": $("#ref_odds_draw_range").val(),
+            "win_direct": $("#ref_win_direct").val(),
+            "odds_win": $("#ref_odds_win").val()
+        };
+        WelcomeMatchHistoryQuery.find(params_, function (b, data) {
+            if (b) {
+                history_relation_query_datasource = data;
+                console.log(data);
+                $("#badge_win").html(data["win"]["total"])
+                $("#badge_draw").html(data["draw"]["total"])
+                $("#badge_lost").html(data["lost"]["total"])
+                $("#query_result_win_table").JsonTableUpdate({source: data["win"]["items"]})
+                $("#query_result_draw_table").JsonTableUpdate({source: data["draw"]["items"]})
+                $("#query_result_lost_table").JsonTableUpdate({source: data["lost"]["items"]})
+            }
+        }, "json");
 }
 $(document).ready(function () {
 
@@ -133,26 +182,7 @@ $(document).ready(function () {
     });
 
     $("#btn_history_relation_query").click(function () {
-        var params_ = {
-            "force": $("#ref_odds_force").val(),
-            "company": $("#ref_odds_companys").val(),
-            "draw_ext": $("#ref_odds_draw_ext").val(),
-            "draw_change_direct": $("#ref_odds_change_direct").val(),
-            "draw_range": $("#ref_odds_draw_range").val(),
-            "win_direct": $("#ref_win_direct").val()
-        };
-        WelcomeMatchHistoryQuery.find(params_,function(b,data){
-            if(b){
-                history_relation_query_datasource = data;
-                console.log(data);
-                $("#badge_win").html(data["win"]["total"])
-                $("#badge_draw").html(data["draw"]["total"])
-                $("#badge_lost").html(data["lost"]["total"])
-                $("#query_result_win_table").JsonTableUpdate({source:data["win"]["items"]})
-                $("#query_result_draw_table").JsonTableUpdate({source:data["draw"]["items"]})
-                $("#query_result_lost_table").JsonTableUpdate({source:data["lost"]["items"]})
-            }
-        },"json");
+        history_query();
     });
 
     $("#match_analyze_btn").click(function () {
@@ -208,47 +238,47 @@ $(document).ready(function () {
 
     // 查询表
     var query_table_meta = {
-        head:['球差',"初赔","变赔","变化","球队","赛事","#"],
-        json:['balls_diff','first','last','change','vs_team_names','evt_name','url_key'],
-        render:function(name,val,row){
+        head: ['球差', "初赔", "变赔", "变化", "球队", "赛事", "#"],
+        json: ['balls_diff', 'first', 'last', 'change', 'vs_team_names', 'evt_name', 'url_key'],
+        render: function (name, val, row) {
             var com_code = $("#ref_odds_companys").val();
-            if(name=="first"){
-                var odds = row["odds_"+com_code]
-                return $.number(odds[0],2)+" "+$.number(odds[1],2)+" "+$.number(odds[2],2);
-            }else if(name=="last"){
-                var odds = row["odds_"+com_code+"_c"]
-                return $.number(odds[0],2)+" "+$.number(odds[1],2)+" "+$.number(odds[2],2);
-            }else if(name=="change"){
-                var first = row["odds_"+com_code]
-                var change = row["odds_"+com_code+"_c"]
-                var win = change[0]-first[0]
-                var draw = change[1]-first[1]
-                var lost = change[2]-first[2]
+            if (name == "first") {
+                var odds = row["odds_" + com_code]
+                return $.number(odds[0], 2) + " " + $.number(odds[1], 2) + " " + $.number(odds[2], 2);
+            } else if (name == "last") {
+                var odds = row["odds_" + com_code + "_c"]
+                return $.number(odds[0], 2) + " " + $.number(odds[1], 2) + " " + $.number(odds[2], 2);
+            } else if (name == "change") {
+                var first = row["odds_" + com_code]
+                var change = row["odds_" + com_code + "_c"]
+                var win = change[0] - first[0]
+                var draw = change[1] - first[1]
+                var lost = change[2] - first[2]
                 var html = "";
-                if(win>0){
-                    html += "+<span style='color: red;'>"+ $.number(win,2)+"</span>";
-                }else if (win<0){
-                    html += "-<span style='color: green;'>"+ $.number(Math.abs(win),2)+"</span>";
-                }else{
-                    html += "+<span>"+ $.number(win,2)+"</span>";
+                if (win > 0) {
+                    html += "+<span style='color: red;'>" + $.number(win, 2) + "</span>";
+                } else if (win < 0) {
+                    html += "-<span style='color: green;'>" + $.number(Math.abs(win), 2) + "</span>";
+                } else {
+                    html += "+<span>" + $.number(win, 2) + "</span>";
                 }
-                if(draw>0){
-                    html += " +<span style='color: red;'>"+ $.number(draw,2)+"</span>";
-                }else if(draw<0){
-                    html += " -<span style='color: green;'>"+ $.number(Math.abs(draw),2)+"</span>";
-                }else{
-                    html += " +<span>"+ $.number(draw,2)+"</span>";
+                if (draw > 0) {
+                    html += " +<span style='color: red;'>" + $.number(draw, 2) + "</span>";
+                } else if (draw < 0) {
+                    html += " -<span style='color: green;'>" + $.number(Math.abs(draw), 2) + "</span>";
+                } else {
+                    html += " +<span>" + $.number(draw, 2) + "</span>";
                 }
-                if(lost>0){
-                    html += " +<span style='color: red;'>"+ $.number(lost,2)+"</span>";
-                }else if(lost<0){
-                    html += " -<span style='color: green;'>"+ $.number(Math.abs(lost),2)+"</span>";
-                }else{
-                    html += " +<span>"+ $.number(lost,2)+"</span>";
+                if (lost > 0) {
+                    html += " +<span style='color: red;'>" + $.number(lost, 2) + "</span>";
+                } else if (lost < 0) {
+                    html += " -<span style='color: green;'>" + $.number(Math.abs(lost), 2) + "</span>";
+                } else {
+                    html += " +<span>" + $.number(lost, 2) + "</span>";
                 }
                 return html;
-            }else if(name=="url_key"){
-                return "<a target='_blank' href='http://odds.500.com/fenxi/ouzhi-"+val+"#datatb'>欧</a>";
+            } else if (name == "url_key") {
+                return "<a target='_blank' href='http://odds.500.com/fenxi/ouzhi-" + val + "#datatb'>欧</a>";
             }
             return val;
         }
