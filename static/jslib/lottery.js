@@ -193,7 +193,7 @@ $(document).ready(function () {
         json: ['season_name', 'ball_diff', 'detect_result', 'actual_result',
             'Odds_WL', 'team_names', 'score', 'match_date', 'match_id'],
         render: function (name, value, row) {
-            if (name == "actual_result" && value == -1) {
+            if (name == "actual_result" && value != -1) {
                 return value;
             } else if (name == "Odds_WL") {
                 return $.number(value[0], 2) + " " + $.number(value[1], 2) + " " + $.number(value[2], 2);
