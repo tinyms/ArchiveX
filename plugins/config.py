@@ -6,7 +6,7 @@ from tinyms.point import IDatabase
 
 class CustomDatabase(IDatabase):
     def name(self):
-        return "postgres"
+        return "tinyms"
     def user(self):
         return "postgres"
     def password(self):

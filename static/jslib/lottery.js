@@ -208,19 +208,47 @@ $(document).ready(function () {
 
     // 查询表
     var query_table_meta = {
-        head:['球差',"初赔","变赔","球队","赛事","#"],
-        json:['balls_diff','first','last','vs_team_names','evt_name','url_key'],
+        head:['球差',"初赔","变赔","变化","球队","赛事","#"],
+        json:['balls_diff','first','last','change','vs_team_names','evt_name','url_key'],
         render:function(name,val,row){
-            console.log(row);
             var com_code = $("#ref_odds_companys").val();
-            console.log(com_code);
             if(name=="first"){
                 var odds = row["odds_"+com_code]
-                console.log(odds);
                 return $.number(odds[0],2)+" "+$.number(odds[1],2)+" "+$.number(odds[2],2);
             }else if(name=="last"){
                 var odds = row["odds_"+com_code+"_c"]
                 return $.number(odds[0],2)+" "+$.number(odds[1],2)+" "+$.number(odds[2],2);
+            }else if(name=="change"){
+                var first = row["odds_"+com_code]
+                var change = row["odds_"+com_code+"_c"]
+                var win = change[0]-first[0]
+                var draw = change[1]-first[1]
+                var lost = change[2]-first[2]
+                var html = "";
+                if(win>0){
+                    html += "+<span style='color: red;'>"+ $.number(win,2)+"</span>";
+                }else if (win<0){
+                    html += "-<span style='color: green;'>"+ $.number(Math.abs(win),2)+"</span>";
+                }else{
+                    html += "+<span>"+ $.number(win,2)+"</span>";
+                }
+                if(draw>0){
+                    html += " +<span style='color: red;'>"+ $.number(draw,2)+"</span>";
+                }else if(draw<0){
+                    html += " -<span style='color: green;'>"+ $.number(Math.abs(draw),2)+"</span>";
+                }else{
+                    html += " +<span>"+ $.number(draw,2)+"</span>";
+                }
+                if(lost>0){
+                    html += " +<span style='color: red;'>"+ $.number(lost,2)+"</span>";
+                }else if(lost<0){
+                    html += " -<span style='color: green;'>"+ $.number(Math.abs(lost),2)+"</span>";
+                }else{
+                    html += " +<span>"+ $.number(lost,2)+"</span>";
+                }
+                return html;
+            }else if(name=="url_key"){
+                return "<a target='_blank' href='http://odds.500.com/fenxi/ouzhi-"+val+"#datatb'>欧</a>";
             }
             return val;
         }
