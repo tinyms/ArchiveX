@@ -112,32 +112,6 @@ function show_baseface(self, match_id) {
             ]
         }
         new Chart(ctx).Line(chart_data);
-        $("#ref_odds_force").val(current.detect_result);
-        $("#ref_odds_companys").val("beta");
-        var first = current.Odds_365;
-        if (first.length == 3) {
-            var draw = first[1] - parseInt(first[1]);
-            $("#ref_odds_draw_ext").val($.number(draw, 2));
-            var direct = "3";
-            var diff = first[0] - first[2];
-            if (diff > 0) {
-                direct = "0"
-            } else if (diff == 0) {
-                direct = "1";
-            }
-            var diff2 = "gt";
-            if (current.Odds_365_Change[1] - first[1] < 0) {
-                diff2 = "lt";
-            }
-            $("#ref_odds_change_direct").val(diff2);
-            $("#ref_win_direct").val(direct);
-            if(direct=="3"){
-                $("#ref_odds_win").val($.number(first[0], 1));
-            }else if(direct=="0"){
-                $("#ref_odds_win").val($.number(first[2], 1));
-            }
-            history_query();
-        }
     }
     $("#DataParseDlg").modal({show: true, keyboard: true});
 }
@@ -153,15 +127,12 @@ function history_query(){
             "force": $("#ref_odds_force").val(),
             "company": $("#ref_odds_companys").val(),
             "draw_ext": $("#ref_odds_draw_ext").val(),
-            "draw_change_direct": $("#ref_odds_change_direct").val(),
-            "draw_range": $("#ref_odds_draw_range").val(),
             "win_direct": $("#ref_win_direct").val(),
             "odds_win": $("#ref_odds_win").val()
         };
         WelcomeMatchHistoryQuery.find(params_, function (b, data) {
             if (b) {
                 history_relation_query_datasource = data;
-                console.log(data);
                 $("#badge_win").html(data["win"]["total"])
                 $("#badge_draw").html(data["draw"]["total"])
                 $("#badge_lost").html(data["lost"]["total"])
@@ -171,16 +142,18 @@ function history_query(){
             }
         }, "json");
 }
+function history_match_tip_in(self,result,key){
+    console.log(result);
+}
+function history_match_tip_out(self,result,key){
+
+}
 $(document).ready(function () {
 
-    $('#DataParseDlg').on('show', function () {
-        $(this).css({
-            'margin-top': function () {
-                return window.pageYOffset - ($(this).height() / 2);
-            }
-        });
-    });
 
+    $("#bt_history_query_ui").click(function(){
+        $("#history_dlg").modal({show: true, keyboard: true});
+    });
     $("#btn_history_relation_query").click(function () {
         history_query();
     });
@@ -242,7 +215,11 @@ $(document).ready(function () {
         json: ['balls_diff', 'first', 'last', 'change', 'vs_team_names', 'evt_name', 'url_key'],
         render: function (name, val, row) {
             var com_code = $("#ref_odds_companys").val();
-            if (name == "first") {
+            if(name=="vs_team_names"){
+                var params = row["actual_result"]+","+row["url_key"];
+                return "<span onmouseover='history_match_tip_in(this,"+params+");' onmouseout='history_match_tip_out(this,"+params+");'>"+val+"</span>";
+            }
+            else if (name == "first") {
                 var odds = row["odds_" + com_code]
                 return $.number(odds[0], 2) + " " + $.number(odds[1], 2) + " " + $.number(odds[2], 2);
             } else if (name == "last") {

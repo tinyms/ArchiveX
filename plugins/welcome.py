@@ -30,8 +30,6 @@ class MatchHistoryQuery(IAjax):
         win_direct = p["win_direct"]
         company = p["company"]
         draw_ext = p["draw_ext"]
-        draw_change_direct = p["draw_change_direct"]
-        draw_range = p["draw_range"]
         odds_win = p["odds_win"];
         sql = "select * from matchs where detect_result = '%s'" % force
         col = "Odds_%s" % company
@@ -47,21 +45,12 @@ class MatchHistoryQuery(IAjax):
             else:
                 sql += " AND (%s[3]>%.2f AND %s[3]<%.2f)" % (col,nums[0]-0.2,col,nums[0]+0.2)
 
-        nums = Utils.parse_float_array(draw_range)
-        if len(nums)==1 and nums[0]>0:
-            sql += " AND (abs(%s_c[2]-%s[2])>=%.2f AND abs(%s_c[2]-%s[2])<=%.2f)" % (col,col,nums[0],col,col,nums[0]+0.1)
-
-        if draw_change_direct=="gt":
-            sql += " AND %s_c[2]-%s[2] > 0" % (col,col)
-        elif draw_change_direct=="lt":
-            sql += " AND %s_c[2]-%s[2] < 0" % (col,col)
-
         if win_direct == "3":
-            sql += " AND %s[1]-%s[3]<0"  % (col,col)
+            sql += " AND actual_result=3"
         elif win_direct == "0":
-            sql += " AND %s[1]-%s[3]>0"  % (col,col)
+            sql += " AND actual_result=0"
         else:
-            sql += " AND %s[1]-%s[3]=0" % (col,col)
+            sql += " AND actual_result=1"
         print(sql)
         result = dict()
         result["win"] = self.count_matchs(sql,3)
@@ -73,7 +62,7 @@ class MatchHistoryQuery(IAjax):
         result = dict()
         sql += " AND actual_result = %i" % act_result
         count_sql = sql.replace("*","COUNT(1)")
-        sql += " ORDER BY random() LIMIT 50"
+        sql += " ORDER BY random() LIMIT 25"
         result["total"] = Postgres.one(count_sql)
         result["items"] = Postgres.many(sql)
         return result

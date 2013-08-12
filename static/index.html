@@ -50,6 +50,7 @@
             <!-- /input-group -->
         </div>
         <div class="col-lg-3">
+            <button type="button" class="btn btn-success" id="bt_history_query_ui">历史查询</button>
         </div>
     </div>
     <!-- /.row -->
@@ -80,79 +81,93 @@
                     <ul class="nav nav-tabs">
                         <li><a href="#base_tab" data-toggle="tab">基本面</a></li>
                         <li><a href="#change_tab" data-toggle="tab">变赔</a></li>
-                        <li><a href="#same_odds_tab" data-toggle="tab">同赔</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="base_tab"></div>
                         <div class="tab-pane" id="change_tab">
                             <iframe id="extern_url_iframe" width="100%" height="650" style="border: 0px;"></iframe>
                         </div>
-                        <div class="tab-pane" id="same_odds_tab">
-                            <!--同赔-->
-                            <div style="margin-top: 10px;">
-                                <form class="form-inline">
-                                    实力:<select id="ref_odds_force" class="form-control" style="width: 70px;">
-                                        <option value="3" selected>3</option>
-                                        <option value="1">1</option>
-                                        <option value="0">0</option>
-                                        <option value="31">31</option>
-                                        <option value="10">10</option>
-                                    </select>
-                                    方向:<select id="ref_win_direct" class="form-control" style="width: 85px;">
-                                        <option value="3" selected>主胜</option>
-                                        <option value="0">客胜</option>
-                                        <option value="1">平手</option>
-                                    </select>
-                                    公司:<select id="ref_odds_companys" class="form-control" style="width: 85px;">
-                                        <option value="wl">威廉</option>
-                                        <option value="lb">立博</option>
-                                        <option value="ysb">易博</option>
-                                        <option value="beta" selected>贝塔</option>
-                                        <option value="am">澳门</option>
-                                    </select>
-                                    胜赔:<input id="ref_odds_win" value="1.5" type="text" class="form-control" style="width: 100px"/>
-                                    平尾:<input id="ref_odds_draw_ext" class="form-control" placeholder="平赔尾数" style="width: 100px"/>
-                                    <select id="ref_odds_change_direct" class="form-control" style="width: 85px;">
-                                        <option value="gt" selected>升盘</option>
-                                        <option value="lt">降盘</option>
-                                    </select>
-                                    <input id="ref_odds_draw_range" class="form-control" placeholder="幅度" style="width: 100px" value="0.2"/>
-                                    <button type="button" class="btn btn-default" id="btn_history_relation_query">查询</button>
-                                </form>
-                            </div>
-                            <div style="margin-top: 5px;">
-                                <ul class="nav nav-tabs">
-                                    <li><a href="#query_result_win_tab" data-toggle="tab">胜<span id="badge_win" class="badge pull-right">0</span></a></li>
-                                    <li><a href="#query_result_draw_tab" data-toggle="tab">平<span id="badge_draw" class="badge pull-right">0</span></a></li>
-                                    <li><a href="#query_result_lost_tab" data-toggle="tab">负<span id="badge_lost" class="badge pull-right">0</span></a></li>
-                                </ul>
-                                <div class="tab-content">
-                                    <div class="tab-pane active" id="query_result_win_tab">
-                                        <table class="table table-hover table-condensed" id="query_result_win_table">
-                                            <thead>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="tab-pane" id="query_result_draw_tab">
-                                        <table class="table table-hover table-condensed" id="query_result_draw_table">
-                                            <thead>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="tab-pane" id="query_result_lost_tab">
-                                        <table class="table table-hover table-condensed" id="query_result_lost_table">
-                                            <thead>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="history_dlg">
+        <div class="modal-dialog" style="width: 960px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">历史比赛参考</h4>
+                </div>
+                <div class="modal-body">
+                    <!--同赔-->
+                    <form class="form-inline">
+                        实力:<select id="ref_odds_force" class="form-control" style="width: 70px;">
+                        <option value="3" selected>3</option>
+                        <option value="1">1</option>
+                        <option value="0">0</option>
+                        <option value="31">31</option>
+                        <option value="10">10</option>
+                    </select>
+                        赛果:<select id="ref_win_direct" class="form-control" style="width: 85px;">
+                        <option value="3" selected>主胜</option>
+                        <option value="0">客胜</option>
+                        <option value="1">平手</option>
+                    </select>
+                        公司:<select id="ref_odds_companys" class="form-control" style="width: 85px;">
+                        <option value="wl">威廉</option>
+                        <option value="lb">立博</option>
+                        <option value="ysb">易博</option>
+                        <option value="beta" selected>贝塔</option>
+                        <option value="am">澳门</option>
+                    </select>
+                        胜赔:<input id="ref_odds_win" value="1.5" type="text" class="form-control"
+                                  style="width: 100px"/>
+                        平尾:<input id="ref_odds_draw_ext" class="form-control" placeholder="平赔尾数"
+                                  style="width: 100px"/>
+                        <button type="button" class="btn btn-default" id="btn_history_relation_query">查询
+                        </button>
+                    </form>
+                </div>
+                <div style="margin-top: 5px;">
+                    <ul class="nav nav-tabs">
+                        <li><a href="#query_result_win_tab" data-toggle="tab">胜<span id="badge_win"
+                                                                                     class="badge pull-right">0</span></a>
+                        </li>
+                        <li><a href="#query_result_draw_tab" data-toggle="tab">平<span id="badge_draw"
+                                                                                      class="badge pull-right">0</span></a>
+                        </li>
+                        <li><a href="#query_result_lost_tab" data-toggle="tab">负<span id="badge_lost"
+                                                                                      class="badge pull-right">0</span></a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="query_result_win_tab">
+                            <table class="table table-hover table-condensed" id="query_result_win_table">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane" id="query_result_draw_tab">
+                            <table class="table table-hover table-condensed" id="query_result_draw_table">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane" id="query_result_lost_tab">
+                            <table class="table table-hover table-condensed" id="query_result_lost_table">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -161,6 +176,7 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+    <!-- /.modal -->
 </div>
 <script id="match_details_tpl" type="text/x-jsrender">
     <table class="table table-hover table-condensed">
