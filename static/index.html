@@ -103,121 +103,122 @@
                     <h4 class="modal-title">历史比赛参考</h4>
                 </div>
                 <div class="modal-body">
-                    <!--同赔-->
-                    <form class="form-inline">
-                        实力:<select id="ref_odds_force" class="form-control" style="width: 70px;">
-                        <option value="3" selected>3</option>
-                        <option value="1">1</option>
-                        <option value="0">0</option>
-                        <option value="31">31</option>
-                        <option value="10">10</option>
-                    </select>
-                        赛果:<select id="ref_win_direct" class="form-control" style="width: 85px;">
-                        <option value="3" selected>主胜</option>
-                        <option value="0">客胜</option>
-                        <option value="1">平手</option>
-                    </select>
-                        公司:<select id="ref_odds_companys" class="form-control" style="width: 85px;">
-                        <option value="wl">威廉</option>
-                        <option value="lb">立博</option>
-                        <option value="ysb">易博</option>
-                        <option value="beta" selected>贝塔</option>
-                        <option value="am">澳门</option>
-                    </select>
-                        胜赔:<input id="ref_odds_win" value="1.5" type="text" class="form-control"
-                                  style="width: 100px"/>
-                        平尾:<input id="ref_odds_draw_ext" class="form-control" placeholder="平赔尾数"
-                                  style="width: 100px"/>
-                        <button type="button" class="btn btn-default" id="btn_history_relation_query">查询
-                        </button>
-                    </form>
-                </div>
-                <div style="margin-top: 5px;">
-                    <ul class="nav nav-tabs">
-                        <li><a href="#query_result_win_tab" data-toggle="tab">胜<span id="badge_win"
-                                                                                     class="badge pull-right">0</span></a>
-                        </li>
-                        <li><a href="#query_result_draw_tab" data-toggle="tab">平<span id="badge_draw"
-                                                                                      class="badge pull-right">0</span></a>
-                        </li>
-                        <li><a href="#query_result_lost_tab" data-toggle="tab">负<span id="badge_lost"
-                                                                                      class="badge pull-right">0</span></a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="query_result_win_tab">
-                            <table class="table table-hover table-condensed" id="query_result_win_table">
-                                <thead>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="tab-pane" id="query_result_draw_tab">
-                            <table class="table table-hover table-condensed" id="query_result_draw_table">
-                                <thead>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="tab-pane" id="query_result_lost_tab">
-                            <table class="table table-hover table-condensed" id="query_result_lost_table">
-                                <thead>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
+                    <div>
+                        <!--同赔-->
+                        <form class="form-inline">
+                            实力:<select id="ref_odds_force" class="form-control" style="width: 70px;">
+                            <option value="3" selected>3</option>
+                            <option value="1">1</option>
+                            <option value="0">0</option>
+                            <option value="31">31</option>
+                            <option value="10">10</option>
+                        </select>
+                            赛果:<select id="ref_win_direct" class="form-control" style="width: 85px;">
+                            <option value="3" selected>主胜</option>
+                            <option value="0">客胜</option>
+                            <option value="1">平手</option>
+                        </select>
+                            公司:<select id="ref_odds_companys" class="form-control" style="width: 85px;">
+                            <option value="wl">威廉</option>
+                            <option value="lb">立博</option>
+                            <option value="ysb">易博</option>
+                            <option value="beta" selected>贝塔</option>
+                            <option value="am">澳门</option>
+                        </select>
+                            胜赔:<input id="ref_odds_win" value="1.5" type="text" class="form-control"
+                                      style="width: 100px"/>
+                            平尾:<input id="ref_odds_draw_ext" class="form-control" placeholder="平赔尾数"
+                                      style="width: 100px"/>
+                            <button type="button" class="btn btn-default" id="btn_history_relation_query">查询
+                            </button>
+                        </form>
+                    </div>
+                    <div style="margin-top: 5px;">
+                        <ul class="nav nav-tabs">
+                            <li><a href="#query_result_win_tab" data-toggle="tab">胜<span id="badge_win"
+                                                                                         class="badge pull-right">0</span></a>
+                            </li>
+                            <li><a href="#query_result_draw_tab" data-toggle="tab">平<span id="badge_draw"
+                                                                                          class="badge pull-right">0</span></a>
+                            </li>
+                            <li><a href="#query_result_lost_tab" data-toggle="tab">负<span id="badge_lost"
+                                                                                          class="badge pull-right">0</span></a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="query_result_win_tab">
+                                <table class="table table-hover table-condensed" id="query_result_win_table">
+                                    <thead>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane" id="query_result_draw_tab">
+                                <table class="table table-hover table-condensed" id="query_result_draw_table">
+                                    <thead>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane" id="query_result_lost_tab">
+                                <table class="table table-hover table-condensed" id="query_result_lost_table">
+                                    <thead>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- /.modal-content -->
             </div>
-            <!-- /.modal-content -->
+            <!-- /.modal-dialog -->
         </div>
-        <!-- /.modal-dialog -->
+        <!-- /.modal -->
     </div>
-    <!-- /.modal -->
-</div>
-<script id="match_details_tpl" type="text/x-jsrender">
-    <table class="table table-hover table-condensed">
-        <tr>
-            <td>综合10场: {{mix_10}}</td>
-        </tr>
-        <tr>
-            <td>主客10场: {{last_10}}</td>
-        </tr>
-        <tr>
-            <td>主客06场: {{last_6}}</td>
-        </tr>
-        <tr>
-            <td>主客04场: {{last_4}}</td>
-        </tr>
-        <tr>
-            <td>
-                <canvas id="team_force_chart"></canvas>
-                <div style="margin-top:3px;text-indent:20px;color:#CCCCCC;">蓝色主队,黄色客队</div>
-            </td>
-        </tr>
-        <tr>
-            <td>球差: {{ball_diff}} 预测: {{detect_result}} 主客战绩: {{last_battle}}</td>
-        </tr>
-    </table>
-    <table class="table table-hover table-condensed" style="width:570px;">
-        <tr>
-            <th scope="col">公司</th>
-            <th scope="col">初赔</th>
-            <th scope="col">变赔</th>
-            <th scope="col">差异</th>
-        </tr>
-        {{#odds}}
-        <tr>
-            <td>{{{com_name}}}</td>
-            <td>{{{start}}}</td>
-            <td>{{{end}}}</td>
-            <td>{{{change}}}</td>
-        </tr>
-        {{/odds}}
-    </table>
-</script>
+    <script id="match_details_tpl" type="text/x-jsrender">
+        <table class="table table-hover table-condensed">
+            <tr>
+                <td>综合10场: {{mix_10}}</td>
+            </tr>
+            <tr>
+                <td>主客10场: {{last_10}}</td>
+            </tr>
+            <tr>
+                <td>主客06场: {{last_6}}</td>
+            </tr>
+            <tr>
+                <td>主客04场: {{last_4}}</td>
+            </tr>
+            <tr>
+                <td>
+                    <canvas id="team_force_chart"></canvas>
+                    <div style="margin-top:3px;text-indent:20px;color:#CCCCCC;">蓝色主队,黄色客队</div>
+                </td>
+            </tr>
+            <tr>
+                <td>球差: {{ball_diff}} 预测: {{detect_result}} 主客战绩: {{last_battle}}</td>
+            </tr>
+        </table>
+        <table class="table table-hover table-condensed" style="width:570px;">
+            <tr>
+                <th scope="col">公司</th>
+                <th scope="col">初赔</th>
+                <th scope="col">变赔</th>
+                <th scope="col">差异</th>
+            </tr>
+            {{#odds}}
+            <tr>
+                <td>{{{com_name}}}</td>
+                <td>{{{start}}}</td>
+                <td>{{{end}}}</td>
+                <td>{{{change}}}</td>
+            </tr>
+            {{/odds}}
+        </table>
+    </script>
 </body>
 </html>

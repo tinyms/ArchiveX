@@ -169,6 +169,8 @@ class JsonEncoder(json.JSONEncoder):
 class Utils():
     @staticmethod
     def text_read(f_name, join=True):
+        if not os.path.exists(f_name):
+            return ""
         f = codecs.open(f_name, "r", "utf-8")
         all = f.readlines()
         f.close()
