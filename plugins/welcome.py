@@ -1,5 +1,5 @@
 __author__ = 'tinyms'
-__export__ = ["Welcome", "MatchAnalyze","MatchHistoryQuery"]
+__export__ = ["Welcome", "MatchAnalyze","MatchHistoryQuery","SingleOrder"]
 
 import os, json
 from tinyms.web import IRequest
@@ -18,6 +18,53 @@ class Welcome(IWebConfig):
 class WelcomeHandler(IRequest):
     def get(self):
         self.redirect("/static/index.html")
+
+class SingleOrder(IAjax):
+    __export__ = ["create"]
+
+    def client_javascript_object_name(self):
+        return "SingleOrderComposite"
+
+    def compare_two(self,a_arr,b_arr):
+        size = len(a_arr)
+        if size != len(a_arr):
+            return -1
+        count = 0
+        for i in range(size):
+            if a_arr[i] != b_arr[i]:
+                count += 1
+        return count
+
+    def color(self,result):
+        html = result.replace("3","<button style='margin-left:5px;' type='button' class='btn btn-primary'>3</button>")
+        html = html.replace("1","<button style='margin-left:5px;' type='button' class='btn btn-success'>1</button>")
+        html = html.replace("0","<button style='margin-left:5px;' type='button' class='btn btn-danger'>0</button>")
+        return html
+
+    def create(self,**p):
+        num = Utils.parse_int(p["num"])
+        maybe_err = Utils.parse_int(p["err"])
+        source = p["source"]
+        if source:
+            items = [s.strip(" ") for s in source.split(",")]
+            import itertools,random
+            a = list(itertools.product(*items))
+            first = a[0]
+            result = list()
+            for r in a:
+                diff = self.compare_two(first,r)
+                if diff == maybe_err:
+                    result.append("".join(r))
+            random.shuffle(result)
+            random.shuffle(result)
+            result.insert(0,"".join(first))
+            color_result = list()
+            for sr in result:
+                color_result.append(self.color(sr))
+        ds = dict()
+        ds["result"] = result[:num]
+        ds["color_result"] = color_result[:num]
+        return self.json(ds)
 
 class MatchHistoryQuery(IAjax):
     __export__ = ["find"]

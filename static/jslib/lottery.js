@@ -148,14 +148,41 @@ function history_match_tip_in(self,result,key){
 function history_match_tip_out(self,result,key){
 
 }
+function replace_310_with_color(result){
+    var html = result.replace('3',"<button type='button' class='btn btn-primary'>3</button>")
+    html = html.replace('1',"<button type='button' class='btn btn-success'>1</button>")
+    html = html.replace('0',"<button type='button' class='btn btn-danger'>0</button>")
+    return html;
+}
 $(document).ready(function () {
-
-
     $("#bt_history_query_ui").click(function(){
         $("#history_dlg").modal({show: true, keyboard: true});
     });
     $("#btn_history_relation_query").click(function () {
         history_query();
+    });
+
+    $("#bt_single_order").click(function(){
+        $("#SingleOrderDlg").modal({show: true, keyboard: true});
+    });
+
+    $("#SingleOrderActionButton").click(function(){
+        var params = {};
+        params["num"] = $("#single_order_pub_num").val();
+        params["err"] = $("#single_order_pub_err").val();
+        params["source"] = $("#lottery_select").val();
+        SingleOrderComposite.create(params,function(b,data){
+            if(b){
+                var text = "";
+                var html = "";
+                for(var k=0;k<data.result.length;k++){
+                    text += data.result[k]+",\n";
+                    html += "<div style='margin-top: 5px;'>"+data.color_result[k]+"</div>"
+                }
+                $("#after_order_result").text(text);
+                $("#result_layouts").html(html);
+            }
+        },"json");
     });
 
     $("#match_analyze_btn").click(function () {
