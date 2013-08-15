@@ -45,25 +45,25 @@ class Post(Entity):
         return "<posts('%s','%s','%i')>" % (self.title, self.content, self.userid)
 
 
-engine = create_engine("postgresql+psycopg2://postgres:1@localhost/postgres", echo=True)
-Entity.metadata.create_all(engine)
-import datetime
-usr = User()
-usr.name = "JK"
-usr.fullname = "LX"
-usr.odds = [1,2,3,3,4]
-usr.createdate = datetime.datetime.now()
-
-import json
-
-Session = sessionmaker(bind=engine)
-session = Session()
-session.add(usr)
-session.commit()
-print(usr.id)
-
-for u in session.query(User).order_by(User.id):
-    items = u.posts_
-    for item in items:
-        print(json.dumps(dict_json(item)))
+# engine = create_engine("postgresql+psycopg2://postgres:1@localhost/postgres", echo=True)
+# Entity.metadata.create_all(engine)
+# import datetime
+# usr = User()
+# usr.name = "JK"
+# usr.fullname = "LX"
+# usr.odds = [1,2,3,3,4]
+# usr.createdate = datetime.datetime.now()
+#
+# import json
+#
+# Session = sessionmaker(bind=engine)
+# session = Session()
+# session.add(usr)
+# session.commit()
+# print(usr.id)
+#
+# for u in session.query(User).order_by(User.id):
+#     items = u.posts_
+#     for item in items:
+#         print(json.dumps(dict_json(item)))
 

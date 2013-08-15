@@ -341,7 +341,7 @@ class Plugin():
             if hasattr(module_, "__export__"):
                 attrs = [getattr(module_, x) for x in module_.__export__]
                 for attr in attrs:
-                    if not Plugin.ObjectPool.get(attr):
+                    if not Plugin.ObjectPool.get(attr.__base__):
                         Plugin.ObjectPool[attr.__base__] = [attr()]
                     else:
                         Plugin.ObjectPool[attr.__base__].append(attr())
