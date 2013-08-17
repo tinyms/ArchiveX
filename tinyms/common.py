@@ -221,7 +221,7 @@ class Utils():
     @staticmethod
     def parse_int_array(text):
         arr = list()
-        p = re.compile("\\d+", re.M)
+        p = re.compile("[-]?\\d+", re.M)
         nums = p.findall(text)
         if len(nums) > 0:
             arr = [int(s) for s in nums]
@@ -253,7 +253,17 @@ class Utils():
 
     @staticmethod
     def parse_float_array(text):
-        p = re.compile("\\d+\\.\\d+", re.M)
+        p = re.compile("[-]?\\d+\\.\\d+", re.M)
+        return [float(s) for s in p.findall(text)]
+
+    @staticmethod
+    def parse_number_array(text):
+        """
+        int or float
+        :param text:
+        :return:
+        """
+        p = re.compile("[-]?\\d+[\\.]?[\\d]*", re.M)
         return [float(s) for s in p.findall(text)]
 
     @staticmethod

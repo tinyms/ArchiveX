@@ -41,6 +41,27 @@ class SingleOrder(IAjax):
         html = html.replace("0","<button style='margin-left:5px;' type='button' class='btn btn-danger'>0</button>")
         return html
 
+    def results_balance(self,normal_result_arr):
+        rcv = [[r[col] for r in normal_result_arr] for col in range(len(normal_result_arr[0]))]
+        items = []
+        for r in rcv:
+            items.append("".join(r))
+        counters = []
+        for item in items:
+            counter = {}
+            for c in item:
+                if c in counter:
+                    counter[c] += 1
+                else:
+                    counter[c] = 1
+            fmt = "('%s',%i)"
+            tmp = sorted([(v,k) for v,k in counter.items()],reverse=True)
+            tmp_texts = ""
+            for t in tmp:
+                tmp_texts += fmt % (t[0],t[1])
+            counters.append(tmp_texts)
+        return counters
+
     def create(self,**p):
         num = Utils.parse_int(p["num"])
         maybe_err = Utils.parse_int(p["err"])
@@ -64,6 +85,11 @@ class SingleOrder(IAjax):
         ds = dict()
         ds["result"] = result[:num]
         ds["color_result"] = color_result[:num]
+        #统计赛果比例
+        result_for_rate = list()
+        for item in ds["result"]:
+            result_for_rate.append([s for s in item])
+        ds["balance"] = self.results_balance(result_for_rate)
         return self.json(ds)
 
 class MatchHistoryQuery(IAjax):
@@ -85,12 +111,12 @@ class MatchHistoryQuery(IAjax):
         if len(nums)==1:
             sql += " AND (%s[2]-trunc(%s[2]))=%.2f" % (col,col,nums[0])
 
-        nums = Utils.parse_float_array(odds_win)
+        nums = Utils.parse_number_array(odds_win)
         if len(nums)==1:
-            if win_direct == "3":
-                sql += " AND (%s[1]>%.2f AND %s[1]<%.2f)" % (col,nums[0]-0.2,col,nums[0]+0.2)
+            if nums[0] >= 0:
+                sql += " AND (%s[1]>%.2f AND %s[1]<%.2f)" % (col,abs(nums[0])-0.2,col,abs(nums[0])+0.2)
             else:
-                sql += " AND (%s[3]>%.2f AND %s[3]<%.2f)" % (col,nums[0]-0.2,col,nums[0]+0.2)
+                sql += " AND (%s[3]>%.2f AND %s[3]<%.2f)" % (col,abs(nums[0])-0.2,col,abs(nums[0])+0.2)
 
         if win_direct == "3":
             sql += " AND actual_result=3"

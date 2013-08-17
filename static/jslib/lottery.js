@@ -175,12 +175,22 @@ $(document).ready(function () {
             if(b){
                 var text = "";
                 var html = "";
+
                 for(var k=0;k<data.result.length;k++){
                     text += data.result[k]+",\n";
-                    html += "<div style='margin-top: 5px;'>"+data.color_result[k]+"</div>"
+                    html += "<div style='margin-top: 5px;'>"+data.color_result[k]+"</div>";
+
                 }
                 $("#after_order_result").text(text);
                 $("#result_layouts").html(html);
+                var balance = "";
+                for(var k=0;k<data.balance.length;k++){
+                    balance += " 第"+(k+1)+"场:"+data.balance[k];
+                    if(k==7){
+                        balance += "<br/>";
+                    }
+                }
+                $("#results_balance_display").html(balance);
             }
         },"json");
     });
