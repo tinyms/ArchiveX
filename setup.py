@@ -11,7 +11,7 @@ setup(
     name="WaterPress",
     version="1.0",
     description="WaterPress for football match game",
-    options={"build_exe": {"includes": ["psycopg2._psycopg","lottery.parse"]}},
+    options={"build_exe": {"includes": ["psycopg2._psycopg","lottery.parse","tinyms.orm"]}},
     executables=[Executable(script="ArchiveX.py",
                             targetName="WaterPress.exe",
                             icon= "static/images/web.ico",
