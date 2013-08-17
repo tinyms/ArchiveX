@@ -122,77 +122,118 @@ function fill_datatable(data) {
         source: matchs_datasource
     });
 }
-function history_query(){
+function history_query() {
     var params_ = {
-            "force": $("#ref_odds_force").val(),
-            "company": $("#ref_odds_companys").val(),
-            "draw_ext": $("#ref_odds_draw_ext").val(),
-            "win_direct": $("#ref_win_direct").val(),
-            "odds_win": $("#ref_odds_win").val()
-        };
-        WelcomeMatchHistoryQuery.find(params_, function (b, data) {
-            if (b) {
-                history_relation_query_datasource = data;
-                $("#badge_win").html(data["win"]["total"])
-                $("#badge_draw").html(data["draw"]["total"])
-                $("#badge_lost").html(data["lost"]["total"])
-                $("#query_result_win_table").JsonTableUpdate({source: data["win"]["items"]})
-                $("#query_result_draw_table").JsonTableUpdate({source: data["draw"]["items"]})
-                $("#query_result_lost_table").JsonTableUpdate({source: data["lost"]["items"]})
-            }
-        }, "json");
+        "force": $("#ref_odds_force").val(),
+        "company": $("#ref_odds_companys").val(),
+        "draw_ext": $("#ref_odds_draw_ext").val(),
+        "win_direct": $("#ref_win_direct").val(),
+        "odds_win": $("#ref_odds_win").val()
+    };
+    WelcomeMatchHistoryQuery.find(params_, function (b, data) {
+        if (b) {
+            history_relation_query_datasource = data;
+            $("#badge_win").html(data["win"]["total"])
+            $("#badge_draw").html(data["draw"]["total"])
+            $("#badge_lost").html(data["lost"]["total"])
+            $("#query_result_win_table").JsonTableUpdate({source: data["win"]["items"]})
+            $("#query_result_draw_table").JsonTableUpdate({source: data["draw"]["items"]})
+            $("#query_result_lost_table").JsonTableUpdate({source: data["lost"]["items"]})
+        }
+    }, "json");
 }
-function history_match_tip_in(self,result,key){
-    console.log(result);
-}
-function history_match_tip_out(self,result,key){
+function history_match_tip_in(self, result, key) {
+    var ds_key = "win";
+    if (result == 3) {
+        ds_key = "win";
+    } else if (result == 1) {
+        ds_key = "draw";
+    } else if (result == 0) {
+        ds_key = "lost";
+    }
+    var items = history_relation_query_datasource[ds_key].items, row = undefined;
+    for (var k = 0; k < items.length; k++) {
+        if (items[k]["url_key"] == key) {
+            row = items[k];
+            break;
+        }
+    }
+    if (row != undefined) {
+        var detail = {}
+        detail.mix_10 = "";
+        detail.last_10 = row.last_10;
+        detail.last_6 = row.last_6;
+        detail.last_4 = row.last_4;
+        detail.ball_diff = row.balls_diff;
+        detail.last_battle = row.last_battle;
+        detail.detect_result = row.detect_result;
 
+        var odds = [];
+        odds[0] = odds_style("威廉", row.odds_wl, row.odds_wl_c);
+        odds[1] = odds_style("立博", row.odds_lb, row.odds_lb);
+        odds[2] = odds_style("易博", row.odds_ysb, row.odds_beta);
+        odds[3] = odds_style("贝塔", row.odds_beta, row.odds_beta_c);
+        odds[4] = odds_style("澳门", row.odds_am, row.odds_am_c);
+        detail.odds = odds;
+
+        var html = Mustache.render($("#match_history_tpl").html(), detail);
+        $(self).popover({
+            html: true,
+            placement: "left",
+            content: html,
+            trigger:"click"
+        });
+        $(self).popover('show');
+    }
 }
-function replace_310_with_color(result){
-    var html = result.replace('3',"<button type='button' class='btn btn-primary'>3</button>")
-    html = html.replace('1',"<button type='button' class='btn btn-success'>1</button>")
-    html = html.replace('0',"<button type='button' class='btn btn-danger'>0</button>")
+function history_match_tip_out(self, result, key) {
+    $(self).popover('hide');
+}
+function replace_310_with_color(result) {
+    var html = result.replace('3', "<button type='button' class='btn btn-primary'>3</button>")
+    html = html.replace('1', "<button type='button' class='btn btn-success'>1</button>")
+    html = html.replace('0', "<button type='button' class='btn btn-danger'>0</button>")
     return html;
 }
 $(document).ready(function () {
-    $("#bt_history_query_ui").click(function(){
+    $("#bt_history_query_ui").click(function () {
         $("#history_dlg").modal({show: true, keyboard: true});
     });
     $("#btn_history_relation_query").click(function () {
         history_query();
     });
 
-    $("#bt_single_order").click(function(){
+    $("#bt_single_order").click(function () {
         $("#SingleOrderDlg").modal({show: true, keyboard: true});
     });
 
-    $("#SingleOrderActionButton").click(function(){
+    $("#SingleOrderActionButton").click(function () {
         var params = {};
         params["num"] = $("#single_order_pub_num").val();
         params["err"] = $("#single_order_pub_err").val();
         params["source"] = $("#lottery_select").val();
-        SingleOrderComposite.create(params,function(b,data){
-            if(b){
+        SingleOrderComposite.create(params, function (b, data) {
+            if (b) {
                 var text = "";
                 var html = "";
 
-                for(var k=0;k<data.result.length;k++){
-                    text += data.result[k]+",\n";
-                    html += "<div style='margin-top: 5px;'>"+data.color_result[k]+"</div>";
+                for (var k = 0; k < data.result.length; k++) {
+                    text += data.result[k] + ",\n";
+                    html += "<div style='margin-top: 5px;'>" + data.color_result[k] + "</div>";
 
                 }
                 $("#after_order_result").text(text);
                 $("#result_layouts").html(html);
                 var balance = "";
-                for(var k=0;k<data.balance.length;k++){
-                    balance += " 第"+(k+1)+"场:"+data.balance[k];
-                    if(k==7){
+                for (var k = 0; k < data.balance.length; k++) {
+                    balance += " 第" + (k + 1) + "场:" + data.balance[k];
+                    if (k == 7) {
                         balance += "<br/>";
                     }
                 }
                 $("#results_balance_display").html(balance);
             }
-        },"json");
+        }, "json");
     });
 
     $("#match_analyze_btn").click(function () {
@@ -200,7 +241,6 @@ $(document).ready(function () {
         var url = $("#season_url_edit").val();
         url = $.trim(url);
         var state = $("#match_parse_action").prop("checked");
-        console.log(state);
         if (state) {
             state = "Refresh";
         } else {
@@ -252,9 +292,9 @@ $(document).ready(function () {
         json: ['balls_diff', 'first', 'last', 'change', 'vs_team_names', 'evt_name', 'url_key'],
         render: function (name, val, row) {
             var com_code = $("#ref_odds_companys").val();
-            if(name=="vs_team_names"){
-                var params = row["actual_result"]+","+row["url_key"];
-                return "<span onmouseover='history_match_tip_in(this,"+params+");' onmouseout='history_match_tip_out(this,"+params+");'>"+val+"</span>";
+            if (name == "vs_team_names") {
+                var params = row["actual_result"] + "," + row["url_key"];
+                return "<button class='btn btn-default btn-sm' onmouseover='history_match_tip_in(this," + params + ");' onmouseout='history_match_tip_out(this," + params + ");'>" + val + "</button>";
             }
             else if (name == "first") {
                 var odds = row["odds_" + com_code]

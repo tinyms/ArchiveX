@@ -142,7 +142,7 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<div class="modal fade" id="history_dlg">
+<div class="modal" id="history_dlg">
     <div class="modal-dialog" style="width: 960px;">
         <div class="modal-content">
             <div class="modal-header">
@@ -251,6 +251,41 @@
         </tr>
     </table>
     <table class="table table-hover table-condensed" style="width:570px;">
+        <tr>
+            <th scope="col">公司</th>
+            <th scope="col">初赔</th>
+            <th scope="col">变赔</th>
+            <th scope="col">差异</th>
+        </tr>
+        {{#odds}}
+        <tr>
+            <td>{{{com_name}}}</td>
+            <td>{{{start}}}</td>
+            <td>{{{end}}}</td>
+            <td>{{{change}}}</td>
+        </tr>
+        {{/odds}}
+    </table>
+</script>
+<script id="match_history_tpl" type="text/x-jsrender">
+    <table class="table table-hover table-condensed">
+        <tr>
+            <td>综合10场: {{mix_10}}</td>
+        </tr>
+        <tr>
+            <td>主客10场: {{last_10}}</td>
+        </tr>
+        <tr>
+            <td>主客06场: {{last_6}}</td>
+        </tr>
+        <tr>
+            <td>主客04场: {{last_4}}</td>
+        </tr>
+        <tr>
+            <td>球差: {{ball_diff}} 预测: {{detect_result}} 主客战绩: {{last_battle}}</td>
+        </tr>
+    </table>
+    <table class="table table-hover table-condensed" style="width:470px;">
         <tr>
             <th scope="col">公司</th>
             <th scope="col">初赔</th>
