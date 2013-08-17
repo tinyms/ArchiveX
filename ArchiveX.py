@@ -26,8 +26,8 @@ if db_config:
 web_configs = Plugin.get(IWebConfig)
 
 ws_settings = dict()
-ws_settings["static_path"] = os.path.join(os.path.dirname(__file__), "static")
-ws_settings["template_path"] = os.path.join(os.path.dirname(__file__), "templates")
+ws_settings["static_path"] = os.path.join(os.getcwd(), "static")
+ws_settings["template_path"] = os.path.join(os.getcwd(), "templates")
 ws_settings["debug"] = True
 
 ws_url_patterns = [
