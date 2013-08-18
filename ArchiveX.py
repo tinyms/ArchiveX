@@ -21,6 +21,9 @@ if db_config:
         Postgres.USER_NAME = db_config.user()
     if hasattr(db_config,"password"):
         Postgres.PASSWORD = db_config.password()
+    if hasattr(db_config,"table_name_prefix"):
+        SessionFactory.__table_name_prefix__ = db_config.table_name_prefix()
+        print(SessionFactory.__table_name_prefix__)
     if hasattr(db_config,"engine"):
         SessionFactory.__engine__ =db_config.engine()
         SessionFactory.create_tables()

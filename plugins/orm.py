@@ -3,7 +3,6 @@ __author__ = 'tinyms'
 from sqlalchemy import Column, Integer, String, DateTime, Text
 from tinyms.orm import Entity,Simplify,many_to_one,many_to_many,SessionFactory
 
-
 class User(Entity,Simplify):
     name = Column(String)
     fullname = Column(String)

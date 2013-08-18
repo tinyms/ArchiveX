@@ -10,6 +10,8 @@ class IDatabase():
         return "postgres"
     def password(self):
         return ""
+    def table_name_prefix(self):
+        return "ax"
     def engine(self):
         return None
 
