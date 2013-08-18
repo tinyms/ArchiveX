@@ -287,8 +287,29 @@ class Utils():
 
     @staticmethod
     def matrix_reverse(arr):
+        """
+        矩阵翻转
+        :param arr:
+        :return:
+        """
         return [[r[col] for r in arr] for col in range(len(arr[0]))]
 
+    @staticmethod
+    def combine_text_files(folder,target_file_name):
+        text = Utils.text_read(os.path.join(folder,"combine.list"))
+        cfg = json.loads(text)
+        for key in cfg.keys():
+            files = cfg[key]
+            if len(files)>0:
+                combine_file = os.path.join(folder,target_file_name+"."+key)
+                if os.path.exists(combine_file):
+                    os.remove(combine_file)
+                all = list()
+                for file in files:
+                    path = os.path.join(folder,file)
+                    all.append(Utils.text_read(path))
+                Utils.text_write(combine_file,all)
+        pass
 
 class Plugin():
     ObjectPool = dict()

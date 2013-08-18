@@ -6,7 +6,7 @@ import webbrowser
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 
-from tinyms.common import Plugin,Postgres
+from tinyms.common import Plugin,Utils,Postgres
 from tinyms.point import IWebConfig,IDatabase
 from tinyms.web import AjaxHandler, ApiHandler
 from tinyms.orm import SessionFactory
@@ -44,6 +44,8 @@ for web_config in web_configs:
     if hasattr(web_config, "url_mapping"):
         web_config.url_mapping(ws_url_patterns)
 
+#compress js and css file to one
+Utils.combine_text_files(os.path.join(os.getcwd(), "static/jslib/"),"tinyms.common")
 app = Application(ws_url_patterns, **ws_settings)
 
 if __name__ == "__main__":
