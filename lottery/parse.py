@@ -61,7 +61,7 @@ class MatchAnalyzeThread(threading.Thread):
                         else:
                             match_item["team_names"] = Utils.trim(link.get_text())
                     elif href.find("/fenxi/shuju") != -1:
-                        match_item["match_id"] = Utils.parse_int_array(href)[1]
+                        match_item["match_id"] = abs(Utils.parse_int_array(href)[1])
                         map_ = MatchAnalyzeThread.get_actual_result(link.get_text())
                         match_item["score"] = "[%s]" % map_["exp"]
                         match_item["actual_result"] = "%i" % map_["result"]
