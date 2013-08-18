@@ -10,6 +10,8 @@ class IDatabase():
         return "postgres"
     def password(self):
         return ""
+    def engine(self):
+        return None
 
 class IWebConfig():
     def settings(self, ws_setting):

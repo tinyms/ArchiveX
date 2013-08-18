@@ -9,12 +9,11 @@ from tornado.web import Application
 from tinyms.common import Plugin,Postgres
 from tinyms.point import IWebConfig,IDatabase
 from tinyms.web import AjaxHandler, ApiHandler
-
+from tinyms.orm import SessionFactory
 
 Plugin.load()
 
 db_config = Plugin.one(IDatabase)
-
 if db_config:
     if hasattr(db_config,"name"):
         Postgres.DATABASE_NAME = db_config.name()
@@ -22,6 +21,9 @@ if db_config:
         Postgres.USER_NAME = db_config.user()
     if hasattr(db_config,"password"):
         Postgres.PASSWORD = db_config.password()
+    if hasattr(db_config,"engine"):
+        SessionFactory.__engine__ =db_config.engine()
+        SessionFactory.create_tables()
 
 web_configs = Plugin.get(IWebConfig)
 

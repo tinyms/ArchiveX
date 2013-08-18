@@ -1,12 +1,26 @@
 __author__ = 'tinyms'
+
 import json
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship, backref, class_mapper
-from sqlalchemy import create_engine, Column, Integer, ForeignKey, Table
+from sqlalchemy import Column, Integer, ForeignKey, Table
 from sqlalchemy.orm import sessionmaker
 
 Entity = declarative_base()
 
+class SessionFactory():
+    __engine__ = None
+
+    @staticmethod
+    def new():
+        if SessionFactory.__engine__:
+            return sessionmaker(bind=SessionFactory.__engine__)()
+        return None
+
+    @staticmethod
+    def create_tables():
+        if SessionFactory.__engine__:
+            Entity.metadata.create_all(SessionFactory.__engine__)
 
 class Simplify():
     """
