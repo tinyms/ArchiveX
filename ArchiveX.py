@@ -25,6 +25,7 @@ if db_config:
         SessionFactory.__table_name_prefix__ = db_config.table_name_prefix()
         print(SessionFactory.__table_name_prefix__)
     if hasattr(db_config,"engine"):
+        from tinyms.entity import *
         SessionFactory.__engine__ =db_config.engine()
         SessionFactory.create_tables()
 
