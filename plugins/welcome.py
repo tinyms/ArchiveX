@@ -12,8 +12,11 @@ from lottery.parse import MatchAnalyzeThread
 class Welcome(IWebConfig):
     def url_mapping(self, url_patterns):
         url_patterns.append((r"/", WelcomeHandler))
-        pass
+        url_patterns.append((r"/ui/test", UITestHandler))
 
+class UITestHandler(IRequest):
+    def get(self):
+        self.render("ui.html")
 
 class WelcomeHandler(IRequest):
     def get(self):
