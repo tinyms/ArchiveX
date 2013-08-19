@@ -6,15 +6,14 @@ import webbrowser
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 
-from tinyms.common import Plugin,Postgres
+from tinyms.common import Plugin,Utils,Postgres
 from tinyms.point import IWebConfig,IDatabase
 from tinyms.web import AjaxHandler, ApiHandler
-
+from tinyms.orm import SessionFactory
 
 Plugin.load()
 
 db_config = Plugin.one(IDatabase)
-
 if db_config:
     if hasattr(db_config,"name"):
         Postgres.DATABASE_NAME = db_config.name()
@@ -22,6 +21,12 @@ if db_config:
         Postgres.USER_NAME = db_config.user()
     if hasattr(db_config,"password"):
         Postgres.PASSWORD = db_config.password()
+    if hasattr(db_config,"table_name_prefix"):
+        SessionFactory.__table_name_prefix__ = db_config.table_name_prefix()
+        print(SessionFactory.__table_name_prefix__)
+    if hasattr(db_config,"engine"):
+        SessionFactory.__engine__ =db_config.engine()
+        SessionFactory.create_tables()
 
 web_configs = Plugin.get(IWebConfig)
 
@@ -42,6 +47,8 @@ for web_config in web_configs:
     if hasattr(web_config, "url_mapping"):
         web_config.url_mapping(ws_url_patterns)
 
+#compress js and css file to one
+Utils.combine_text_files(os.path.join(os.getcwd(), "static/jslib/"),"tinyms.common")
 app = Application(ws_url_patterns, **ws_settings)
 
 if __name__ == "__main__":

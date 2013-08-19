@@ -67,7 +67,7 @@ class MatchAnalyzeThread(threading.Thread):
                         match_item["actual_result"] = "%i" % map_["result"]
                     elif href.find("detail.php?fid=") != -1 and link.string:
                         nums = Utils.parse_int_array(link.get_text())
-                        if len(nums)!=0:
+                        if len(nums) != 0:
                             alive_result.append(nums[0])
                 if len(alive_result) == 2:
                     r = alive_result[0] - alive_result[1]
@@ -77,14 +77,15 @@ class MatchAnalyzeThread(threading.Thread):
                         result = 1
                     else:
                         result = 0
-                    match_item["score"] = "[%i:%i]" % (alive_result[0],alive_result[1])
+                    match_item["score"] = "[%i:%i]" % (alive_result[0], alive_result[1])
                     match_item["actual_result"] = "%i" % result
                 if match_item.get("match_id"):
                     data.append(match_item)
         return data
+
     @staticmethod
     def get_actual_result(text):
-        map_ = {"exp":"","result":-1}
+        map_ = {"exp": "", "result": -1}
         int_list = []
         exp = re.compile("\\d+:\\d+")
         items = exp.findall(text)
@@ -103,6 +104,7 @@ class MatchAnalyzeThread(threading.Thread):
             elif result == 0:
                 map_["result"] = 1
         return map_
+
     @staticmethod
     def parse(matchs_data):
         MatchAnalyzeThread.batch_download_data_pages(matchs_data)
@@ -112,7 +114,7 @@ class MatchAnalyzeThread(threading.Thread):
             MatchAnalyzeThread.parse_baseface(row, Helper.cache_file_name(
                 "http://odds.500.com/fenxi/shuju-%i" % row["match_id"]))
             MatchAnalyzeThread.detect_result(row)
-            print("分析比赛",row["match_id"],"完成.")
+            print("分析比赛", row["match_id"], "完成.")
 
         #remove formule object.
         for row in matchs_data:
@@ -140,16 +142,17 @@ class MatchAnalyzeThread(threading.Thread):
             file_name = "cache_web_pages/%s.json" % matchs_data[0]["season_no"]
             Utils.text_write(file_name, [json.dumps(matchs_data)])
 
-        #赛果预测
+            #赛果预测
+
     @staticmethod
     def detect_result(match):
-        scores = []
-        #scores += match["formula_total"].to_results()
-        scores += match["formula_last10"].to_results()
-        scores += match["formula_last6"].to_results()
-        scores += match["formula_last4"].to_results()
-        avg_balls = (match["formula_last10"].avg_balls + match["formula_last6"].avg_balls + match[
-            "formula_last4"].avg_balls) / 3
+        match["formula_total"].to_results()
+        match["formula_last10"].to_results()
+        match["formula_last6"].to_results()
+        match["formula_last4"].to_results()
+        avg_balls = (match["formula_total"].avg_balls + match["formula_last10"].avg_balls + match[
+            "formula_last6"].avg_balls + match[
+                         "formula_last4"].avg_balls) / 4
         num = round(avg_balls, 2)
         #scores += match["formula_last_mid"].to_results()
         #r = Result(scores,match["odds"])
@@ -214,14 +217,14 @@ class MatchAnalyzeThread(threading.Thread):
         #视图数据
         row["last_4_status_text_style"] = "(%s)/(%s)" % ("".join(main_data["status"]), "".join(client_data["status"]))
         row["last_10_text_style"] = "(%.1f,%.1f)/(%.1f,%.1f)" % (
-        main_data["last_10"]["win"], main_data["last_10"]["percentage"], client_data["last_10"]["win"],
-        client_data["last_10"]["percentage"])
+            main_data["last_10"]["win"], main_data["last_10"]["percentage"], client_data["last_10"]["win"],
+            client_data["last_10"]["percentage"])
         row["last_6_text_style"] = "(%.1f,%.1f)/(%.1f,%.1f)" % (
-        main_data["last_6"]["win"], main_data["last_6"]["percentage"], client_data["last_6"]["win"],
-        client_data["last_6"]["percentage"])
+            main_data["last_6"]["win"], main_data["last_6"]["percentage"], client_data["last_6"]["win"],
+            client_data["last_6"]["percentage"])
         row["last_4_text_style"] = "(%.1f,%.1f)/(%.1f,%.1f)" % (
-        main_data["last_4"]["win"], main_data["last_4"]["percentage"], client_data["last_4"]["win"],
-        client_data["last_4"]["percentage"])
+            main_data["last_4"]["win"], main_data["last_4"]["percentage"], client_data["last_4"]["win"],
+            client_data["last_4"]["percentage"])
 
         #区段比较数据
         for last_n in [10, 6, 4]:
@@ -233,11 +236,11 @@ class MatchAnalyzeThread(threading.Thread):
             row[formula_key].client_defence = client_data[data_key]["percentage"]
             pass
             #掐头去尾中间比较数据
-        row["formula_last_mid"].main_force = main_data["last_mid"]["win"]
-        row["formula_last_mid"].main_defence = main_data["last_mid"]["percentage"]
-        row["formula_last_mid"].client_force = client_data["last_mid"]["win"]
-        row["formula_last_mid"].client_defence = client_data["last_mid"]["percentage"]
-        ########################结束##########################################
+            # row["formula_last_mid"].main_force = main_data["last_mid"]["win"]
+            # row["formula_last_mid"].main_defence = main_data["last_mid"]["percentage"]
+            # row["formula_last_mid"].client_force = client_data["last_mid"]["win"]
+            # row["formula_last_mid"].client_defence = client_data["last_mid"]["percentage"]
+            ########################结束##########################################
 
     @staticmethod
     def parse_balls_io_total_10(parser):
@@ -264,6 +267,7 @@ class MatchAnalyzeThread(threading.Thread):
         return []
 
         #分段计算平均进球数
+
     @staticmethod
     def count_team_avgballs_section(balls_arr, win_avg, lost_avg):
         avg = dict()
@@ -374,6 +378,7 @@ class MatchAnalyzeThread(threading.Thread):
         return r
 
         #解析根据Limit数限定的历史战绩比分集合(N:M,..)
+
     @staticmethod
     def parse_history_battle_links(links, limit=10):
         items = []
