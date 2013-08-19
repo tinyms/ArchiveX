@@ -11,6 +11,7 @@ class Archives(Entity, Simplify):
     birthday = Column(Date())
     email = Column(String(60))
     mobile_phone = Column(String(20))
+    #accounts
 
 
 @many_to_one("Archives")
@@ -20,12 +21,16 @@ class Account(Entity, Simplify):
     enabled = Column(Boolean(), nullable=False)
     last_logon_time = Column(DateTime())
     create_time = Column(DateTime(), nullable=False)
+    #archives
+    #roles
 
 
 @many_to_many("Account")
 class Role(Entity, Simplify):
     name = Column(String(20), unique=True, nullable=False)
     description = Column(Text)
+    #securitypoints
+    #accounts
 
 
 @many_to_many("Role")
@@ -34,11 +39,14 @@ class SecurityPoint(Entity, Simplify):
     description = Column(Text)
     module_name = Column(String(60), nullable=False)
     pkg_name = Column(String(60), nullable=False)
+    #roles
 
 
 class Term(Entity, Simplify):
     name = Column(String(20), unique=True, nullable=False)
     slug = Column(String(20), nullable=False)
+    #termtaxonomys
+
 
 @many_to_one("Term")
 @many_to_one("TermTaxonomy")
@@ -47,3 +55,5 @@ class TermTaxonomy(Entity, Simplify):
     path = Column(Text, nullable=False)
     object_count = Column(Integer)
     description = Column(Text)
+    #parent
+    #term
