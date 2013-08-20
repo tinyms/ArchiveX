@@ -8,7 +8,7 @@ from tornado.web import Application
 
 from tinyms.common import Plugin,Utils,Postgres
 from tinyms.point import IWebConfig,IDatabase
-from tinyms.web import AjaxHandler, ApiHandler
+from tinyms.web import AjaxHandler, ApiHandler, DataTableHandler
 from tinyms.widgets import DataTableModule
 from tinyms.orm import SessionFactory
 
@@ -40,7 +40,8 @@ ws_settings["ui_modules"] = {"DataTable":DataTableModule}
 ws_url_patterns = [
     (r"/ajax/(.*).js", AjaxHandler),
     #/api/module.class/method
-    (r"/api/(.*)/(.*)", ApiHandler)
+    (r"/api/(.*)/(.*)", ApiHandler),
+    (r"/datatable/(.*)", DataTableHandler)
 ]
 
 for web_config in web_configs:

@@ -2,8 +2,12 @@
 <html>
 <head>
     <title>UI Test</title>
+    <script type="text/javascript" src="/static/jslib/tinyms.common.js"></script>
 </head>
 <body>
-{% module DataTable("tinyms.entity.Account") %}
+{%
+module DataTable(entity="tinyms.entity.Role",id="Roles",
+titles=['A','B','C','D'],cols=['a','b','c','d'])
+%}
 </body>
 </html>

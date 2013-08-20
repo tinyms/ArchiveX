@@ -2,12 +2,21 @@ __author__ = 'tinyms'
 
 import json
 from tornado.web import RequestHandler
+from tornado.util import import_object
 from tinyms.common import Plugin,JsonEncoder
 from tinyms.point import IAjax, IApi
-
+from tinyms.orm import SessionFactory
+from tinyms.widgets import DataTableModule
 
 class IRequest(RequestHandler): pass
 
+class DataTableHandler(IRequest):
+    def post(self, id):
+        name = DataTableModule.__entity_mapping__.get(id)
+        entity = import_object(name)
+        cnn = SessionFactory.new()
+        print(cnn.query(entity).all())
+        pass
 
 class ApiHandler(IRequest):
     def get(self, class_full_name, method_name):
