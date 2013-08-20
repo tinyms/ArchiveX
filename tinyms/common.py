@@ -8,7 +8,7 @@ import hashlib
 import json
 import urllib.request
 import urllib.parse
-import decimal
+import decimal,datetime
 from imp import find_module, load_module, acquire_lock, release_lock
 
 import psycopg2
@@ -164,6 +164,8 @@ class JsonEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, decimal.Decimal):
             return float(o)
+        elif isinstance(o, datetime.date) or isinstance(o, datetime.datetime):
+            return o.isoformat()
         super(JsonEncoder, self).default(o)
 
 class Utils():

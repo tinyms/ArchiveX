@@ -1,6 +1,7 @@
 __author__ = 'tinyms'
 
 import json
+import logging as log
 from tornado.web import RequestHandler
 from tornado.util import import_object
 from tinyms.common import Plugin,JsonEncoder
@@ -15,8 +16,15 @@ class DataTableHandler(IRequest):
         name = DataTableModule.__entity_mapping__.get(id)
         entity = import_object(name)
         cnn = SessionFactory.new()
-        print(cnn.query(entity).all())
-        pass
+        ds = cnn.query(entity).all()
+        self.set_header("Content-Type", "text/json;charset=utf-8")
+        results = dict()
+        results["sEcho"] = self.get_argument("sEcho")
+        results["iTotalRecords"] = len(ds)
+        results["iTotalDisplayRecords"] = len(ds)
+        results["aaData"] = [item.dict() for item in ds]
+        log.info(results)
+        self.write(json.dumps(results,cls=JsonEncoder))
 
 class ApiHandler(IRequest):
     def get(self, class_full_name, method_name):

@@ -5,9 +5,10 @@
     <script type="text/javascript" src="/static/jslib/tinyms.common.js"></script>
 </head>
 <body>
+<input type="button" value="Break" onclick="var t = $('#ArchivesDataTable').dataTable();t.fnClearTable();">
 {%
-module DataTable(entity="tinyms.entity.Role",id="Roles",
-titles=['A','B','C','D'],cols=['a','b','c','d'])
+module DataTable(entity="tinyms.entity.Archives",id="ArchivesDataTable",
+titles=['姓名','性别','生日','邮箱','电话'],cols=['name','sex','birthday','email','mobile_phone'])
 %}
 </body>
 </html>
