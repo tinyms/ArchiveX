@@ -313,7 +313,7 @@ class MatchAnalyzeThread(threading.Thread):
             is_main_team = False
             #主/客场最近10场对战数据
         total_10_balls_io = MatchAnalyzeThread.parse_team_battle_balls_io_nums(div_id, parser, is_main_team)
-        r["status"] = "".join(total_10_balls_io["310"][0:6])
+        r["status"] = "".join(total_10_balls_io["310"])
         #主/客平均进球数
         win_avg = Helper.zero_div(sum([balls["win"] for balls in total_10_balls_io["scores"]]), 10)
         #主/客平均丢球数
