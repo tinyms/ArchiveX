@@ -7,7 +7,7 @@
 <body>
 <input type="button" value="Break" onclick="var t = $('#ArchivesDataTable').dataTable();t.fnClearTable();">
 {%
-module DataTable(entity="tinyms.entity.Archives",id="ArchivesDataTable",
+module DataTable(id="ArchivesDataTable",entity="tinyms.entity.Archives",
 titles=['姓名','性别','生日','邮箱','电话'],cols=['name','sex','birthday','email','mobile_phone'])
 %}
 </body>

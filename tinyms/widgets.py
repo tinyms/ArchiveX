@@ -4,46 +4,68 @@ import json
 from tornado.web import UIModule
 from tinyms.common import Utils
 
+
 class DataTableModule(UIModule):
     __entity_mapping__ = dict()
-    def render(self,**prop):
+
+    def render(self, **prop):
         self.dom_id = prop.get("id")
         self.cols = prop.get("cols")
         self.titles = prop.get("titles")
-        self.entity_full_name =  prop.get("entity")
+        self.entity_full_name = prop.get("entity")
+        self.form_id = prop.get("form_id")
+        if not self.form_id:
+            self.form_id = ""
         if not self.entity_full_name:
             return "Require entity full name."
-        self.params = prop.get("params")
-        DataTableModule.__entity_mapping__[Utils.md5(self.entity_full_name)] = self.entity_full_name
-        if not self.params:
-            self.params = "DataTable_FNServerParams"
-        html = """
-         <table id="{0}"><thead><tr>{1}</tr></thead></table>
-        """
-        html_titles = ""
-        for title in self.titles:
-            html_titles += "<th>"+title+"</th>"
-        #print(import_object(prop["entity_name"]))
-        return html.format(self.dom_id,html_titles)
-    def embedded_javascript(self):
-        js = """
-            function DataTable_FNServerParams(aoData){}
-            $(document).ready(function(){
-                var %s = $("#%s").dataTable({"bServerSide":true,
-                "bProcessing":true,
-                "asSorting":true,
-                "sAjaxSource":"/datatable/%s",
-                "sServerMethod":"POST",
-                "fnServerParams":function(aoData){try{%s(aoData);}catch(e){}},
-                "aoColumns":%s});
-            });
-        """
-        html_col = list()
-        for col in self.cols:
-            html_col.append({"mData":col})
 
-        return js % (self.dom_id,self.dom_id,Utils.md5(self.entity_full_name),self.params,json.dumps(html_col))
+        DataTableModule.__entity_mapping__[Utils.md5(self.entity_full_name)] = self.entity_full_name
+
+        html = """
+         <table id="{0}"><tfoot><tr>{1}</tr></tfoot></table>
+        """
+        tag = ""
+        for title in self.titles:
+            tag += "<th>"+title+"</th>"
+        tag += "<th>#</th>"
+        return html.format(self.dom_id,tag)
+    def html_body(self):
+        html = """
+         <div id="{0}_EditFormDialog"></div>
+        """
+        return html.format(self.dom_id)
+    def embedded_javascript(self):
+        params_ = dict()
+        params_["id"] = self.dom_id
+        params_["edit_form_id"] = self.form_id
+        params_["entity_name"] = Utils.md5(self.entity_full_name)
+
+        html_col = list()
+        filter_configs = list()
+
+        index = 0
+        for col in self.cols:
+            filter_configs.append({"type":"text"})
+            html_col.append({"mData": col,"sTitle":self.titles[index],"sDefaultContent":""})
+            index += 1
+
+        params_["col_defs"] = json.dumps(html_col)
+        params_["filter_configs"] = json.dumps(filter_configs)
+        return self.render_string("widgets/datatable.tpl", opt=params_)
+
     def javascript_files(self):
-        return "/static/jslib/datatable/js/jquery.dataTables.min.js"
+        items = list();
+        items.append("/static/jslib/jquery-ui/js/jquery-ui-1.10.3.custom.min.js")
+        items.append("/static/jslib/datatable/js/jquery.dataTables.min.js")
+        items.append("/static/jslib/datatable/js/jquery.dataTables.columnFilter.js")
+        items.append("/static/jslib/datatable/extras/tabletools/js/ZeroClipboard.js")
+        items.append("/static/jslib/datatable/extras/tabletools/js/TableTools.min.js")
+        items.append("/static/jslib/datatable/extras/fixedheader/FixedHeader.min.js")
+        return items
+
     def css_files(self):
-        return "/static/jslib/datatable/css/jquery.dataTables.css"
+        items = list();
+        items.append("/static/jslib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.min.css")
+        items.append("/static/jslib/datatable/css/jquery.dataTables.css")
+        items.append("/static/jslib/datatable/extras/tabletools/css/TableTools.css")
+        return items

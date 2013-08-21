@@ -7,7 +7,7 @@ from tinyms.point import IDatabase
 
 class CustomDatabase(IDatabase):
     def name(self):
-        return "postgres"
+        return "ArchiveX"
     def user(self):
         return "postgres"
     def password(self):
@@ -15,4 +15,4 @@ class CustomDatabase(IDatabase):
     def table_name_prefix(self):
         return "ax"
     def engine(self):
-        return create_engine("postgresql+psycopg2://postgres:1@localhost/postgres", echo=True)
+        return create_engine("postgresql+psycopg2://postgres:1@localhost/ArchiveX", echo=True)

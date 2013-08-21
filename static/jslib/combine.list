@@ -1,4 +1,4 @@
 {
-    "js":["json2.js","mustache.js","jquery-1.10.2.min.js","jquery.number.min.js"],
+    "js":["json2.js","mustache.js","jquery-1.8.2.min.js","jquery.number.min.js"],
     "css":[]
 }
