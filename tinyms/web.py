@@ -4,7 +4,8 @@ import json
 import logging as log
 from tornado.web import RequestHandler
 from tornado.util import import_object
-from tinyms.common import Plugin,JsonEncoder
+from sqlalchemy import func
+from tinyms.common import Plugin,JsonEncoder,Utils
 from tinyms.point import IAjax, IApi
 from tinyms.orm import SessionFactory
 from tinyms.widgets import DataTableModule
@@ -15,13 +16,20 @@ class DataTableHandler(IRequest):
     def post(self, id):
         name = DataTableModule.__entity_mapping__.get(id)
         entity = import_object(name)
-        cnn = SessionFactory.new()
-        ds = cnn.query(entity).all()
+
         self.set_header("Content-Type", "text/json;charset=utf-8")
+        display_start = Utils.parse_int(self.get_argument("iDisplayStart"))
+        display_length = Utils.parse_int(self.get_argument("iDisplayLength"))
+        cols_num = self.get_argument("iColumns")
+        gloabal_search_fieldname = self.get_argument("sSearch")
+        print(display_start,display_length,cols_num,gloabal_search_fieldname)
+        cnn = SessionFactory.new()
+        nums = cnn.query(func.count(entity.id)).one()
+        ds = cnn.query(entity).offset(display_start).limit(display_length)
         results = dict()
         results["sEcho"] = self.get_argument("sEcho")
-        results["iTotalRecords"] = len(ds)
-        results["iTotalDisplayRecords"] = len(ds)
+        results["iTotalRecords"] = nums[0]
+        results["iTotalDisplayRecords"] = nums[0]
         results["aaData"] = [item.dict() for item in ds]
         log.info(results)
         self.write(json.dumps(results,cls=JsonEncoder))
