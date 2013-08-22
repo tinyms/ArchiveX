@@ -16,7 +16,7 @@ from lottery.formula import Formula
 
 class MatchAnalyzeThread(threading.Thread):
     IS_RUNNING = False
-
+    IS_HISTORY = False
     def __init__(self):
         threading.Thread.__init__(self)
         self.urls = list()
@@ -143,6 +143,10 @@ class MatchAnalyzeThread(threading.Thread):
             Utils.text_write(file_name, [json.dumps(matchs_data)])
 
             #赛果预测
+    #history data save
+    @staticmethod
+    def save_history_data(dataset):
+        pass
 
     @staticmethod
     def detect_result(match):
@@ -191,7 +195,7 @@ class MatchAnalyzeThread(threading.Thread):
         if not parser:
             return
         row["match_date"] = MatchAnalyzeThread.parse_match_date(parser)
-
+        row["mix_310"] = MatchAnalyzeThread.parse_mix_battles(parser)
         ########################进球数比较引擎数据构造块#######################
 
         #球队主客混合平均进球数
@@ -349,6 +353,22 @@ class MatchAnalyzeThread(threading.Thread):
         elif src.find("l_blue.png") != -1:
             return "0"
         return ""
+
+    @staticmethod
+    def parse_mix_battles(base_face_parser):
+        main = list()
+        client = list()
+        main_panel = base_face_parser.find("div", id="team_zhanji_1")
+        if main_panel:
+            imgs1 = main_panel.find_all("img")
+            for img in imgs1:
+                main.append(MatchAnalyzeThread.get_status_num_style(img["src"]))
+        client_panel = base_face_parser.find("div", id="team_zhanji_0")
+        if client_panel:
+            imgs2 = client_panel.find_all("img")
+            for img in imgs2:
+                client.append(MatchAnalyzeThread.get_status_num_style(img["src"]))
+        return "(%s)/(%s)" % ("".join(main),"".join(client))
 
     @staticmethod
     def parse_team_battle_balls_io_nums(div_id, parser, is_main=True):

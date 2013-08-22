@@ -15,4 +15,5 @@ class CustomDatabase(IDatabase):
     def table_name_prefix(self):
         return "ax"
     def engine(self):
-        return create_engine("postgresql+psycopg2://postgres:1@localhost/ArchiveX", echo=True)
+        return create_engine("sqlite+pysqlite:///matchs", echo=True)
+        #return create_engine("postgresql+psycopg2://postgres:1@localhost/ArchiveX", echo=True)
