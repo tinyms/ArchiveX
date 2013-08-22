@@ -10,8 +10,22 @@ from tinyms.point import IAjax, IApi
 from tinyms.orm import SessionFactory
 from tinyms.widgets import DataTableModule
 
-class IRequest(RequestHandler): pass
 
+
+class IRequest(RequestHandler):
+    __url_patterns__ = list()
+
+def route(pattern):
+    """
+    url mapping.
+    """
+    def ref_pattern(cls):
+        IRequest.__url_patterns__.append((pattern,cls))
+        return cls
+
+    return ref_pattern
+
+@route(r"/datatable/(.*)")
 class DataTableHandler(IRequest):
     def post(self, id):
         name = DataTableModule.__entity_mapping__.get(id)
@@ -34,6 +48,7 @@ class DataTableHandler(IRequest):
         log.info(results)
         self.write(json.dumps(results,cls=JsonEncoder))
 
+@route(r"/api/(.*)/(.*)")
 class ApiHandler(IRequest):
     def get(self, class_full_name, method_name):
         self.req(class_full_name, method_name)
@@ -67,7 +82,7 @@ class ApiHandler(IRequest):
                         else:
                             self.write("The method `%s` not found." % method_name)
 
-
+@route(r"/ajax/(.*).js")
 class AjaxHandler(IRequest):
     def get(self, class_full_name):
         self.set_header("Content-Type", "text/javascript;charset=utf-8")

@@ -1,23 +1,20 @@
 __author__ = 'tinyms'
-__export__ = ["Welcome", "MatchAnalyze","MatchHistoryQuery","SingleOrder"]
+__export__ = ["MatchAnalyze","MatchHistoryQuery","SingleOrder"]
 
 import os, json
-from tinyms.web import IRequest
+from tinyms.web import IRequest,route
 from tinyms.common import Utils
-from tinyms.point import IWebConfig, IApi, IAjax
+from tinyms.point import IApi, IAjax
 from tinyms.common import Postgres
 from lottery.parse import MatchAnalyzeThread
 
 
-class Welcome(IWebConfig):
-    def url_mapping(self, url_patterns):
-        url_patterns.append((r"/", WelcomeHandler))
-        url_patterns.append((r"/ui/test", UITestHandler))
-
+@route(r"/ui/test")
 class UITestHandler(IRequest):
     def get(self):
         self.render("ui.html")
 
+@route(r"/")
 class WelcomeHandler(IRequest):
     def get(self):
         self.redirect("/static/index.html")

@@ -332,11 +332,12 @@ class Plugin():
         :return: a object
         """
         if not class_full_name:
-            return Plugin.ObjectPool[type_]
+            return Plugin.ObjectPool.get(type_)
         else:
-            arr = Plugin.ObjectPool[type_]
+            arr = Plugin.ObjectPool.get(type_)
             for t in arr:
-                if t.__str__().find(class_full_name) != -1:
+                name = "%s.%s" % (t.__class__.__module__,t.__class__.__qualname__)
+                if name.lower() == class_full_name.lower():
                     return t
 
     @staticmethod

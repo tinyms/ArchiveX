@@ -24,15 +24,6 @@ class IWebConfig():
         """
         return
 
-    def url_mapping(self, url_patterns):
-        """
-        Tornado url mapping
-        Append (r'/some/any',RequestHandlerClass)
-        :param url_patterns: list()
-        :return:
-        """
-        return
-
 
 class IAjax():
     def request(self, tornado_httpreq):
