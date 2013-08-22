@@ -9,44 +9,51 @@ class DataTableModule(UIModule):
     __entity_mapping__ = dict()
 
     def render(self, **prop):
-        self.dom_id = prop.get("id")
-        self.cols = prop.get("cols")
-        self.titles = prop.get("titles")
-        self.entity_full_name = prop.get("entity")
-        self.form_id = prop.get("form_id")
+        self.dom_id = prop.get("id")#client dom id
+        self.cols = prop.get("cols")#entity field list
+        self.titles = prop.get("titles")#title list
+        self.entity_full_name = prop.get("entity")#entity name
+        self.form_id = prop.get("form_id")#Edit form
+        self.search_field = prop.get("search_field")#default search field name
         if not self.form_id:
             self.form_id = ""
         if not self.entity_full_name:
             return "Require entity full name."
+        self.datatable_key = Utils.md5(self.entity_full_name)
 
-        DataTableModule.__entity_mapping__[Utils.md5(self.entity_full_name)] = self.entity_full_name
+        sub = dict()
+        sub["name"] = self.entity_full_name
+        sub["cols"] = self.cols
+        DataTableModule.__entity_mapping__[self.datatable_key] = sub
 
         html = """
          <table id="{0}"><tfoot><tr>{1}</tr></tfoot></table>
         """
         tag = ""
         for title in self.titles:
-            tag += "<th>"+title+"</th>"
+            tag += "<th>" + title + "</th>"
         tag += "<th>#</th>"
-        return html.format(self.dom_id,tag)
+        return html.format(self.dom_id, tag)
+
     def html_body(self):
         html = """
          <div id="{0}_EditFormDialog"></div>
         """
         return html.format(self.dom_id)
+
     def embedded_javascript(self):
         params_ = dict()
         params_["id"] = self.dom_id
         params_["edit_form_id"] = self.form_id
-        params_["entity_name"] = Utils.md5(self.entity_full_name)
+        params_["entity_name"] = self.datatable_key
 
         html_col = list()
         filter_configs = list()
 
         index = 0
         for col in self.cols:
-            filter_configs.append({"type":"text"})
-            html_col.append({"mData": col,"sTitle":self.titles[index],"sDefaultContent":""})
+            filter_configs.append({"type": "text"})
+            html_col.append({"mData": col, "sTitle": self.titles[index], "sDefaultContent": ""})
             index += 1
 
         params_["col_defs"] = json.dumps(html_col)

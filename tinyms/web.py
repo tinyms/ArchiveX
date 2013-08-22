@@ -28,15 +28,18 @@ def route(pattern):
 @route(r"/datatable/(.*)")
 class DataTableHandler(IRequest):
     def post(self, id):
-        name = DataTableModule.__entity_mapping__.get(id)
-        entity = import_object(name)
-
+        meta = DataTableModule.__entity_mapping__.get(id)
+        if not meta:
+            self.set_status(403,"Error!")
+        print(self.request.arguments)
+        entity = import_object(meta["name"])
+        self.datatable_display_cols = meta["cols"]
         self.set_header("Content-Type", "text/json;charset=utf-8")
         display_start = Utils.parse_int(self.get_argument("iDisplayStart"))
         display_length = Utils.parse_int(self.get_argument("iDisplayLength"))
         cols_num = self.get_argument("iColumns")
-        gloabal_search_fieldname = self.get_argument("sSearch")
-        print(display_start,display_length,cols_num,gloabal_search_fieldname)
+        gloabal_search_value = self.get_argument("sSearch")
+        query_params = self.parse_search_params("sSearch_")
         cnn = SessionFactory.new()
         nums = cnn.query(func.count(entity.id)).one()
         ds = cnn.query(entity).offset(display_start).limit(display_length)
@@ -47,6 +50,18 @@ class DataTableHandler(IRequest):
         results["aaData"] = [item.dict() for item in ds]
         log.info(results)
         self.write(json.dumps(results,cls=JsonEncoder))
+
+    def parse_search_params(self,prefix):
+        params = dict()
+        args = self.request.arguments
+        size = len(self.datatable_display_cols)
+        for key in args:
+            if key.find(prefix)!=-1:
+                index = Utils.parse_int(key)
+                if size <= index:
+                    continue
+                params[self.datatable_display_cols[index]] = args[key]
+        return params
 
 @route(r"/api/(.*)/(.*)")
 class ApiHandler(IRequest):
