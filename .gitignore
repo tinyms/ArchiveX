@@ -1,6 +1,7 @@
 .idea
 cache_web_pages
 cache
+matchs
 *.py[cod]
 
 # C extensions
