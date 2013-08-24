@@ -4,8 +4,21 @@ import json
 from tornado.web import UIModule
 from tinyms.common import Utils
 
+class IWidget(UIModule):
+    __ui_mapping__ = dict()
 
-class DataTableModule(UIModule):
+def ui(name):
+    """
+    url mapping.
+    """
+    def ref_pattern(cls):
+        IWidget.__ui_mapping__[name] = cls
+        return cls
+
+    return ref_pattern
+
+@ui("DataTable")
+class DataTableModule(IWidget):
     __entity_mapping__ = dict()
 
     def render(self, **prop):

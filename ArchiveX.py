@@ -10,7 +10,7 @@ from tornado.web import Application
 from tinyms.common import Plugin, Utils, Postgres
 from tinyms.point import IWebConfig, IDatabase
 from tinyms.web import IRequest
-from tinyms.widgets import DataTableModule
+from tinyms.widgets import IWidget
 from tinyms.orm import SessionFactory
 
 Plugin.load()
@@ -23,12 +23,8 @@ if db_config:
         Postgres.USER_NAME = db_config.user()
     if hasattr(db_config, "password"):
         Postgres.PASSWORD = db_config.password()
-    if hasattr(db_config, "table_name_prefix"):
-        SessionFactory.__table_name_prefix__ = db_config.table_name_prefix()
-    if hasattr(db_config, "engine"):
-        from tinyms.entity import *
-
-        SessionFactory.__engine__ = db_config.engine()
+    if hasattr(db_config, "orm_engine"):
+        SessionFactory.__engine__ = db_config.orm_engine()
         SessionFactory.create_tables()
 
 web_configs = Plugin.get(IWebConfig)
@@ -37,7 +33,10 @@ ws_settings = dict()
 ws_settings["static_path"] = os.path.join(os.getcwd(), "static")
 ws_settings["template_path"] = os.path.join(os.getcwd(), "templates")
 ws_settings["debug"] = True
-ws_settings["ui_modules"] = {"DataTable": DataTableModule}
+
+ws_settings["ui_modules"] = dict()
+for key in IWidget.__ui_mapping__:
+    ws_settings["ui_modules"][key] = IWidget.__ui_mapping__[key]
 
 if web_configs:
     for web_config in web_configs:

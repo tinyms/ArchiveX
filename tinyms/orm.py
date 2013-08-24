@@ -10,7 +10,12 @@ Entity = declarative_base()
 
 class SessionFactory():
     __engine__ = None
-    __table_name_prefix__ = ""
+    __table_name_prefix__ = "archivex"
+
+    @staticmethod
+    def table_name_prefix(name):
+        SessionFactory.__table_name_prefix__ = name
+
     @staticmethod
     def new():
         if SessionFactory.__engine__:
@@ -101,7 +106,7 @@ def many_to_many(foreign_entity_name):
     def ref_table(cls):
         target_name = foreign_entity_name.lower()
         self_name = cls.__name__.lower()
-        association_table = Table('{0}_association_{1}_{2}'.format(SessionFactory.__table_name_prefix__,self_name, target_name), Entity.metadata,
+        association_table = Table('{0}_{1}_{2}_relationships'.format(SessionFactory.__table_name_prefix__,self_name, target_name), Entity.metadata,
                                   Column('{0}_id'.format(target_name), Integer,
                                          ForeignKey('{0}_{1}.id'.format(SessionFactory.__table_name_prefix__,target_name),ondelete="CASCADE")),
                                   Column('{0}_id'.format(self_name), Integer,

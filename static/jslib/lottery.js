@@ -192,6 +192,9 @@ function history_match_tip_out(self, result, key) {
     $(self).popover('hide');
 }
 function color_battle(result){
+    if(result==undefined){
+        return "";
+    }
     var html = result.replace(new RegExp('3','gm'), "<span style='color: red;'>3</span>")
     html = html.replace(new RegExp('1','gm'), "<span style='color: green'>1</span>")
     html = html.replace(new RegExp('0','gm'), "<span style='color: blue;'>0</span>")
