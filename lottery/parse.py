@@ -368,7 +368,7 @@ class MatchAnalyzeThread(threading.Thread):
             imgs2 = client_panel.find_all("img")
             for img in imgs2:
                 client.append(MatchAnalyzeThread.get_status_num_style(img["src"]))
-        return "(%s)/(%s)" % ("".join(main),"".join(client))
+        return "(%s)/(%s)" % ("".join(main[0:6]),"".join(client[0:6]))
 
     @staticmethod
     def parse_team_battle_balls_io_nums(div_id, parser, is_main=True):
@@ -377,7 +377,7 @@ class MatchAnalyzeThread(threading.Thread):
         scores = list()
         history_battle_data_panel = parser.find("div", id=div_id)
         if history_battle_data_panel:
-            imgs = history_battle_data_panel.find_all("img")
+            imgs = history_battle_data_panel.find_all("img")[0:6]
             for img in imgs:
                 r["310"].append(MatchAnalyzeThread.get_status_num_style(img["src"]))
             aList = history_battle_data_panel.find_all("a")

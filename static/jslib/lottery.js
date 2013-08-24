@@ -70,6 +70,7 @@ function show_baseface(self, match_id) {
         }
     }
     if (current != undefined) {
+        console.log(current);
         set_team_names_title(current.team_names);
         var detail = {}
         detail.mix_10 = current.last_mix_total_10;
@@ -77,7 +78,8 @@ function show_baseface(self, match_id) {
         detail.last_6 = current.last_6_text_style;
         detail.last_4 = current.last_4_text_style;
         detail.ball_diff = current.ball_diff;
-        detail.last_battle = current.last_4_status_text_style;
+        detail.last_battle = color_battle(current.last_4_status_text_style);
+        detail.last_mix_battle = color_battle(current.mix_310);
         detail.detect_result = current.detect_result;
 
         var odds = [];
@@ -189,10 +191,10 @@ function history_match_tip_in(self, result, key) {
 function history_match_tip_out(self, result, key) {
     $(self).popover('hide');
 }
-function replace_310_with_color(result) {
-    var html = result.replace('3', "<button type='button' class='btn btn-primary'>3</button>")
-    html = html.replace('1', "<button type='button' class='btn btn-success'>1</button>")
-    html = html.replace('0', "<button type='button' class='btn btn-danger'>0</button>")
+function color_battle(result){
+    var html = result.replace(new RegExp('3','gm'), "<span style='color: red;'>3</span>")
+    html = html.replace(new RegExp('1','gm'), "<span style='color: green'>1</span>")
+    html = html.replace(new RegExp('0','gm'), "<span style='color: blue;'>0</span>")
     return html;
 }
 $(document).ready(function () {
