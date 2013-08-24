@@ -275,11 +275,20 @@ $(document).ready(function () {
         json: ['season_name', 'ball_diff', 'detect_result', 'actual_result',
             'Odds_WL', 'team_names', 'score', 'match_date', 'match_id'],
         render: function (name, value, row) {
-            if (name == "actual_result" && value != -1) {
-                return value;
-            } else if (name == "Odds_WL") {
+            if(name=="detect_result"){
+                return color_battle(value);
+            }
+            if (name == "actual_result") {
+                if(value!=-1){
+                    return color_battle(new String(value));
+                }else{
+                    return "";
+                }
+            }
+            if (name == "Odds_WL") {
                 return $.number(value[0], 2) + " " + $.number(value[1], 2) + " " + $.number(value[2], 2);
-            } else if (name == "match_id") {
+            }
+            if (name == "match_id") {
                 var html = "";
                 html += "<button type='button' class='btn btn-primary btn-xs' onclick='show_baseface(this," + value + ");'>析</button>";
                 return html;
