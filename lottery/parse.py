@@ -163,13 +163,13 @@ class MatchAnalyzeThread(threading.Thread):
         #match["result"]=r.detect(match["formula_last4"])
         diff = abs(num)
         match["ball_diff"] = num
-        if diff >= 0 and diff <= 0.25:
-            match["detect_result"] = "1"
-        elif diff > 0.25 and diff < 0.75:
+        # if diff >= 0 and diff <= 0.25:
+        #     match["detect_result"] = "1"
+        if 0 < diff < 0.75:
             if num > 0:
                 match["detect_result"] = "31"
             else:
-                match["detect_result"] = "10"
+                match["detect_result"] = "01"
         elif diff >= 0.75:
             if num > 0:
                 match["detect_result"] = "3"
