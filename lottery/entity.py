@@ -1,22 +1,7 @@
 __author__ = 'tinyms'
-__export__ = ["CustomDatabase"]
 
 from sqlalchemy import Column, Integer, String, Numeric
 from tinyms.orm import Simplify,Entity,many_to_one,SessionFactory
-
-from sqlalchemy import create_engine
-from tinyms.point import IDatabase
-
-class CustomDatabase(IDatabase):
-    def name(self):
-        return "ArchiveX"
-    def user(self):
-        return "postgres"
-    def password(self):
-        return "1"
-    def orm_engine(self):
-        return create_engine("sqlite+pysqlite:///matchs", echo=True)
-        #return create_engine("postgresql+psycopg2://postgres:1@localhost/ArchiveX", echo=True)
 
 SessionFactory.table_name_prefix("lottery")
 
@@ -37,8 +22,8 @@ class Battle(Entity,Simplify):
     evt_name = Column(String(20))
     #oddss list
 
-SessionFactory.table_name_prefix("m310")
 
+@many_to_one("Battle")
 class Odds(Entity,Simplify):
     com_name = Column(String(10))
     r_3 = Column(Numeric(2,2))

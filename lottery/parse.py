@@ -11,7 +11,10 @@ from concurrent.futures import ThreadPoolExecutor
 from bs4 import BeautifulSoup
 
 from tinyms.common import Utils
+from tinyms.orm import SessionFactory
+
 from lottery.formula import Formula
+from lottery.entity import Battle,Odds
 
 
 class MatchAnalyzeThread(threading.Thread):
@@ -24,8 +27,9 @@ class MatchAnalyzeThread(threading.Thread):
 
     def run(self):
         MatchAnalyzeThread.IS_RUNNING = True
-        ds = MatchAnalyzeThread.extract_matchs(self.urls, self.cached)
-        MatchAnalyzeThread.parse(ds)
+        for url in self.urls:
+            ds = MatchAnalyzeThread.extract_matchs([url], self.cached)
+            MatchAnalyzeThread.parse(ds)
         MatchAnalyzeThread.IS_RUNNING = False
 
     @staticmethod
@@ -107,6 +111,7 @@ class MatchAnalyzeThread(threading.Thread):
 
     @staticmethod
     def parse(matchs_data):
+        print(matchs_data)
         MatchAnalyzeThread.batch_download_data_pages(matchs_data)
         for row in matchs_data:
             MatchAnalyzeThread.parse_odds(row, Helper.cache_file_name(
@@ -141,12 +146,53 @@ class MatchAnalyzeThread(threading.Thread):
         if len(matchs_data) > 0:
             file_name = "cache_web_pages/%s.json" % matchs_data[0]["season_no"]
             Utils.text_write(file_name, [json.dumps(matchs_data)])
-
+            if MatchAnalyzeThread.IS_HISTORY:
+                MatchAnalyzeThread.save_history_data(matchs_data)
             #赛果预测
     #history data save
     @staticmethod
     def save_history_data(dataset):
-        pass
+        q = SessionFactory.new()
+        rows = list()
+        for row in dataset:
+            b = Battle()
+            b.actual_result = row.get("actual_result")
+            b.balls_diff = row.get("ball_diff")
+            b.detect_result = row.get("detect_result")
+            b.evt_name = row.get("season_name")
+            b.last_mix = row.get("last_mix_total_10")
+            b.last_10 = row.get("last_10_text_style")
+            b.last_6 = row.get("last_6_text_style")
+            b.last_4 = row.get("last_4_text_style")
+            b.last_battle = row.get("last_4_status_text_style")
+            b.last_mix_battle = row.get("mix_310")
+            b.score = row.get("score")
+            b.url_key = row.get("match_id")
+            b.vs_date = row.get("match_date")
+            b.vs_team = row.get("team_names")
+            MatchAnalyzeThread.odds_change_for_db("WL",row.get("Odds_WL"),row.get("Odds_WL_Change"),b)
+            MatchAnalyzeThread.odds_change_for_db("LB",row.get("Odds_LB"),row.get("Odds_LB_Change"),b)
+            MatchAnalyzeThread.odds_change_for_db("YB",row.get("Odds_YSB"),row.get("Odds_YSB_Change"),b)
+            MatchAnalyzeThread.odds_change_for_db("BT",row.get("Odds_365"),row.get("Odds_365_Change"),b)
+            MatchAnalyzeThread.odds_change_for_db("AM",row.get("Odds_AM"),row.get("Odds_AM_Change"),b)
+            rows.append(b)
+        q.add_all(rows)
+        q.commit()
+
+    @staticmethod
+    def odds_change_for_db(com_name,odds,odds_c,parent):
+        if len(odds) == 3:
+            o = Odds()
+            o.com_name = com_name
+            o.r_3 = odds[0]
+            o.r_1 = odds[1]
+            o.r_0 = odds[2]
+            if len(odds_c) == 3:
+                o.r_3_c =  odds_c[0]
+                o.r_1_c =  odds_c[1]
+                o.r_0_c =  odds_c[2]
+            parent.oddss.append(o)
+        return None
 
     @staticmethod
     def detect_result(match):
@@ -165,14 +211,14 @@ class MatchAnalyzeThread(threading.Thread):
         match["ball_diff"] = num
         if 0 <= diff <= 0.5:
             if num > 0:
-                match["detect_result"] = "1(3)"
+                match["detect_result"] = "13"
             else:
-                match["detect_result"] = "1(0)"
+                match["detect_result"] = "10"
         if 0.5 < diff < 1.0:
             if num > 0:
-                match["detect_result"] = "3(1)"
+                match["detect_result"] = "31"
             else:
-                match["detect_result"] = "0(1)"
+                match["detect_result"] = "01"
         elif diff >= 1.0:
             if num > 0:
                 match["detect_result"] = "3"
@@ -510,7 +556,6 @@ class MatchAnalyzeThread(threading.Thread):
 class Helper():
     @staticmethod
     def web_page_download(url, cached=True):
-        print(url)
         while True:
             try:
                 f = Helper.cache_file_name(url)
