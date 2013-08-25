@@ -37,16 +37,25 @@ class DataTableHandler(IRequest):
         self.set_header("Content-Type", "text/json;charset=utf-8")
         display_start = Utils.parse_int(self.get_argument("iDisplayStart"))
         display_length = Utils.parse_int(self.get_argument("iDisplayLength"))
-        cols_num = self.get_argument("iColumns")
+        #cols_num = self.get_argument("iColumns")
         gloabal_search_value = self.get_argument("sSearch")
         query_params = self.parse_search_params("sSearch_")
+        print(query_params)
         cnn = SessionFactory.new()
-        nums = cnn.query(func.count(entity.id)).one()
-        ds = cnn.query(entity).offset(display_start).limit(display_length)
+        #here place custom filter
+        total_query = cnn.query(func.count(entity.id))
+        ds_query = cnn.query(entity)
+        custom_filter = DataTableModule.__filter_mapping__.get(entity)
+        if custom_filter:
+            custom_filter_obj = custom_filter()
+            if hasattr(custom_filter_obj,"filter"):
+                custom_filter_obj.filter(total_query,ds_query,self)
+        total = total_query.scalar()
+        ds = ds_query.offset(display_start).limit(display_length)
         results = dict()
         results["sEcho"] = self.get_argument("sEcho")
-        results["iTotalRecords"] = nums[0]
-        results["iTotalDisplayRecords"] = nums[0]
+        results["iTotalRecords"] = total
+        results["iTotalDisplayRecords"] = total
         results["aaData"] = [item.dict() for item in ds]
         log.info(results)
         self.write(json.dumps(results,cls=JsonEncoder))
@@ -60,7 +69,11 @@ class DataTableHandler(IRequest):
                 index = Utils.parse_int(key)
                 if size <= index:
                     continue
-                params[self.datatable_display_cols[index]] = args[key]
+                v = self.get_argument(key)
+                if v:
+                    params[self.datatable_display_cols[index]] = v
+        if len(params.keys()) == 0:
+            return None
         return params
 
 @route(r"/api/(.*)/(.*)")

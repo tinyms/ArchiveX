@@ -9,7 +9,7 @@ class IWidget(UIModule):
 
 def ui(name):
     """
-    url mapping.
+    ui mapping. 配置UI至模版可用
     """
     def ref_pattern(cls):
         IWidget.__ui_mapping__[name] = cls
@@ -17,8 +17,20 @@ def ui(name):
 
     return ref_pattern
 
+def datatable_filter(entity_name):
+    """
+    custom datatable filter.自定义DataTable数据查询过滤，只要加上这个
+    装饰器，并传入datatable对应的实体名，使用此装饰器的类必须实现一个filter的方法
+    """
+    def ref_pattern(cls):
+        DataTableModule.__filter_mapping__[entity_name] = cls
+        return cls
+
+    return ref_pattern
+
 @ui("DataTable")
 class DataTableModule(IWidget):
+    __filter_mapping__ = dict()
     __entity_mapping__ = dict()
 
     def render(self, **prop):

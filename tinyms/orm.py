@@ -41,6 +41,30 @@ class Simplify():
         columns = [c.key for c in class_mapper(self.__class__).columns]
         return dict((c, getattr(self, c)) for c in columns)
 
+    def cols_meta(self):
+        cols = class_mapper(self.__class__).columns
+        metas = list()
+        for col in cols:
+            meta = dict()
+            meta["pk"] = col.primary_key
+            meta["name"] = col.key
+            meta["nullable"] = col.nullable
+            meta["unique"] = col.unique
+            meta["autoincrement"] = col.autoincrement
+            meta["default"] = col.default
+            type_name = col.type.__visit_name__
+            if ["string","text","unicode","unicode_text"].count(type_name)==1:
+                type_name = "string"
+            elif ["integer","small_integer","big_integer","boolean"].count(type_name)==1:
+                type_name = "int"
+            elif ["numeric","float"].count(type_name)==1:
+                type_name = "numeric"
+            elif ["datetime","date","time"].count(type_name)==1:
+                type_name = "date"
+            meta["type"] = type_name
+            metas.append(meta)
+        return metas
+
     def json(self):
         return json.dumps(self.dict())
 
