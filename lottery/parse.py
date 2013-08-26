@@ -148,13 +148,25 @@ class MatchAnalyzeThread(threading.Thread):
             Utils.text_write(file_name, [json.dumps(matchs_data)])
             if MatchAnalyzeThread.IS_HISTORY:
                 MatchAnalyzeThread.save_history_data(matchs_data)
-            #赛果预测
+
     #history data save
+    @staticmethod
+    def exclude_evt_(name):
+        if name.find("超")!=-1 or name.find("甲")!=-1 or name.find("乙")!=-1:
+            return False
+        if name.find("冠")!=-1 and name.find("杯")==-1:
+            return False
+        if name.find("日职")!=-1:
+            return False
+        return True
+
     @staticmethod
     def save_history_data(dataset):
         q = SessionFactory.new()
         rows = list()
         for row in dataset:
+            if MatchAnalyzeThread.exclude_evt_(row.get("season_name")):
+                continue
             b = Battle()
             b.actual_result = row.get("actual_result")
             b.balls_diff = row.get("ball_diff")
