@@ -47,6 +47,7 @@ class Simplify():
         for col in cols:
             meta = dict()
             meta["pk"] = col.primary_key
+            meta["fk"] = col.foreign_keys# is a set()
             meta["name"] = col.key
             meta["nullable"] = col.nullable
             meta["unique"] = col.unique

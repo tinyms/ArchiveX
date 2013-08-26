@@ -40,6 +40,11 @@ class DataTableModule(IWidget):
         self.entity_full_name = prop.get("entity")#entity name
         self.form_id = prop.get("form_id")#Edit form
         self.search_field = prop.get("search_field")#default search field name
+
+        self.col_title_mapping = dict()
+        for i,col in enumerate(self.cols):
+            self.col_title_mapping[col] = self.titles[i]
+
         if not self.form_id:
             self.form_id = ""
         if not self.entity_full_name:
@@ -61,10 +66,14 @@ class DataTableModule(IWidget):
         return html.format(self.dom_id, tag)
 
     def html_body(self):
-        html = """
-         <div id="{0}_EditFormDialog"></div>
-        """
-        return html.format(self.dom_id)
+        data = dict()
+        data["dom_id"] = self.dom_id
+        data["use_sys_editform"] = False
+        if not self.form_id:
+            data["use_sys_editform"] = True
+            data["col_title_mapping"] = self.col_title_mapping
+            data["cols"]=self.cols
+        return self.render_string("widgets/editform.tpl",opt=data)
 
     def embedded_javascript(self):
         params_ = dict()
