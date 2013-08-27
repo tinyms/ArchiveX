@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship, backref, class_mapper
 from sqlalchemy import Column, Integer, ForeignKey, Table
 from sqlalchemy.orm import sessionmaker
-
+from tinyms.common import Utils
 Entity = declarative_base()
 
 class SessionFactory():
@@ -37,9 +37,37 @@ class Simplify():
     def __tablename__(self):
         return "%s_%s" % (SessionFactory.__table_name_prefix__,self.__name__.lower())
 
-    def dict(self):
-        columns = [c.key for c in class_mapper(self.__class__).columns]
-        return dict((c, getattr(self, c)) for c in columns)
+    def dict(self,dict_=None):
+        """
+        1, object to map
+        2, map to object
+        :param dict_:
+        :return:
+        """
+        if not dict_:
+            columns = [c.key for c in class_mapper(self.__class__).columns]
+            return dict((c, getattr(self, c)) for c in columns)
+        else:
+            metas = self.cols_meta()
+            for k,v in enumerate(dict_):
+                if not hasattr(self,k):
+                    continue
+                for m in metas:
+                    if m["name"] == k:
+                        if m["type"] == "int":
+                            if type(v) == str:
+                                setattr(self,k,Utils.parse_int(v))
+                            else:
+                                setattr(self,k,v)
+                        elif m["type"] == "numeric":
+                            if type(v) == str:
+                                setattr(self,k,Utils.parse_float(v))
+                            else:
+                                setattr(self,k,v)
+                        else:
+                            setattr(self,k,v)
+                pass
+            pass
 
     def cols_meta(self):
         cols = class_mapper(self.__class__).columns

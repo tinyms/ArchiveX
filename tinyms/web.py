@@ -5,32 +5,53 @@ import logging as log
 from tornado.web import RequestHandler
 from tornado.util import import_object
 from sqlalchemy import func
-from tinyms.common import Plugin,JsonEncoder,Utils
+from tinyms.common import Plugin, JsonEncoder, Utils
 from tinyms.point import IAjax, IApi
 from tinyms.orm import SessionFactory
 from tinyms.widgets import DataTableModule
 
 
-
 class IRequest(RequestHandler):
     __url_patterns__ = list()
+
+    def wrap_bean(self, bean_obj, excude_keys=["id"]):
+        """
+        把参数值填充到对象对应属性中，针对ORM中的Entity
+        :param obj:
+        :param excude_keys:
+        :return:
+        """
+        dict_ = dict()
+        args = self.request.arguments
+        for key in args:
+            if excude_keys.count(key) != -1:
+                continue
+            dict_[key] = self.get_argument(key)
+        bean_obj.dict(dict_)
+        return bean_obj
 
 def route(pattern):
     """
     url mapping.
     """
+
     def ref_pattern(cls):
-        IRequest.__url_patterns__.append((pattern,cls))
+        IRequest.__url_patterns__.append((pattern, cls))
         return cls
 
     return ref_pattern
 
+
 @route(r"/datatable/(.*)")
 class DataTableHandler(IRequest):
+    def delte(self,id):
+        pass
+    def update(self,id):
+        pass
     def post(self, id):
         meta = DataTableModule.__entity_mapping__.get(id)
         if not meta:
-            self.set_status(403,"Error!")
+            self.set_status(403, "Error!")
         print(self.request.arguments)
         entity = import_object(meta["name"])
         self.datatable_display_cols = meta["cols"]
@@ -45,11 +66,11 @@ class DataTableHandler(IRequest):
         #here place custom filter
         total_query = cnn.query(func.count(entity.id))
         ds_query = cnn.query(entity)
-        custom_filter = DataTableModule.__filter_mapping__.get(entity)
+        custom_filter = DataTableModule.__filter_mapping__.get(meta["name"])
         if custom_filter:
             custom_filter_obj = custom_filter()
-            if hasattr(custom_filter_obj,"filter"):
-                custom_filter_obj.filter(total_query,ds_query,self)
+            if hasattr(custom_filter_obj, "filter"):
+                custom_filter_obj.filter(total_query, ds_query, self)
         total = total_query.scalar()
         ds = ds_query.offset(display_start).limit(display_length)
         results = dict()
@@ -57,15 +78,14 @@ class DataTableHandler(IRequest):
         results["iTotalRecords"] = total
         results["iTotalDisplayRecords"] = total
         results["aaData"] = [item.dict() for item in ds]
-        log.info(results)
-        self.write(json.dumps(results,cls=JsonEncoder))
+        self.write(json.dumps(results, cls=JsonEncoder))
 
-    def parse_search_params(self,prefix):
+    def parse_search_params(self, prefix):
         params = dict()
         args = self.request.arguments
         size = len(self.datatable_display_cols)
         for key in args:
-            if key.find(prefix)!=-1:
+            if key.find(prefix) != -1:
                 index = Utils.parse_int(key)
                 if size <= index:
                     continue
@@ -75,6 +95,7 @@ class DataTableHandler(IRequest):
         if len(params.keys()) == 0:
             return None
         return params
+
 
 @route(r"/api/(.*)/(.*)")
 class ApiHandler(IRequest):
@@ -106,9 +127,10 @@ class ApiHandler(IRequest):
                             func_params = json.loads(self.get_argument("params"))
                             obj.request(self)
                             result = func(**func_params)
-                            self.write(json.dumps(result,cls=JsonEncoder))
+                            self.write(json.dumps(result, cls=JsonEncoder))
                         else:
                             self.write("The method `%s` not found." % method_name)
+
 
 @route(r"/ajax/(.*).js")
 class AjaxHandler(IRequest):
