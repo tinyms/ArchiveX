@@ -44,11 +44,23 @@ def route(pattern):
 
 @route(r"/datatable/(.*)")
 class DataTableHandler(IRequest):
-    def delte(self,id):
+    def post(self,id):
+        self.list(id)
+    def delete(self,id):
+        meta = DataTableModule.__entity_mapping__.get(id)
+        if not meta:
+            self.set_status(403, "Error!")
+        entity = import_object(meta["name"])
+        entity_id = self.get_argument("id")
         pass
     def update(self,id):
+        meta = DataTableModule.__entity_mapping__.get(id)
+        if not meta:
+            self.set_status(403, "Error!")
+        entity = import_object(meta["name"])
+        entity_id = self.get_argument("id")
         pass
-    def post(self, id):
+    def list(self, id):
         meta = DataTableModule.__entity_mapping__.get(id)
         if not meta:
             self.set_status(403, "Error!")
