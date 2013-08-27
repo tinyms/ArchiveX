@@ -285,15 +285,18 @@ $(document).ready(function () {
                 if(value!=-1){
                     return color_battle(new String(value));
                 }else{
-                    return "";
+                    return "<input type='text' style='width: 30px;margin-left: 2px;'/>";
                 }
+            }
+            if(name=="score"&&value=="[]"){
+                return "";
             }
             if (name == "Odds_WL") {
                 return $.number(value[0], 2) + " " + $.number(value[1], 2) + " " + $.number(value[2], 2);
             }
             if (name == "match_id") {
                 var html = "";
-                html += "<button type='button' class='btn btn-primary btn-xs' onclick='show_baseface(this," + value + ");'>析</button>";
+                html += "<button type='button' class='btn btn-primary btn-xs' style='margin-left: 1px;' onclick='show_baseface(this," + value + ");'>析</button>";
                 return html;
             }
             return value;
