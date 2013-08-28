@@ -3,6 +3,10 @@ import json
 from tinyms.common import JsonEncoder
 #for plugin to extends
 
+class ObjectPool():
+    api = dict()
+    ajax = dict()
+
 class IDatabase():
     def name(self):
         return "postgres"
@@ -37,3 +41,23 @@ class IAjax():
 class IApi():
     def request(self, tornado_httpreq):
         self.req = tornado_httpreq
+
+def api(key):
+    """
+    api mapping.
+    """
+    def ref(cls):
+        ObjectPool.api[key] = cls()
+        return cls
+
+    return ref
+
+def ajax(key):
+    """
+    ajax mapping.
+    """
+    def ref(cls):
+        ObjectPool.ajax[key] = cls()
+        return cls
+
+    return ref

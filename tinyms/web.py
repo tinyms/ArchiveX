@@ -6,7 +6,7 @@ from tornado.web import RequestHandler
 from tornado.util import import_object
 from sqlalchemy import func
 from tinyms.common import Plugin, JsonEncoder, Utils
-from tinyms.point import IAjax, IApi
+from tinyms.point import IAjax, IApi, ObjectPool
 from tinyms.orm import SessionFactory
 from tinyms.widgets import DataTableModule
 
@@ -30,6 +30,7 @@ class IRequest(RequestHandler):
         bean_obj.dict(dict_)
         return bean_obj
 
+
 def route(pattern):
     """
     url mapping.
@@ -44,22 +45,25 @@ def route(pattern):
 
 @route(r"/datatable/(.*)")
 class DataTableHandler(IRequest):
-    def post(self,id):
+    def post(self, id):
         self.list(id)
-    def delete(self,id):
+
+    def delete(self, id):
         meta = DataTableModule.__entity_mapping__.get(id)
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
         entity_id = self.get_argument("id")
         pass
-    def update(self,id):
+
+    def update(self, id):
         meta = DataTableModule.__entity_mapping__.get(id)
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
         entity_id = self.get_argument("id")
         pass
+
     def list(self, id):
         meta = DataTableModule.__entity_mapping__.get(id)
         if not meta:
@@ -111,37 +115,32 @@ class DataTableHandler(IRequest):
 
 @route(r"/api/(.*)/(.*)")
 class ApiHandler(IRequest):
-    def get(self, class_full_name, method_name):
-        self.req(class_full_name, method_name)
+    def get(self, key, method_name):
+        self.req(key, method_name)
 
-    def post(self, class_full_name, method_name):
-        self.req(class_full_name, method_name)
+    def post(self, key, method_name):
+        self.req(key, method_name)
 
-    def req(self, class_full_name, method_name):
+    def req(self, key, method_name):
         """
-        Url: localhost/api/module.class/method
-        :param class_full_name:
+        Url: localhost/api/key/method
+        :param key: example: localost/com.tinyms.category.v2/create
         :return:
         """
-        #ver = self.get_argument("ver")
         self.set_header("Content-Type", "text/json;charset=utf-8")
-        if not class_full_name:
-            self.write("Class Name Require.")
+        if not key:
+            self.write("Key require.")
         else:
-            obj = Plugin.get(IApi, class_full_name)
+            obj = ObjectPool.api.get(key)
             if not obj:
-                self.write("Class Not Found.")
+                self.write("Object not found.")
             else:
-                if hasattr(obj, "__export__"):
-                    if obj.__export__.count(method_name) > 0:
-                        if hasattr(obj, method_name):
-                            func = obj.__getattribute__(method_name)
-                            func_params = json.loads(self.get_argument("params"))
-                            obj.request(self)
-                            result = func(**func_params)
-                            self.write(json.dumps(result, cls=JsonEncoder))
-                        else:
-                            self.write("The method `%s` not found." % method_name)
+                if hasattr(obj, method_name):
+                    func = obj.__getattribute__(method_name)
+                    func_params = json.loads(self.get_argument("params"))
+                    func_params.request = self
+                    result = func(**func_params)
+                    self.write(json.dumps(result, cls=JsonEncoder))
 
 
 @route(r"/ajax/(.*).js")
