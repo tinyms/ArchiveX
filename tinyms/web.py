@@ -6,7 +6,7 @@ from tornado.web import RequestHandler
 from tornado.util import import_object
 from sqlalchemy import func
 from tinyms.common import Plugin, JsonEncoder, Utils
-from tinyms.point import IAjax, IApi, ObjectPool
+from tinyms.point import IAjax, EmptyClass, ObjectPool
 from tinyms.orm import SessionFactory
 from tinyms.widgets import DataTableModule
 
@@ -29,6 +29,20 @@ class IRequest(RequestHandler):
             dict_[key] = self.get_argument(key)
         bean_obj.dict(dict_)
         return bean_obj
+
+    def wrap_params_to_dict(self):
+        dict_ = dict()
+        args = self.request.arguments
+        for key in args:
+            dict_[key] = self.get_argument(key)
+        return dict_
+
+    def wrap_params_to_obj(self):
+        obj = EmptyClass()
+        args = self.request.arguments
+        for key in args:
+            setattr(obj, key, self.get_argument(key))
+        return obj
 
 
 def route(pattern):
@@ -124,90 +138,84 @@ class ApiHandler(IRequest):
     def req(self, key, method_name):
         """
         Url: localhost/api/key/method
-        :param key: example: localost/com.tinyms.category.v2/create
+        :param key: example: com.tinyms.category.v2
         :return:
+
+        example:
+            @api("com.tinyms.category.v2")
+            class ApiTest():
+                def create():
+                    prama1 = self.param("prama1");
+                    req = self.request # IRequest
+
+            client side:
+            $.post("/api/com.tinyms.category.v2/create",params,func,"json");
         """
         self.set_header("Content-Type", "text/json;charset=utf-8")
         if not key:
             self.write("Key require.")
         else:
-            obj = ObjectPool.api.get(key)
-            if not obj:
+            cls = ObjectPool.api.get(key)
+            if not cls:
                 self.write("Object not found.")
             else:
+                obj = cls()
                 if hasattr(obj, method_name):
-                    func = obj.__getattribute__(method_name)
-                    func_params = json.loads(self.get_argument("params"))
-                    func_params.request = self
-                    result = func(**func_params)
+                    setattr(obj, "request", self)
+                    setattr(obj, "__params__", self.wrap_params_to_dict())
+                    setattr(obj, "param", lambda key: obj.__params__.get(key))
+                    func = getattr(obj, method_name)
+                    result = func()
                     self.write(json.dumps(result, cls=JsonEncoder))
 
 
 @route(r"/ajax/(.*).js")
 class AjaxHandler(IRequest):
-    def get(self, class_full_name):
+    def get(self, key):
         self.set_header("Content-Type", "text/javascript;charset=utf-8")
-        if not class_full_name:
-            self.write("alert('Class Name Require.')")
+        if not key:
+            self.write("alert('Ajax key require.')")
         else:
-            obj = Plugin.get(IAjax, class_full_name)
-            if not obj:
-                self.write("alert('Class Not Found.')")
+            cls = ObjectPool.ajax.get(key)
+            if not cls:
+                self.write("alert('Object not found.')")
             else:
-                if hasattr(obj, "__export__"):
-                    if len(obj.__export__) > 0:
-                        if not hasattr(obj, "client_javascript_object_name"):
-                            print("client javascript object name not assign.")
-                            return
-                        client_js_object_name = obj.client_javascript_object_name()
-                        js_ = """
-                            %s.%s=function(dict_params, func, data_type){
-                                var p_ = {};
-                                p_.__func_dict_params__ = JSON.stringify(dict_params);
-                                p_.__func_name__ = "%s";
-                                p_.__data_type__ = data_type;
-                                var req = $.ajax({
-                                    url: "/ajax/%s.js",type:"POST",data:p_,dataType:data_type
-                                });
-                                req.done(function(data){func(true,data);});
-                                req.fail(function(jqXHR, textStatus) {
-                                    alert( "Request failed: " + textStatus );
-                                    func(false,textStatus);
-                                })
-                            };
-                        """
-                        js_buffer = list()
-                        js_buffer.append("var %s = {};" % client_js_object_name)
-                        for export_func in obj.__export__:
-                            js_buffer.append(js_ % (client_js_object_name,
-                                                    export_func,
-                                                    export_func,
-                                                    class_full_name))
-                            self.write("".join(js_buffer))
+                obj = cls()
+                if hasattr(obj, "__export__") and type(obj.__export__) == list:
+                    return self.render("core/ajax.tpl",
+                                              module_name=obj.__class__.__module__,
+                                              class_name=obj.__class__.__qualname__,
+                                              key=key,
+                                              methods=obj.__export__)
                 else:
-                    self.write("console.log('Attr `__export__` Not exist');")
+                    self.write("alert('Attr `__export__` not exists or blank!');")
 
-    def post(self, class_full_name):
+    def post(self, key):
 
-        func_return_data_type = self.get_argument("__data_type__")
-        if func_return_data_type == "json":
+        data_type = self.get_argument("__data_type__")
+        if data_type == "json":
             self.set_header("Content-Type", "text/json;charset=utf-8")
-        elif func_return_data_type == "script":
+        elif data_type == "script":
             self.set_header("Content-Type", "text/javascript;charset=utf-8")
-        elif func_return_data_type == "html":
+        elif data_type == "html":
             self.set_header("Content-Type", "text/html;charset=utf-8")
 
-        if not class_full_name:
-            self.write("Class Name Require.")
+        if not key:
+            self.write("alert('Ajax key require.')")
         else:
-            obj = Plugin.get(IAjax, class_full_name)
-            if not obj:
-                self.write("Class Not Found.")
+            cls = ObjectPool.ajax.get(key)
+            if not cls:
+                self.write("Class not found.")
             else:
-                func_name = self.get_argument("__func_name__")
-                func_params = json.loads(self.get_argument("__func_dict_params__"))
-                if hasattr(obj, func_name):
-                    obj.request(self)
-                    func = obj.__getattribute__(func_name)
-                    result = func(**func_params)
-                    self.write(result)
+                method_name = self.get_argument("__method_name__")
+                obj = cls()
+                if hasattr(obj, method_name):
+                    setattr(obj, "request", self)
+                    setattr(obj, "__params__", self.wrap_params_to_dict())
+                    setattr(obj, "param", lambda key: obj.__params__.get(key))
+                    func = getattr(obj, method_name)
+                    result = func()
+                    if data_type == "json":
+                        self.write(json.dumps(result, cls=JsonEncoder))
+                    else:
+                        self.write(result)

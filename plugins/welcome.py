@@ -4,7 +4,7 @@ __export__ = ["MatchAnalyze","MatchHistoryQuery","SingleOrder"]
 import os, json
 from tinyms.web import IRequest,route
 from tinyms.common import Utils
-from tinyms.point import IApi, IAjax
+from tinyms.point import IApi, IAjax, api, ajax
 from tinyms.common import Postgres
 from lottery.parse import MatchAnalyzeThread
 
@@ -13,6 +13,19 @@ from lottery.parse import MatchAnalyzeThread
 class UITestHandler(IRequest):
     def get(self):
         self.render("ui.html")
+
+@api("test")
+class ApiTest():
+    def list(self):
+        print(self.param("abc"))
+        return [2,5,1,12]
+
+@ajax("test")
+class AjaxTest():
+    __export__ = ["list"]
+    def list(self):
+        print(self.param("abc"))
+        return [2,5,1,12]
 
 @route(r"/")
 class WelcomeHandler(IRequest):

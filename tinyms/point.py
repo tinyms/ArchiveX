@@ -2,6 +2,7 @@ __author__ = 'tinyms'
 import json
 from tinyms.common import JsonEncoder
 #for plugin to extends
+class EmptyClass():pass
 
 class ObjectPool():
     api = dict()
@@ -47,7 +48,7 @@ def api(key):
     api mapping.
     """
     def ref(cls):
-        ObjectPool.api[key] = cls()
+        ObjectPool.api[key] = cls
         return cls
 
     return ref
@@ -57,7 +58,7 @@ def ajax(key):
     ajax mapping.
     """
     def ref(cls):
-        ObjectPool.ajax[key] = cls()
+        ObjectPool.ajax[key] = cls
         return cls
 
     return ref
