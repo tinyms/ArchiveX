@@ -25,7 +25,7 @@ class Battle(Entity,Simplify):
 
 @many_to_one("Battle")
 class Odds(Entity,Simplify):
-    com_name = Column(String(10))
+    com_name = Column(String(12))
     r_3 = Column(Numeric(2,2))
     r_1 = Column(Numeric(2,2))
     r_0 = Column(Numeric(2,2))

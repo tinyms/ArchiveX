@@ -187,6 +187,12 @@ class MatchAnalyzeThread(threading.Thread):
             MatchAnalyzeThread.odds_change_for_db("YB",row.get("Odds_YSB"),row.get("Odds_YSB_Change"),b)
             MatchAnalyzeThread.odds_change_for_db("BT",row.get("Odds_365"),row.get("Odds_365_Change"),b)
             MatchAnalyzeThread.odds_change_for_db("AM",row.get("Odds_AM"),row.get("Odds_AM_Change"),b)
+            #other last5 com
+            MatchAnalyzeThread.odds_change_for_db("Inerwetten",row.get("Odds_Inerwetten"),row.get("Odds_Inerwetten_Change"),b)
+            MatchAnalyzeThread.odds_change_for_db("HG",row.get("Odds_HG"),row.get("Odds_HG_Change"),b)
+            MatchAnalyzeThread.odds_change_for_db("WD",row.get("Odds_WD"),row.get("Odds_WD_Change"),b)
+            MatchAnalyzeThread.odds_change_for_db("Bwin",row.get("Odds_Bwin"),row.get("Odds_Bwin_Change"),b)
+            MatchAnalyzeThread.odds_change_for_db("10bet",row.get("Odds_10bet"),row.get("Odds_10bet_Change"),b)
             rows.append(b)
         q.add_all(rows)
         q.commit()
@@ -490,19 +496,29 @@ class MatchAnalyzeThread(threading.Thread):
         row["Odds_LB"] = ""
         row["Odds_365"] = ""
         row["Odds_YSB"] = ""
+        row["Odds_Inerwetten"] = ""#"Inerwetten"
+        row["Odds_HG"] = ""#皇冠
+        row["Odds_WD"] = ""#韦德
+        row["Odds_Bwin"] = ""#Bwin
+        row["Odds_10bet"] = ""#10bet
 
         row["Odds_WL_Change"] = ""
         row["Odds_AM_Change"] = ""
         row["Odds_LB_Change"] = ""
         row["Odds_365_Change"] = ""
         row["Odds_YSB_Change"] = ""
+        row["Odds_Inerwetten_Change"] = ""#"Inerwetten"
+        row["Odds_HG_Change"] = ""#皇冠
+        row["Odds_WD_Change"] = ""#韦德
+        row["Odds_Bwin_Change"] = ""#Bwin
+        row["Odds_10bet_Change"] = ""#10bet
 
         parser = Helper.soup(f_name)
         if not parser:
             return
 
         #获取各大菠菜公司的初盘
-        tr_ids = ["293", "5", "2", "3", "9"]
+        tr_ids = ["293", "5", "2", "3", "9", "4", "280", "6", "11", "16"]
         for tr_id in tr_ids:
             tr = parser.find("tr", id="tr_" + tr_id)
             if tr:
@@ -519,6 +535,16 @@ class MatchAnalyzeThread(threading.Thread):
                         row["Odds_365"] = nums[0:3]
                     elif tr_id == "9":
                         row["Odds_YSB"] = nums[0:3]
+                    elif tr_id == "4":#other
+                        row["Odds_Inerwetten"] = nums[0:3]
+                    elif tr_id == "280":
+                        row["Odds_HG"] = nums[0:3]
+                    elif tr_id == "6":
+                        row["Odds_WD"] = nums[0:3]
+                    elif tr_id == "11":
+                        row["Odds_Bwin"] = nums[0:3]
+                    elif tr_id == "16":
+                        row["Odds_10bet"] = nums[0:3]
 
             tr = parser.find("tr", id="tr2_" + tr_id)
             if tr:
@@ -535,6 +561,16 @@ class MatchAnalyzeThread(threading.Thread):
                         row["Odds_365_Change"] = nums[0:3]
                     elif tr_id == "9":
                         row["Odds_YSB_Change"] = nums[0:3]
+                    elif tr_id == "4":#other
+                        row["Odds_Inerwetten_Change"] = nums[0:3]
+                    elif tr_id == "280":
+                        row["Odds_HG_Change"] = nums[0:3]
+                    elif tr_id == "6":
+                        row["Odds_WD_Change"] = nums[0:3]
+                    elif tr_id == "11":
+                        row["Odds_Bwin_Change"] = nums[0:3]
+                    elif tr_id == "16":
+                        row["Odds_10bet_Change"] = nums[0:3]
 
     @staticmethod
     def parse_match_date(parser):
