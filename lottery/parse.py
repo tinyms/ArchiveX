@@ -154,7 +154,7 @@ class MatchAnalyzeThread(threading.Thread):
     def exclude_evt_(name):
         if name.find("超")!=-1 or name.find("甲")!=-1 or name.find("乙")!=-1:
             return False
-        if name.find("冠")!=-1 and name.find("杯")==-1:
+        if name.find("英冠")!=-1:
             return False
         if name.find("日职")!=-1:
             return False
