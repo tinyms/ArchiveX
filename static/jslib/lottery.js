@@ -88,6 +88,11 @@ function show_baseface(self, match_id) {
         odds[2] = odds_style("易博", current.Odds_YSB, current.Odds_YSB_Change);
         odds[3] = odds_style("贝塔", current.Odds_365, current.Odds_365_Change);
         odds[4] = odds_style("澳门", current.Odds_AM, current.Odds_AM_Change);
+        odds[5] = odds_style("因特", current.Odds_Inerwetten, current.Odds_Inerwetten_Change);//other
+        odds[6] = odds_style("皇冠", current.Odds_HG, current.Odds_HG_Change);
+        odds[7] = odds_style("韦德", current.Odds_WD, current.Odds_WD_Change);
+        odds[8] = odds_style("必赢", current.Odds_Bwin, current.Odds_Bwin_Change);
+        odds[9] = odds_style("十贝", current.Odds_10bet, current.Odds_10bet_Change);
         detail.odds = odds;
 
         var html = Mustache.render($("#match_details_tpl").html(), detail);
@@ -217,7 +222,7 @@ $(document).ready(function () {
         params["num"] = $("#single_order_pub_num").val();
         params["err"] = $("#single_order_pub_err").val();
         params["source"] = $("#lottery_select").val();
-        SingleOrderComposite.create(params, function (b, data) {
+        welcome_SingleOrder.create(params, function (b, data) {
             if (b) {
                 var text = "";
                 var html = "";
@@ -252,15 +257,15 @@ $(document).ready(function () {
             state = "Parse";
         }
         var params = {"url": url, "act": state};
-        $.post("/api/welcome.MatchAnalyze/run", {"params": JSON.stringify(params)}, function (data) {
+        $.post("/api/match_analyze/run", params, function (data) {
             if (data.msg == "Started" || data.msg == "Running" || data.msg == "History") {
                 var mum_interval = 5 * 1000;
                 if (data.msg == "History") {
                     mum_interval = 100;
                 }
                 timer = setInterval(function () {
-                    var post_url = "/api/welcome.MatchAnalyze/result";
-                    $.post(post_url, {"params": JSON.stringify(params)}, function (data) {
+                    var post_url = "/api/match_analyze/result";
+                    $.post(post_url, params, function (data) {
                         if ($.isArray(data) && data.length > 0) {
                             //Do..
                             fill_datatable(data);

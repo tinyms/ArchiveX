@@ -4,7 +4,7 @@ __export__ = ["MatchAnalyze","MatchHistoryQuery","SingleOrder"]
 import os, json
 from tinyms.web import IRequest,route
 from tinyms.common import Utils
-from tinyms.point import IApi, IAjax, api, ajax
+from tinyms.point import IAjax, api, ajax
 from tinyms.common import Postgres
 from lottery.parse import MatchAnalyzeThread
 
@@ -32,7 +32,8 @@ class WelcomeHandler(IRequest):
     def get(self):
         self.redirect("/static/index.html")
 
-class SingleOrder(IAjax):
+@ajax("single_order")
+class SingleOrder():
     __export__ = ["create"]
 
     def client_javascript_object_name(self):
@@ -75,10 +76,10 @@ class SingleOrder(IAjax):
             counters.append(tmp_texts)
         return counters
 
-    def create(self,**p):
-        num = Utils.parse_int(p["num"])
-        maybe_err = Utils.parse_int(p["err"])
-        source = p["source"]
+    def create(self):
+        num = Utils.parse_int(self.param("num"))
+        maybe_err = Utils.parse_int(self.param("err"))
+        source = self.param("source")
         if source:
             items = [s.strip(" ") for s in source.split(",")]
             import itertools,random
@@ -103,7 +104,7 @@ class SingleOrder(IAjax):
         for item in ds["result"]:
             result_for_rate.append([s for s in item])
         ds["balance"] = self.results_balance(result_for_rate)
-        return self.json(ds)
+        return ds
 
 class MatchHistoryQuery(IAjax):
     __export__ = ["find"]
@@ -154,29 +155,32 @@ class MatchHistoryQuery(IAjax):
         return result
 
 #/api/welcome.MatchAnalyze/method
-class MatchAnalyze(IApi):
-    __export__ = ["run", "result"]
+@api("match_analyze")
+class MatchAnalyze():
+
     thread = None
 
-    def result(self, **p):
+    def result(self):
         msg = dict()
-        if not p["url"]:
+        url = self.param("url")
+        if not url:
             msg["msg"] = "NotBlank"
             return msg
-        if not Utils.url_with_params(p["url"]):
+        if not Utils.url_with_params(url):
             msg["msg"] = "UrlRequireParams."
             return msg
-        file = "cache_web_pages/%s.json" % Utils.md5(Utils.trim(p["url"]))
+        file = "cache_web_pages/%s.json" % Utils.md5(Utils.trim(url))
         if not os.path.exists(file):
             return list()
         else:
             content = Utils.text_read(file)
             return json.loads(content)
 
-    def run(self, **p):
+    def run(self):
         msg = dict()
-        act = p["act"];
-        file = "cache_web_pages/%s.json" % Utils.md5(Utils.trim(p["url"]))
+        act = self.param("act")
+        url = self.param("url")
+        file = "cache_web_pages/%s.json" % Utils.md5(Utils.trim(url))
         if act=="Refresh" and os.path.exists(file):
             dataset = json.loads(Utils.text_read(file))
             for item in dataset:
@@ -188,15 +192,15 @@ class MatchAnalyze(IApi):
         if os.path.exists(file):
             msg["msg"] = "History"
             return msg
-        if not p["url"]:
+        if not url:
             msg["msg"] = "NotBlank"
             return msg
-        if not Utils.url_with_params(p["url"]):
+        if not Utils.url_with_params(url):
             msg["msg"] = "UrlRequireParams."
             return msg
         if not MatchAnalyzeThread.IS_RUNNING:
             MatchAnalyze.thread = MatchAnalyzeThread()
-            MatchAnalyze.thread.urls = [p["url"]]
+            MatchAnalyze.thread.urls = [url]
             MatchAnalyze.thread.start()
             msg["msg"] = "Started"
         else:
