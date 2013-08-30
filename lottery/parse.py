@@ -152,6 +152,8 @@ class MatchAnalyzeThread(threading.Thread):
     #history data save
     @staticmethod
     def exclude_evt_(name):
+        if not name:
+            return True
         if name.find("超")!=-1 or name.find("甲")!=-1 or name.find("乙")!=-1:
             return False
         if name.find("英冠")!=-1:
