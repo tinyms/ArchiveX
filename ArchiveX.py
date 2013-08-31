@@ -1,6 +1,6 @@
 __author__ = 'tinyms'
 
-import os, sys
+import os, sys, base64, uuid
 import logging as log
 import webbrowser
 
@@ -30,14 +30,16 @@ if db_config:
 web_configs = Plugin.get(IWebConfig)
 
 ws_settings = dict()
+ws_settings["debug"] = True
 ws_settings["static_path"] = os.path.join(os.getcwd(), "static")
 ws_settings["template_path"] = os.path.join(os.getcwd(), "templates")
-ws_settings["debug"] = True
+ws_settings["cookie_secret"] = (base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)).decode("utf-8")
 
 ws_settings["ui_modules"] = dict()
 for key in IWidget.__ui_mapping__:
     ws_settings["ui_modules"][key] = IWidget.__ui_mapping__[key]
 
+print(ws_settings)
 if web_configs:
     for web_config in web_configs:
         if hasattr(web_config, "ws_settings"):
