@@ -6,13 +6,52 @@ from tornado.web import RequestHandler
 from tornado.util import import_object
 from sqlalchemy import func
 from tinyms.common import Plugin, JsonEncoder, Utils
-from tinyms.point import IAjax, EmptyClass, ObjectPool
+from tinyms.point import EmptyClass, ObjectPool
 from tinyms.orm import SessionFactory
 from tinyms.widgets import DataTableModule
 
 
 class IRequest(RequestHandler):
     __url_patterns__ = list()
+    __key_account_id__ = "__key_account_id__"
+    __key_account_points__ = "__key_account_points__"
+    __key_account_summary__ = "__key_account_summary__"
+
+    def security_check(self,points=set()):
+        diff = points & self.get_current_account_points()
+        if len(diff) > 0:
+            return True
+        return False
+
+    def get_current_user(self):
+        """
+        account id, int
+        :return:
+        """
+        id = self.get_secure_cookie(IRequest.__key_account_id__)
+        if id:
+            return int(id)
+        return None
+
+    def get_current_account_points(self):
+        """
+        account security points: set('key1','key2',..)
+        :return:
+        """
+        data = self.get_secure_cookie(IRequest.__key_account_points__)
+        if data:
+            return json.loads(data)
+        return set()
+
+    def get_current_account_summary(self):
+        """
+        current account name,sex,post,org etc.
+        :return:
+        """
+        data = self.get_secure_cookie(IRequest.__key_account_points__)
+        if data:
+            return json.loads(data)
+        return None
 
     def wrap_bean(self, bean_obj, excude_keys=["id"]):
         """

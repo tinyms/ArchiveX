@@ -1,6 +1,5 @@
 __author__ = 'tinyms'
-import json
-from tinyms.common import JsonEncoder
+from functools import wraps
 #for plugin to extends
 class EmptyClass():pass
 
@@ -27,21 +26,23 @@ class IWebConfig():
         """
         return
 
-
-class IAjax():
-    def request(self, tornado_httpreq):
-        self.req = tornado_httpreq
-
-    def client_javascript_object_name(self):
-        return "client_javascript_object_name_not_assign"
-
-    def json(self,obj):
-        return json.dumps(obj,cls=JsonEncoder)
-
-
-class IApi():
-    def request(self, tornado_httpreq):
-        self.req = tornado_httpreq
+def auth(points=set()):
+    def handle_func(func):
+        @wraps(func)
+        def returned_func(*args,**kwargs):
+            self_ = args[0]
+            account_id = self_.request.get_current_user()
+            if not account_id:
+                return returned_func
+            points_ = self_.request.get_current_account_points()
+            diff = points & points_
+            if len(diff) > 0:
+                print(True)
+            else:
+                print(False)
+            return func(*args,**kwargs)
+        return returned_func
+    return handle_func
 
 def api(key):
     """

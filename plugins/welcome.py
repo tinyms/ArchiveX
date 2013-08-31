@@ -4,7 +4,7 @@ __export__ = ["MatchAnalyze","MatchHistoryQuery","SingleOrder"]
 import os, json
 from tinyms.web import IRequest,route
 from tinyms.common import Utils
-from tinyms.point import IAjax, api, ajax
+from tinyms.point import api, ajax, auth
 from tinyms.common import Postgres
 from lottery.parse import MatchAnalyzeThread
 
@@ -16,8 +16,8 @@ class UITestHandler(IRequest):
 
 @api("test")
 class ApiTest():
+    @auth({'key1'})
     def list(self):
-        print(self.param("abc"))
         return [2,5,1,12]
 
 @ajax("test")
@@ -106,7 +106,7 @@ class SingleOrder():
         ds["balance"] = self.results_balance(result_for_rate)
         return ds
 
-class MatchHistoryQuery(IAjax):
+class MatchHistoryQuery():
     __export__ = ["find"]
 
     def client_javascript_object_name(self):
