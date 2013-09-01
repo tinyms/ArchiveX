@@ -1,17 +1,21 @@
 __author__ = 'tinyms'
 
-import os, sys, base64, uuid
+import os
+import sys
+import base64
+import uuid
 import logging as log
 import webbrowser
 
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 
-from tinyms.common import Plugin, Utils, Postgres
-from tinyms.point import IWebConfig, IDatabase
-from tinyms.web import IRequest
-from tinyms.widgets import IWidget
-from tinyms.orm import SessionFactory
+from tinyms.core.common import Plugin, Utils, Postgres
+from tinyms.core.point import IWebConfig, IDatabase
+from tinyms.core.web import IRequest
+from tinyms.core.widgets import IWidget
+from tinyms.core.orm import SessionFactory
+
 
 Plugin.load()
 

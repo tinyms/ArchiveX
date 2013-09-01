@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship, backref, class_mapper
 from sqlalchemy import Column, Integer, ForeignKey, Table
 from sqlalchemy.orm import sessionmaker
-from tinyms.common import Utils
+from tinyms.core.common import Utils
 Entity = declarative_base()
 
 class SessionFactory():

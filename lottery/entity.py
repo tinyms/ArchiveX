@@ -1,7 +1,7 @@
 __author__ = 'tinyms'
 
 from sqlalchemy import Column, Integer, String, Numeric
-from tinyms.orm import Simplify,Entity,many_to_one,SessionFactory
+from tinyms.core.orm import Simplify,Entity,many_to_one,SessionFactory
 
 SessionFactory.table_name_prefix("lottery")
 

@@ -1,2 +1,2 @@
 __author__ = 'tinyms'
-from tinyms.entity import *
+from tinyms.core.entity import *

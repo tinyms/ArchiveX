@@ -1,14 +1,13 @@
 __author__ = 'tinyms'
 
 import json
-import logging as log
 from tornado.web import RequestHandler
 from tornado.util import import_object
 from sqlalchemy import func
-from tinyms.common import Plugin, JsonEncoder, Utils
-from tinyms.point import EmptyClass, ObjectPool
-from tinyms.orm import SessionFactory
-from tinyms.widgets import DataTableModule
+from tinyms.core.common import JsonEncoder, Utils
+from tinyms.core.point import EmptyClass, ObjectPool
+from tinyms.core.orm import SessionFactory
+from tinyms.core.widgets import DataTableModule
 
 
 class IRequest(RequestHandler):
@@ -17,11 +16,27 @@ class IRequest(RequestHandler):
     __key_account_points__ = "__key_account_points__"
     __key_account_summary__ = "__key_account_summary__"
 
-    def security_check(self,points=set()):
+    def auth(self,points=set()):
+        """
+        细微控制数据输出,不产生页面跳转相关动作
+        :param points:
+        :return:
+        """
         diff = points & self.get_current_account_points()
         if len(diff) > 0:
             return True
         return False
+
+    def get_login_url(self):
+        self.redirect("/login")
+
+    def write_error(self, status_code, **kwargs):
+        if status_code == 401:
+            self.render("login.html")
+        elif status_code == 403:
+            self.render("err.html",reason = "访问禁止")
+        else:
+            self.render("err.html",reason = "服务器内部错误")
 
     def get_current_user(self):
         """

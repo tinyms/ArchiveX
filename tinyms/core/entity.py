@@ -1,7 +1,8 @@
 __author__ = 'tinyms'
 
-from tinyms.orm import Entity, Simplify, many_to_one, many_to_many
 from sqlalchemy import Column, Integer, String, DateTime, Text, Date, Boolean
+
+from tinyms.core.orm import Entity, Simplify, many_to_one, many_to_many
 
 
 class Archives(Entity, Simplify):

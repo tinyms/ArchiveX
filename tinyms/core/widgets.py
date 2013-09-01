@@ -2,7 +2,7 @@ __author__ = 'tinyms'
 
 import json
 from tornado.web import UIModule
-from tinyms.common import Utils
+from tinyms.core.common import Utils
 
 class IWidget(UIModule):
     __ui_mapping__ = dict()

@@ -2,7 +2,7 @@ __author__ = 'tinyms'
 __export__ = ["CustomDatabase"]
 
 from sqlalchemy import create_engine
-from tinyms.point import IDatabase
+from tinyms.core.point import IDatabase
 
 class CustomDatabase(IDatabase):
     def name(self):

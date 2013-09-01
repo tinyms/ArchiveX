@@ -1,6 +1,6 @@
 __author__ = 'tinyms'
 from lottery.parse import Helper, MatchAnalyzeThread
-from tinyms.orm import SessionFactory
+from tinyms.core.orm import SessionFactory
 
 
 def last_days():
