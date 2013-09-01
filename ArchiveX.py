@@ -4,34 +4,17 @@ import os
 import sys
 import base64
 import uuid
-import logging as log
 import webbrowser
 
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 
-from tinyms.core.common import Plugin, Utils, Postgres
-from tinyms.core.point import IWebConfig, IDatabase
-from tinyms.core.web import IRequest
+from tinyms.core.common import Plugin, Utils
+from tinyms.core.point import IWebConfig, ObjectPool
 from tinyms.core.widgets import IWidget
 from tinyms.core.orm import SessionFactory
 
-
 Plugin.load()
-
-db_config = Plugin.one(IDatabase)
-if db_config:
-    if hasattr(db_config, "name"):
-        Postgres.DATABASE_NAME = db_config.name()
-    if hasattr(db_config, "user"):
-        Postgres.USER_NAME = db_config.user()
-    if hasattr(db_config, "password"):
-        Postgres.PASSWORD = db_config.password()
-    if hasattr(db_config, "orm_engine"):
-        SessionFactory.__engine__ = db_config.orm_engine()
-        SessionFactory.create_tables()
-
-web_configs = Plugin.get(IWebConfig)
 
 ws_settings = dict()
 ws_settings["debug"] = True
@@ -43,17 +26,19 @@ ws_settings["ui_modules"] = dict()
 for key in IWidget.__ui_mapping__:
     ws_settings["ui_modules"][key] = IWidget.__ui_mapping__[key]
 
-print(ws_settings)
+web_configs = Plugin.get(IWebConfig)
 if web_configs:
     for web_config in web_configs:
         if hasattr(web_config, "ws_settings"):
             web_config.settings(ws_settings)
+        if hasattr(web_config, "db_driver"):#Only one in application
+            SessionFactory.__engine__ = web_config.db_driver()
+            SessionFactory.create_tables()
 
 #compress js and css file to one
 Utils.combine_text_files(os.path.join(os.getcwd(), "static/jslib/"), "tinyms.common")
 
-log.info(IRequest.__url_patterns__)
-app = Application(IRequest.__url_patterns__, **ws_settings)
+app = Application(ObjectPool.url_patterns, **ws_settings)
 
 if __name__ == "__main__":
     port = 80

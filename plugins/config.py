@@ -1,17 +1,12 @@
 __author__ = 'tinyms'
-__export__ = ["CustomDatabase"]
+
+__export__ = ["DefaultWebConfig"]
 
 from sqlalchemy import create_engine
-from tinyms.core.point import IDatabase
+from tinyms.core.point import IWebConfig
 
-class CustomDatabase(IDatabase):
-    def name(self):
-        return "ArchiveX"
-    def user(self):
-        return "postgres"
-    def password(self):
-        return "1"
-    def orm_engine(self):
+class DefaultWebConfig(IWebConfig):
+    def db_driver(self):
         return create_engine("sqlite+pysqlite:///matchs", echo=True)
         #return create_engine("postgresql+psycopg2://postgres:1@localhost/ArchiveX", echo=True)
 

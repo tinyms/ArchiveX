@@ -1,23 +1,18 @@
 __author__ = 'tinyms'
+
 from functools import wraps
+
 #for plugin to extends
 class EmptyClass():pass
 
 class ObjectPool():
     api = dict()
     ajax = dict()
-
-class IDatabase():
-    def name(self):
-        return "postgres"
-    def user(self):
-        return "postgres"
-    def password(self):
-        return ""
-    def orm_engine(self):
-        return None
+    url_patterns = list()
 
 class IWebConfig():
+    def db_driver(self):
+        return None
     def settings(self, ws_setting):
         """
         Append or modify tornado setting
@@ -25,6 +20,15 @@ class IWebConfig():
         :return:
         """
         return
+
+def route(pattern):
+    """
+    url mapping.
+    """
+    def ref_pattern(cls):
+        ObjectPool.url_patterns.append((pattern, cls))
+        return cls
+    return ref_pattern
 
 def auth(points=set()):
     def handle_func(func):

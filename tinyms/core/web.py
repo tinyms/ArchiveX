@@ -5,13 +5,13 @@ from tornado.web import RequestHandler
 from tornado.util import import_object
 from sqlalchemy import func
 from tinyms.core.common import JsonEncoder, Utils
-from tinyms.core.point import EmptyClass, ObjectPool
+from tinyms.core.point import EmptyClass, ObjectPool, route
 from tinyms.core.orm import SessionFactory
 from tinyms.core.widgets import DataTableModule
 
 
 class IRequest(RequestHandler):
-    __url_patterns__ = list()
+
     __key_account_id__ = "__key_account_id__"
     __key_account_points__ = "__key_account_points__"
     __key_account_summary__ = "__key_account_summary__"
@@ -97,18 +97,6 @@ class IRequest(RequestHandler):
         for key in args:
             setattr(obj, key, self.get_argument(key))
         return obj
-
-
-def route(pattern):
-    """
-    url mapping.
-    """
-
-    def ref_pattern(cls):
-        IRequest.__url_patterns__.append((pattern, cls))
-        return cls
-
-    return ref_pattern
 
 
 @route(r"/datatable/(.*)")
