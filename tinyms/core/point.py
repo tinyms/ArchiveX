@@ -8,10 +8,14 @@ class EmptyClass():pass
 class ObjectPool():
     api = dict()
     ajax = dict()
+    security_filter_uri = set()
     url_patterns = list()
+    ui_mapping = dict()
 
 class IWebConfig():
-    def db_driver(self):
+    def get_database_driver(self):
+        return None
+    def security_urls(self,urls=set()):
         return None
     def settings(self, ws_setting):
         """

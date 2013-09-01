@@ -11,7 +11,6 @@ from tornado.web import Application
 
 from tinyms.core.common import Plugin, Utils
 from tinyms.core.point import IWebConfig, ObjectPool
-from tinyms.core.widgets import IWidget
 from tinyms.core.orm import SessionFactory
 
 Plugin.load()
@@ -23,15 +22,17 @@ ws_settings["template_path"] = os.path.join(os.getcwd(), "templates")
 ws_settings["cookie_secret"] = (base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)).decode("utf-8")
 
 ws_settings["ui_modules"] = dict()
-for key in IWidget.__ui_mapping__:
-    ws_settings["ui_modules"][key] = IWidget.__ui_mapping__[key]
+for key in ObjectPool.ui_mapping:
+    ws_settings["ui_modules"][key] = ObjectPool.ui_mapping[key]
 
 web_configs = Plugin.get(IWebConfig)
 if web_configs:
     for web_config in web_configs:
         if hasattr(web_config, "ws_settings"):
             web_config.settings(ws_settings)
-        if hasattr(web_config, "db_driver"):#Only one in application
+        if hasattr(web_config, "security_urls"):
+            web_config.security_urls(ObjectPool.security_filter_uri)
+        if hasattr(web_config, "get_database_driver"):#Only one in application
             SessionFactory.__engine__ = web_config.db_driver()
             SessionFactory.create_tables()
 

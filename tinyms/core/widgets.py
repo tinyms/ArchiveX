@@ -2,17 +2,19 @@ __author__ = 'tinyms'
 
 import json
 from tornado.web import UIModule
+
 from tinyms.core.common import Utils
+from tinyms.core.point import ObjectPool
 
 class IWidget(UIModule):
-    __ui_mapping__ = dict()
+    pass
 
 def ui(name):
     """
     ui mapping. 配置UI至模版可用
     """
     def ref_pattern(cls):
-        IWidget.__ui_mapping__[name] = cls
+        ObjectPool.ui_mapping[name] = cls
         return cls
 
     return ref_pattern

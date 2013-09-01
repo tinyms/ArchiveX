@@ -11,12 +11,23 @@ from tinyms.core.widgets import DataTableModule
 
 
 class IRequest(RequestHandler):
-
     __key_account_id__ = "__key_account_id__"
     __key_account_points__ = "__key_account_points__"
     __key_account_summary__ = "__key_account_summary__"
 
-    def auth(self,points=set()):
+    def __init__(self, application, request, **kwargs):
+        RequestHandler.__init__(self, application, request, **kwargs)
+        if not self.get_current_user():
+            uri = self.request.uri
+            security_urls = ObjectPool.security_filter_uri
+            ignore = True
+            for url in security_urls:
+                if uri.startswith(url):
+                    ignore = False
+            if not ignore:
+                self.redirect(self.get_login_url())
+
+    def auth(self, points=set()):
         """
         细微控制数据输出,不产生页面跳转相关动作
         :param points:
@@ -34,9 +45,9 @@ class IRequest(RequestHandler):
         if status_code == 401:
             self.render("login.html")
         elif status_code == 403:
-            self.render("err.html",reason = "访问禁止")
+            self.render("err.html", reason="访问禁止")
         else:
-            self.render("err.html",reason = "服务器内部错误")
+            self.render("err.html", reason="服务器内部错误")
 
     def get_current_user(self):
         """
@@ -225,10 +236,10 @@ class AjaxHandler(IRequest):
                 obj = cls()
                 if hasattr(obj, "__export__") and type(obj.__export__) == list:
                     return self.render("core/ajax.tpl",
-                                              module_name=obj.__class__.__module__,
-                                              class_name=obj.__class__.__qualname__,
-                                              key=key,
-                                              methods=obj.__export__)
+                                       module_name=obj.__class__.__module__,
+                                       class_name=obj.__class__.__qualname__,
+                                       key=key,
+                                       methods=obj.__export__)
                 else:
                     self.write("alert('Attr `__export__` not exists or blank!');")
 
