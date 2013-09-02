@@ -33,7 +33,7 @@ if web_configs:
         if hasattr(web_config, "security_urls"):
             web_config.security_urls(ObjectPool.security_filter_uri)
         if hasattr(web_config, "get_database_driver"):#Only one in application
-            SessionFactory.__engine__ = web_config.db_driver()
+            SessionFactory.__engine__ = web_config.get_database_driver()
             SessionFactory.create_tables()
 
 #compress js and css file to one

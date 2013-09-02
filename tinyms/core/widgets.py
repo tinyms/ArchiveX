@@ -59,13 +59,13 @@ class DataTableModule(IWidget):
         DataTableModule.__entity_mapping__[self.datatable_key] = sub
 
         html = """
-         <table id="{0}"><tfoot><tr>{1}</tr></tfoot></table>
+         <div id="{0}_wrap"><table id="{1}"><tfoot><tr>{2}</tr></tfoot></table></div><div id="{3}_form_container">I am form container.</div>
         """
         tag = ""
         for title in self.titles:
             tag += "<th>" + title + "</th>"
         tag += "<th>#</th>"
-        return html.format(self.dom_id, tag)
+        return html.format(self.dom_id, self.dom_id, tag, self.dom_id)
 
     def html_body(self):
         data = dict()
@@ -103,7 +103,7 @@ class DataTableModule(IWidget):
         items.append("/static/jslib/datatable/js/jquery.dataTables.columnFilter.js")
         items.append("/static/jslib/datatable/extras/tabletools/js/ZeroClipboard.js")
         items.append("/static/jslib/datatable/extras/tabletools/js/TableTools.min.js")
-        items.append("/static/jslib/datatable/extras/fixedheader/FixedHeader.min.js")
+        items.append("/static/jslib/tinyms.datatable.js")
         return items
 
     def css_files(self):
