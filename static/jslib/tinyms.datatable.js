@@ -47,8 +47,12 @@ function DataTableX(id_,entityName_,cols_,filter_configs_,editFormId_){
 		$('#'+self.id+'_NewRowBtnWrap').html("<button id='"+self.id+"_NewRowBtn'>+</button>");
         $("#"+self.id+"_NewRowBtn").click(function(){
             if(self.formType=="panel"&&self.editFormId!=""){
-                $("#"+self.id+"_wrap").hide("fast");
-                $("#"+self.editFormId).show("fast");
+                $("#"+self.id+"_wrap").hide();
+                $("#"+self.editFormId).show();
+            }else{
+                $("#"+self.id+"_wrap").hide();
+                $("#"+self.id+"_EditForm").html($("#"+self.id+"_EditFormTemplate").html())
+                $("#"+self.id+"_form_container").show();
             }
         });
 		return self.__dataTable;
@@ -63,6 +67,26 @@ function DataTableX(id_,entityName_,cols_,filter_configs_,editFormId_){
 	this.DataSet = function(){
 		return $('#'+self.id).data("DataSet");
 	};
+    this.form = {
+        "cancel":function(btn){
+            if(self.formType=="panel"){
+                $("#"+self.id+"_wrap").show();
+                $("#"+self.id+"_form_container").hide();
+            }else{
+                $("#"+self.id+"_wrap").show();
+                $("#"+self.id+"_form_container").hide();
+            }
+        },
+        "save":function(btn){
+            alert("save");
+        },
+        "saveNext":function(btn){
+            alert("saveNext");
+        },
+        "reset":function(btn){
+            alert("reset");
+        }
+    };
 	this.RecordSetProvider = {
 		"id":function(){
 			return self.id;

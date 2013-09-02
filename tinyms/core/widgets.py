@@ -58,14 +58,11 @@ class DataTableModule(IWidget):
         sub["cols"] = self.cols
         DataTableModule.__entity_mapping__[self.datatable_key] = sub
 
-        html = """
-         <div id="{0}_wrap"><table id="{1}"><tfoot><tr>{2}</tr></tfoot></table></div><div id="{3}_form_container">I am form container.</div>
-        """
         tag = ""
         for title in self.titles:
             tag += "<th>" + title + "</th>"
         tag += "<th>#</th>"
-        return html.format(self.dom_id, self.dom_id, tag, self.dom_id)
+        return self.render_string("widgets/datatable_html.tpl",domId=self.dom_id,thTags = tag)
 
     def html_body(self):
         data = dict()
@@ -94,7 +91,7 @@ class DataTableModule(IWidget):
 
         params_["col_defs"] = json.dumps(html_col)
         params_["filter_configs"] = json.dumps(filter_configs)
-        return self.render_string("widgets/datatable.tpl", opt=params_)
+        return self.render_string("widgets/datatable_script.tpl", opt=params_)
 
     def javascript_files(self):
         items = list();
