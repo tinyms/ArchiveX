@@ -217,13 +217,13 @@ class MatchAnalyzeThread(threading.Thread):
 
     @staticmethod
     def detect_result(match):
-        match["formula_total"].to_results()
+        #match["formula_total"].to_results()
         match["formula_last10"].to_results()
         match["formula_last6"].to_results()
         match["formula_last4"].to_results()
-        avg_balls = (match["formula_total"].avg_balls + match["formula_last10"].avg_balls + match[
+        avg_balls = (match["formula_last10"].avg_balls + match[
             "formula_last6"].avg_balls + match[
-                         "formula_last4"].avg_balls) / 4
+                         "formula_last4"].avg_balls) / 3
         num = round(avg_balls, 2)
         #scores += match["formula_last_mid"].to_results()
         #r = Result(scores,match["odds"])

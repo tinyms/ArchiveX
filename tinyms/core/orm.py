@@ -49,7 +49,8 @@ class Simplify():
             return dict((c, getattr(self, c)) for c in columns)
         else:
             metas = self.cols_meta()
-            for k,v in enumerate(dict_):
+            for k,v in dict_.items():
+                print(k,v)
                 if not hasattr(self,k):
                     continue
                 for m in metas:
@@ -62,6 +63,21 @@ class Simplify():
                         elif m["type"] == "numeric":
                             if type(v) == str:
                                 setattr(self,k,Utils.parse_float(v))
+                            else:
+                                setattr(self,k,v)
+                        elif m["type"] == "datetime":
+                            if type(v) == str:
+                                setattr(self,k,Utils.parse_datetime(v))
+                            else:
+                                setattr(self,k,v)
+                        elif m["type"] == "date":
+                            if type(v) == str:
+                                setattr(self,k,Utils.parse_date(v))
+                            else:
+                                setattr(self,k,v)
+                        elif m["type"] == "time":
+                            if type(v) == str:
+                                setattr(self,k,Utils.parse_time(v))
                             else:
                                 setattr(self,k,v)
                         else:
@@ -88,8 +104,8 @@ class Simplify():
                 type_name = "int"
             elif ["numeric","float"].count(type_name)==1:
                 type_name = "numeric"
-            elif ["datetime","date","time"].count(type_name)==1:
-                type_name = "date"
+            # elif ["datetime","date","time"].count(type_name)==1:
+            #     type_name = "date"
             meta["type"] = type_name
             metas.append(meta)
         return metas

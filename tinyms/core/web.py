@@ -79,7 +79,7 @@ class IRequest(RequestHandler):
             return json.loads(data)
         return None
 
-    def wrap_bean(self, bean_obj, excude_keys=["id"]):
+    def wrap_entity(self, entity_object, excude_keys=["id"]):
         """
         把参数值填充到对象对应属性中，针对ORM中的Entity
         :param obj:
@@ -88,12 +88,12 @@ class IRequest(RequestHandler):
         """
         dict_ = dict()
         args = self.request.arguments
-        for key in args:
-            if excude_keys.count(key) != -1:
+        for key in args.keys():
+            if excude_keys.count(key) != 0:
                 continue
             dict_[key] = self.get_argument(key)
-        bean_obj.dict(dict_)
-        return bean_obj
+        entity_object.dict(dict_)
+        return entity_object
 
     def wrap_params_to_dict(self):
         dict_ = dict()
@@ -110,26 +110,49 @@ class IRequest(RequestHandler):
         return obj
 
 
-@route(r"/datatable/(.*)")
+@route(r"/datatable/(.*)/(.*)")
 class DataTableHandler(IRequest):
-    def post(self, id):
-        self.list(id)
+
+    def post(self, id, act):
+        if act == "list":
+            self.list(id)
+        elif act == "save":
+            self.update(id)
+        elif act == "saveNext":
+            self.update(id)
+        elif act == "delete":
+            self.delete(id)
 
     def delete(self, id):
+        self.set_header("Content-Type", "text/json;charset=utf-8")
         meta = DataTableModule.__entity_mapping__.get(id)
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
-        entity_id = self.get_argument("id")
-        pass
+        print(entity)
+
+        self.write("delete")
 
     def update(self, id):
+        self.set_header("Content-Type", "text/json;charset=utf-8")
         meta = DataTableModule.__entity_mapping__.get(id)
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
-        entity_id = self.get_argument("id")
-        pass
+        message = dict()
+        id = self.get_argument("id")
+        if not id:
+            obj = self.wrap_entity(entity())
+            cnn = SessionFactory.new()
+            cnn.add(obj)
+            cnn.commit()
+            message["success"] = True
+            message["msg"] = "Updated"
+            self.write(json.dumps(message))
+        else:
+            message["success"] = False
+            message["msg"] = "UpdateFailure"
+            self.write(json.dumps(message))
 
     def list(self, id):
         meta = DataTableModule.__entity_mapping__.get(id)

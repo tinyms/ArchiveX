@@ -8,7 +8,9 @@ import hashlib
 import json
 import urllib.request
 import urllib.parse
-import decimal,datetime
+import time
+import datetime
+import decimal
 from imp import find_module, load_module, acquire_lock, release_lock
 
 import psycopg2
@@ -230,7 +232,26 @@ class Utils():
         return arr
 
     @staticmethod
+    def parse_time_text(text):
+        if not text:
+            return ""
+        p = re.compile("\\d{2}:\\d{2}")
+        dates = p.findall(text)
+        if len(dates) > 0:
+            return dates[0]
+        return ""
+
+    @staticmethod
+    def parse_time(text):
+        time_text = Utils.parse_time_text(text)
+        if not time_text:
+            return None
+        return time.strptime(time_text,"%H:%M")
+
+    @staticmethod
     def parse_date_text(text):
+        if not text:
+            return ""
         p = re.compile("\\d{4}-\\d{2}-\\d{2}")
         dates = p.findall(text)
         if len(dates) > 0:
@@ -238,13 +259,31 @@ class Utils():
         return ""
 
     @staticmethod
+    def parse_date(text):
+        date_text = Utils.parse_date_text(text)
+        if not date_text:
+            return None
+        from datetime import datetime
+        return datetime.strptime(date_text,"%Y-%m-%d").date()
+
+    @staticmethod
     def parse_datetime_text(text):
+        if not text:
+            return ""
         p = "\\d{2}-\\d{2}\\s{1}\\d{2}:\\d{2}"
         r = re.compile(p)
         matchs = r.findall(text)
         if len(matchs) > 0:
             return matchs[0]
         return ""
+
+    @staticmethod
+    def parse_datetime(text):
+        datetime_text = Utils.parse_datetime_text(text)
+        if not datetime_text:
+            return None
+        from datetime import datetime
+        return datetime.strptime(datetime_text,"%Y-%m-%d %H:%M")
 
     @staticmethod
     def parse_float(text):
