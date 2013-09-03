@@ -41,7 +41,24 @@ function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
                     }
                 });
             },
-            "aoColumns": self.cols
+            "aoColumns": self.cols,
+            "sPaginationType" : "full_numbers",
+			"oLanguage" : {
+				"sLengthMenu": "每页显示 _MENU_ 条记录",
+				"sZeroRecords": "抱歉， 没有找到",
+				"sInfo": "从_START_到_END_ / 共_TOTAL_条数据",
+				"sInfoEmpty": "没有数据",
+				"sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+				"sZeroRecords": "没有检索到数据",
+				 "sSearch": "搜索:",
+				"oPaginate": {
+				"sFirst": "首页",
+				"sPrevious": "前一页",
+				"sNext": "后一页",
+				"sLast": "尾页"
+				}
+
+			}
         };
         $('#' + self.id).data("EditFormId", self.editFormId);
         self.filter_configs.push(null);
