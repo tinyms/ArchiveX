@@ -98,6 +98,9 @@ function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
             self.switchTableAndEditFormPanel(false);
         },
         "save": function (btn,state) {
+            if(!$("#" + self.id + "_EditForm").valid()){
+                return;
+            }
             $("#" + self.id + "_EditForm").ajaxSubmit({
                 "dataType": "json", "url": self.request_url + "save", "type": "post",
                 "beforSubmit": function (formData, jqForm, options) {

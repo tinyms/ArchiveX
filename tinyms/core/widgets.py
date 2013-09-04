@@ -61,10 +61,26 @@ class DataTableModule(IWidget):
         if not self.form_id:
             obj = import_object(self.entity_full_name)()
             metas = obj.cols_meta()
+            col_defs = list()
+            for col in self.cols:
+                col_def = dict()
+                col_def["name"]=col
+                col_def["type"]=""
+                col_def["required"]=""
+                for meta in metas:
+                    if meta["name"]==col:
+                        if not meta["nullable"]:
+                            col_def["required"]="required"
+                        if meta["type"]=="int":
+                            col_def["type"]="digits"
+                        elif meta["type"]=="numeric":
+                            col_def["type"]="number"
+                        elif meta["type"]=="date":
+                            col_def["type"]="date"
+                col_defs.append(col_def)
             data["use_sys_editform"] = True
             data["col_title_mapping"] = self.col_title_mapping
-            data["cols"]=self.cols
-            data["meta"] = obj.cols_meta()
+            data["cols"]=col_defs
         return self.render_string("widgets/editform.tpl",opt=data)
 
     def embedded_javascript(self):
