@@ -71,3 +71,13 @@ def ajax(key):
         return cls
 
     return ref
+
+def ui(name):
+    """
+    ui mapping. 配置UI至模版可用
+    """
+    def ref_pattern(cls):
+        ObjectPool.ui_mapping[name] = cls
+        return cls
+
+    return ref_pattern

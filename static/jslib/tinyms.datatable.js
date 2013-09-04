@@ -7,7 +7,7 @@ function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
     this.id = id_;
     this.__dataTable = null;
     this.editFormId = editFormId_;
-    this.formType = "dialog";//'dialog','panel',default is 'dialog'
+    this.formType = "default";
     this.entityName = entityName_;
     this.cols = cols_;
     this.filter_configs = filter_configs_;
@@ -15,9 +15,9 @@ function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
     this.request_url = "/datatable/" + self.entityName + "/";
     this.Create = function () {
         self.cols.push({"mData": "id", "sTitle": "#", "mRender": function (pk, type, full) {
-            var action_btns = '<a href="#" onclick="' + self.id + '.RecordSetProvider.New(this);">增</a>';
-            action_btns += ' <a href="#" onclick="' + self.id + '.RecordSetProvider.Modify(this,' + pk + ');">改</a>';
-            action_btns += ' <a href="#" onclick="' + self.id + '.RecordSetProvider.Delete(this,' + pk + ');">删</a>';
+            var action_btns = '<a href="#" onclick="' + self.id + '_.RecordSetProvider.New(this);">增</a>';
+            action_btns += ' <a href="#" onclick="' + self.id + '_.RecordSetProvider.Modify(this,' + pk + ');">改</a>';
+            action_btns += ' <a href="#" onclick="' + self.id + '_.RecordSetProvider.Delete(this,' + pk + ');">删</a>';
             return action_btns;
         }});
         self.config = {
@@ -65,15 +65,8 @@ function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
         self.__dataTable = $('#' + self.id).dataTable(self.config).columnFilter({"aoColumns": self.filter_configs});
         $('#' + self.id + '_NewRowBtnWrap').html("<button id='" + self.id + "_NewRowBtn'>+</button>");
         $("#" + self.id + "_NewRowBtn").click(function () {
-            if (self.formType == "panel" && self.editFormId != "") {
-                $("#" + self.id + "_wrap").hide();
-                $("#" + self.editFormId).show();
-            } else {
-                $("#" + self.id + "_wrap").hide();
-                var form_html = "<input type='hidden' id='id' name='id'/>";
-                form_html += $("#" + self.id + "_EditFormTemplate").html();
-                $("#" + self.id + "_EditForm").html(form_html);
-                $("#" + self.id + "_form_container").show();
+            if(self.editFormId==""){
+                self.switchTableAndEditFormPanel(true);
             }
         });
         return self.__dataTable;
@@ -81,10 +74,16 @@ function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
     this.dataTable = function () {
         return self.__dataTable;
     };
-    this.switchEditFormPanel=function(direct){
-        if(direct=="panel"){
+    this.switchTableAndEditFormPanel=function(is_panel){
+        if(is_panel){
+            var form_html = "<input type='hidden' id='id' name='id'/>";
+            form_html += $("#" + self.id + "_EditFormTemplate").html();
+            $("#" + self.id + "_EditForm").html(form_html);
             $("#" + self.id + "_wrap").hide();
-            $("#" + self.editFormId).show();
+            $("#" + self.id + "_form_container").show();
+        }else{
+            $("#" + self.id + "_wrap").show();
+            $("#" + self.id + "_form_container").hide();
         }
     }
     this.Refresh = function () {
@@ -96,13 +95,7 @@ function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
     };
     this.form = {
         "cancel": function (btn) {
-            if (self.formType == "panel") {
-                $("#" + self.id + "_wrap").show();
-                $("#" + self.id + "_form_container").hide();
-            } else {
-                $("#" + self.id + "_wrap").show();
-                $("#" + self.id + "_form_container").hide();
-            }
+            self.switchTableAndEditFormPanel(false);
         },
         "save": function (btn,state) {
             $("#" + self.id + "_EditForm").ajaxSubmit({
@@ -113,11 +106,12 @@ function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
                     if(data.success){
                         alert(data.msg);
                         if(data.msg=="Updated"){
-                            self.Refresh();
+
                         }
                         if(state=="clear"){
                             $("#" + self.id + "_EditForm").resetForm();
                         }
+                        self.Refresh();
                     }
                 },
                 "error":function(){
@@ -141,13 +135,7 @@ function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
             $(btn).parent().parent().attr("style", "background-color:#99CC99;");
         },
         "New": function (btn) {
-            $('#' + this.id() + '_EditFormDialog').dialog("open");
-            if (this.form_id() == "") {
-                return;
-            }
-            var html = Mustache.render($("#" + this.form_id()).html(), {});
-            //open edit dialog
-            $('#' + this.id() + '_EditFormDialog').dialog("open");
+            self.switchTableAndEditFormPanel(true);
         },
         "Modify": function (btn, record_id) {
             this.color_current_row(btn);
@@ -160,19 +148,25 @@ function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
                 }
             }
             if (current_row != null) {
-                console.log(current_row);
                 if (this.form_id() == "") {
-                    return;
+                    self.switchTableAndEditFormPanel(true);
+                    try{
+                        for(k in current_row){
+                            $("#"+k).val(current_row[k]);
+                        }
+                    }catch(e){}
                 }
-                var html = Mustache.render($("#" + this.form_id()).html(), current_row);
-                //open edit dialog
-                $('#' + this.id() + '_EditFormDialog').dialog("open");
             }
         },
         "Delete": function (btn, record_id) {
             this.color_current_row(btn);
-            if (confirm("确定要删除当前选中的记录?")) {
-
+            if (confirm("确定要删除当前选中的记录吗?")) {
+                $.post(self.request_url + "delete",{id:record_id},function(data){
+                    if(data.success){
+                        alert(data.msg);
+                        self.Refresh();
+                    }
+                },"json");
             }
         }
     };

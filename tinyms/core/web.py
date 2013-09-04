@@ -129,9 +129,15 @@ class DataTableHandler(IRequest):
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
-        print(entity)
-
-        self.write("delete")
+        message = dict()
+        rec_id = self.get_argument("id")
+        cnn = SessionFactory.new()
+        cur_row = cnn.query(entity).get(rec_id)
+        cnn.delete(cur_row)
+        cnn.commit()
+        message["success"] = True
+        message["msg"] = "Deleted"
+        self.write(json.dumps(message))
 
     def update(self, id):
         self.set_header("Content-Type", "text/json;charset=utf-8")
@@ -140,18 +146,22 @@ class DataTableHandler(IRequest):
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
         message = dict()
-        id = self.get_argument("id")
-        if not id:
+        rec_id = self.get_argument("id")
+        if not rec_id:
             obj = self.wrap_entity(entity())
             cnn = SessionFactory.new()
             cnn.add(obj)
             cnn.commit()
             message["success"] = True
-            message["msg"] = "Updated"
+            message["msg"] = "Newed"
             self.write(json.dumps(message))
         else:
-            message["success"] = False
-            message["msg"] = "UpdateFailure"
+            cnn = SessionFactory.new()
+            cur_row = cnn.query(entity).get(rec_id)
+            self.wrap_entity(cur_row)
+            cnn.commit()
+            message["success"] = True
+            message["msg"] = "Updated"
             self.write(json.dumps(message))
 
     def list(self, id):

@@ -2,22 +2,12 @@ __author__ = 'tinyms'
 
 import json
 from tornado.web import UIModule
-
+from tornado.util import import_object
 from tinyms.core.common import Utils
-from tinyms.core.point import ObjectPool
+from tinyms.core.point import ui
 
 class IWidget(UIModule):
     pass
-
-def ui(name):
-    """
-    ui mapping. 配置UI至模版可用
-    """
-    def ref_pattern(cls):
-        ObjectPool.ui_mapping[name] = cls
-        return cls
-
-    return ref_pattern
 
 def datatable_filter(entity_name):
     """
@@ -69,9 +59,12 @@ class DataTableModule(IWidget):
         data["dom_id"] = self.dom_id
         data["use_sys_editform"] = False
         if not self.form_id:
+            obj = import_object(self.entity_full_name)()
+            metas = obj.cols_meta()
             data["use_sys_editform"] = True
             data["col_title_mapping"] = self.col_title_mapping
             data["cols"]=self.cols
+            data["meta"] = obj.cols_meta()
         return self.render_string("widgets/editform.tpl",opt=data)
 
     def embedded_javascript(self):
@@ -95,7 +88,6 @@ class DataTableModule(IWidget):
 
     def javascript_files(self):
         items = list();
-        items.append("/static/jslib/jquery-ui/js/jquery-ui-1.10.3.custom.min.js")
         items.append("/static/jslib/datatable/js/jquery.dataTables.min.js")
         items.append("/static/jslib/datatable/js/jquery.dataTables.columnFilter.js")
         items.append("/static/jslib/datatable/extras/tabletools/js/ZeroClipboard.js")
@@ -105,7 +97,6 @@ class DataTableModule(IWidget):
 
     def css_files(self):
         items = list();
-        items.append("/static/jslib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.min.css")
         items.append("/static/jslib/datatable/css/jquery.dataTables.css")
         items.append("/static/jslib/datatable/extras/tabletools/css/TableTools.css")
         return items
