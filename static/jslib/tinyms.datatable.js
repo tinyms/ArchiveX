@@ -2,15 +2,13 @@
  * User: tinyms
  * Date: 13-9-2
  */
-function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
+function DataTableX(id_, entityName_, cols_, editFormId_) {
     var self = this;
     this.id = id_;
     this.__dataTable = null;
     this.editFormId = editFormId_;
-    this.formType = "default";
     this.entityName = entityName_;
     this.cols = cols_;
-    this.filter_configs = filter_configs_;
     this.config = {};
     this.request_url = "/datatable/" + self.entityName + "/";
     this.Create = function () {
@@ -61,8 +59,7 @@ function DataTableX(id_, entityName_, cols_, filter_configs_, editFormId_) {
 			}
         };
         $('#' + self.id).data("EditFormId", self.editFormId);
-        self.filter_configs.push(null);
-        self.__dataTable = $('#' + self.id).dataTable(self.config).columnFilter({"aoColumns": self.filter_configs});
+        self.__dataTable = $('#' + self.id).dataTable(self.config);
         $('#' + self.id + '_NewRowBtnWrap').html("<button id='" + self.id + "_NewRowBtn'>+</button>");
         $("#" + self.id + "_NewRowBtn").click(function () {
             if(self.editFormId==""){

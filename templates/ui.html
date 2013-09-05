@@ -5,9 +5,11 @@
     <script type="text/javascript" src="/static/jslib/tinyms.common.js"></script>
 </head>
 <body>
-{%
-module DataTable(id="ArchivesDataTable",entity="tinyms.core.entity.Archives",
-titles=['姓名','性别','生日','邮箱','电话'],cols=['name','sex','birthday','email','mobile_phone'])
-%}
+{% module DataTable(id="ArchivesDataTable",
+entity="tinyms.core.entity.Archives",
+cols=['name','sex','birthday','email','mobile_phone'],
+titles=['姓名','性别','生日','邮箱','电话'],
+search_fields="name,email"
+) %}
 </body>
 </html>
