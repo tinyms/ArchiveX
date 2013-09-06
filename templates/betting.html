@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>投注</title>
+    <script type="text/javascript" src="/static/jslib/tinyms.common.js"></script>
+    <script type="text/javascript">
+        function datatable_render(id,k,v,row){
+            if(id=="BettingDataTable"&&k=="fix"){
+                if(v==true){
+                    return "是";
+                }else{
+                    return "否";
+                }
+            }
+            return v;
+        }
+    </script>
+</head>
+<body>
+<div>
+{% module DataTable(id="BettingDataTable",
+entity="lottery.entity.Betting",
+cols=['seq','select','reason','fix'],
+titles=['序号','选择','原因','稳胆'],
+search_fields="select",
+form="BettingDataTable_EditFormTemplate"
+) %}
+</div>
+<div>
+{% module DataTable(id="ExpectDataTable",
+entity="lottery.entity.Expect",
+cols=['no'],
+titles=['期号'],
+search_fields="",
+form="ExpectDataTable_EditFormTemplate"
+) %}
+</div>
+<!--EditForms-->
+<script id="BettingDataTable_EditFormTemplate" type="text/x-jsrender">
+
+	<div class="form-group">
+		<label for="seq" class="col-lg-2 control-label">序号</label>
+		<div class="col-lg-10">
+		  <input type="text" class="form-control" id="seq" name="seq" required digits>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="select" class="col-lg-2 control-label">选择</label>
+		<div class="col-lg-10">
+		  <input type="text" class="form-control" id="select" name="select" required >
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="reason" class="col-lg-2 control-label">原因</label>
+		<div class="col-lg-10">
+		  <input type="text" class="form-control" id="reason" name="reason"  >
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="fix" class="col-lg-2 control-label">稳胆</label>
+		<div class="col-lg-10">
+		  <input type="text" class="form-control" id="fix" name="fix"  digits>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="expect_id" class="col-lg-2 control-label">期号</label>
+		<div class="col-lg-10">
+            <select id="expect_id" name="expect_id" class="form-control">
+                {% for ep in opt['expects'] %}
+                <option value="{{ ep[0] }}">{{ ep[1] }}</option>
+                {% end %}
+            </select>
+		</div>
+	</div>
+
+</script>
+<script id="ExpectDataTable_EditFormTemplate" type="text/x-jsrender">
+
+	<div class="form-group">
+		<label for="no" class="col-lg-2 control-label">no</label>
+		<div class="col-lg-10">
+		  <input type="text" class="form-control" id="no" name="no" required digits>
+		</div>
+	</div>
+
+</script>
+</body>
+</html>

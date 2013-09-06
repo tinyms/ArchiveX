@@ -1,6 +1,17 @@
 /**
  * User: tinyms
  * Date: 13-9-2
+ * @plugins:
+ * function datatable_sortable(id){}
+ * function datatable_server_params(id,aoData){} //aoData is list(dict)
+ * function datatable_server_data(id, data, textStatus, jqXHR){}
+ * function datatable_form_fill(id,row){}
+ * function datatable_render(id,k,v,row){}
+ * function datatable_render_actionbar(id,k,v,row){}
+ * function datatable_data_add(id,form_data){}
+ * function datatable_data_update(id,pk,form_data){}
+ * function datatable_data_delete(id,pk){}
+ * function datatable_data_delete_confirm_label(id);
  */
 function DataTableX(id_, entityName_, cols_, editFormId_) {
     var self = this;
@@ -12,20 +23,42 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
     this.config = {};
     this.request_url = "/datatable/" + self.entityName + "/";
     this.Create = function () {
-        self.cols.push({"mData": "id", "sTitle": "#", "mRender": function (pk, type, full) {
+        var len = this.cols.length;
+        for (var k = 0; k < len; k++) {
+            var item = this.cols[k];
+            if (typeof(datatable_render) != "undefined") {
+                var func = function (col, v, type, row) {
+                    return datatable_render(self.id, col, v, row)
+                };
+                func.prototype.column = item["mData"];
+                item["mRender"] = func;
+            }
+        }
+        self.cols.push({"mData": "id", "sTitle": "#", "mRender": function (col, v, type, row) {
+            if (typeof(datatable_render_actionbar) != "undefined") {
+                return datatable_render_actionbar(self.id, "id", v, row);
+            }
             var action_btns = '<a href="#" onclick="' + self.id + '_.RecordSetProvider.New(this);">增</a>';
-            action_btns += ' <a href="#" onclick="' + self.id + '_.RecordSetProvider.Modify(this,' + pk + ');">改</a>';
-            action_btns += ' <a href="#" onclick="' + self.id + '_.RecordSetProvider.Delete(this,' + pk + ');">删</a>';
+            action_btns += ' <a href="#" onclick="' + self.id + '_.RecordSetProvider.Modify(this,' + v + ');">改</a>';
+            action_btns += ' <a href="#" onclick="' + self.id + '_.RecordSetProvider.Delete(this,' + v + ');">删</a>';
             return action_btns;
         }});
+
+        var bSorting = true;
+        if (typeof(datatable_sortable) != "undefined") {
+            bSorting = datatable_sortable(self.id);
+        }
         self.config = {
             "bServerSide": true,
             "bProcessing": true,
-            "asSorting": true,
+            "asSorting": bSorting,
             "sDom": '<"#' + self.id + '_NewRowBtnWrap">T<"clear">lfrtip',
-            "oTableTools": {"sSwfPath": "/static/jslib/datatable/extras/tabletools/swf/copy_csv_xls_pdf.swf"},
+            "oTableTools": {"sSwfPath": "/static/jslib/datatable/extras/tabletools/swf/copy_csv_xls.swf"},
             "sAjaxSource": self.request_url + "list",
             "fnServerParams": function (aoData) {
+                if (typeof(datatable_server_params) != "undefined") {
+                    datatable_server_params(self.id, aoData);
+                }
             },
             "fnServerData": function (sSource, aoData, fnCallback, oSettings) {
                 oSettings.jqXHR = $.ajax({
@@ -36,49 +69,50 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
                     "success": function (data, textStatus, jqXHR) {
                         $('#' + self.id).data("DataSet", data);
                         fnCallback(data, textStatus, jqXHR);
+                        if (typeof(datatable_server_data) != "undefined") {
+                            datatable_server_data(self.id, data, textStatus, jqXHR);
+                        }
                     }
                 });
             },
             "aoColumns": self.cols,
-            "sPaginationType" : "full_numbers",
-			"oLanguage" : {
-				"sLengthMenu": "每页显示 _MENU_ 条记录",
-				"sZeroRecords": "抱歉， 没有找到",
-				"sInfo": "从_START_到_END_ / 共_TOTAL_条数据",
-				"sInfoEmpty": "没有数据",
-				"sInfoFiltered": "(从 _MAX_ 条数据中检索)",
-				"sZeroRecords": "没有检索到数据",
-				 "sSearch": "搜索:",
-				"oPaginate": {
-				"sFirst": "首页",
-				"sPrevious": "前一页",
-				"sNext": "后一页",
-				"sLast": "尾页"
-				}
+            "sPaginationType": "full_numbers",
+            "oLanguage": {
+                "sLengthMenu": "每页显示 _MENU_ 条记录",
+                "sZeroRecords": "抱歉， 没有找到",
+                "sInfo": "从_START_到_END_ / 共_TOTAL_条数据",
+                "sInfoEmpty": "没有数据",
+                "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                "sZeroRecords": "没有检索到数据",
+                "sSearch": "搜索:",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "前一页",
+                    "sNext": "后一页",
+                    "sLast": "尾页"
+                }
 
-			}
+            }
         };
         $('#' + self.id).data("EditFormId", self.editFormId);
         self.__dataTable = $('#' + self.id).dataTable(self.config);
         $('#' + self.id + '_NewRowBtnWrap').html("<button id='" + self.id + "_NewRowBtn'>+</button>");
         $("#" + self.id + "_NewRowBtn").click(function () {
-            if(self.editFormId==""){
-                self.switchTableAndEditFormPanel(true);
-            }
+            self.switchTableAndEditFormPanel(true);
         });
         return self.__dataTable;
     };
     this.dataTable = function () {
         return self.__dataTable;
     };
-    this.switchTableAndEditFormPanel=function(is_panel){
-        if(is_panel){
+    this.switchTableAndEditFormPanel = function (is_panel) {
+        if (is_panel) {
             var form_html = "<input type='hidden' id='id' name='id'/>";
             form_html += $("#" + self.id + "_EditFormTemplate").html();
             $("#" + self.id + "_EditForm").html(form_html);
             $("#" + self.id + "_wrap").hide();
             $("#" + self.id + "_form_container").show();
-        }else{
+        } else {
             $("#" + self.id + "_wrap").show();
             $("#" + self.id + "_form_container").hide();
         }
@@ -94,8 +128,8 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
         "cancel": function (btn) {
             self.switchTableAndEditFormPanel(false);
         },
-        "save": function (btn,state) {
-            if(!$("#" + self.id + "_EditForm").valid()){
+        "save": function (btn, state) {
+            if (!$("#" + self.id + "_EditForm").valid()) {
                 return;
             }
             $("#" + self.id + "_EditForm").ajaxSubmit({
@@ -103,18 +137,23 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
                 "beforSubmit": function (formData, jqForm, options) {
                 },
                 "success": function (data, statusText, xhr, $form) {
-                    if(data.success){
-                        alert(data.msg);
-                        if(data.msg=="Updated"){
-
+                    if (data.success) {
+                        if (data.msg == "Updated") {
+                            if (typeof(datatable_data_add) != "undefined") {
+                                return datatable_data_add(self.id, null);
+                            }
+                        } else if (data.msg == "Newed") {
+                            if (typeof(datatable_data_update) != "undefined") {
+                                return datatable_data_update(self.id, $("#" + self.id + "_EditForm #id").val(), null);
+                            }
                         }
-                        if(state=="clear"){
+                        if (state == "clear") {
                             $("#" + self.id + "_EditForm").resetForm();
                         }
                         self.Refresh();
                     }
                 },
-                "error":function(){
+                "error": function () {
                     alert("Server Error.");
                 }
             });
@@ -150,23 +189,33 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
             if (current_row != null) {
                 if (this.form_id() == "") {
                     self.switchTableAndEditFormPanel(true);
-                    try{
-                        for(k in current_row){
-                            $("#"+k).val(current_row[k]);
+                    try {
+                        for (k in current_row) {
+                            $("#" + self.id + "_EditForm #" + k).val(current_row[k]);
                         }
-                    }catch(e){}
+                        if (typeof(datatable_form_fill) != "undefined") {
+                            datatable_form_fill(self.id, current_row);
+                        }
+                    } catch (e) {
+                    }
                 }
             }
         },
         "Delete": function (btn, record_id) {
             this.color_current_row(btn);
-            if (confirm("确定要删除当前选中的记录吗?")) {
-                $.post(self.request_url + "delete",{id:record_id},function(data){
-                    if(data.success){
-                        alert(data.msg);
+            var label = "确定要删除当前选中的记录吗?";
+            if (typeof(datatable_data_delete_confirm_label) != "undefined") {
+                label = datatable_data_delete_confirm_label(self.id);
+            }
+            if (confirm(label)) {
+                $.post(self.request_url + "delete", {id: record_id}, function (data) {
+                    if (data.success) {
+                        if (typeof(datatable_data_delete) != "undefined") {
+                            return datatable_data_delete(self.id, record_id);
+                        }
                         self.Refresh();
                     }
-                },"json");
+                }, "json");
             }
         }
     };

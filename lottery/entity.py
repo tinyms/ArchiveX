@@ -1,6 +1,6 @@
 __author__ = 'tinyms'
 
-from sqlalchemy import Column, Integer, String, Numeric
+from sqlalchemy import Column, Integer, String, Numeric, Boolean, Text
 from tinyms.core.orm import Simplify,Entity,many_to_one,SessionFactory
 
 SessionFactory.table_name_prefix("lottery")
@@ -33,3 +33,27 @@ class Odds(Entity,Simplify):
     r_1_c = Column(Numeric(2,2))
     r_0_c = Column(Numeric(2,2))
     #battle one
+
+class Expect(Entity,Simplify):
+    no = Column(Integer(),unique=True,nullable=False)
+
+@many_to_one("Expect")
+class Betting(Entity,Simplify):
+    seq = Column(Integer(),nullable=False)
+    select = Column(String(3),nullable=False)
+    reason = Column(Text())
+    fix = Column(Boolean)
+
+from tinyms.core.web import IRequest
+from tinyms.core.point import route
+
+@route("/betting")
+class BettingController(IRequest):
+    def get(self, *args, **kwargs):
+        cnn = SessionFactory.new()
+        opt=dict()
+        opt["expects"]=list()
+        for e in cnn.query(Expect).order_by(Expect.id.desc()):
+            opt["expects"].append((e.id,e.no))
+        print(opt["expects"])
+        return self.render("betting.html",opt=opt)
