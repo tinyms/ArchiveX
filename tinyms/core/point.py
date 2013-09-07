@@ -13,6 +13,8 @@ class ObjectPool():
     ui_mapping = dict()
 
 class IWebConfig():
+    def get_server_port(self):
+        return 80
     def get_database_driver(self):
         return None
     def security_urls(self,urls=set()):

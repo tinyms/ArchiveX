@@ -25,10 +25,13 @@ ws_settings["ui_modules"] = dict()
 for key in ObjectPool.ui_mapping:
     ws_settings["ui_modules"][key] = ObjectPool.ui_mapping[key]
 
+port = 80
 web_configs = Plugin.get(IWebConfig)
 if web_configs:
     for web_config in web_configs:
-        if hasattr(web_config, "ws_settings"):
+        if hasattr(web_config, "get_server_port"):
+            port = web_config.get_server_port()
+        if hasattr(web_config, "settings"):
             web_config.settings(ws_settings)
         if hasattr(web_config, "security_urls"):
             web_config.security_urls(ObjectPool.security_filter_uri)
@@ -38,22 +41,19 @@ if web_configs:
 
 #compress js and css file to one
 Utils.combine_text_files(os.path.join(os.getcwd(), "static/jslib/"), "tinyms.common")
-
 app = Application(ObjectPool.url_patterns, **ws_settings)
 
 if __name__ == "__main__":
-    port = 80
-    while True:
+    server_new = True
+    try:
+        app.listen(port)
+    except Exception as e:
+        server_new = False
+        print("%s" % e)
+    webbrowser.open_new_tab("http://localhost:%i" % port)
+    if server_new:
         try:
-            app.listen(port)
-            break
+            IOLoop.instance().start()
         except Exception as e:
             print("%s" % e)
-            port += 1
-            continue
-    webbrowser.open_new_tab("http://localhost:%i" % port)
-    try:
-        IOLoop.instance().start()
-    except Exception as e:
-        print("%s" % e)
-        sys.exit(1)
+            sys.exit(1)
