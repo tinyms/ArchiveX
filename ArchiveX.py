@@ -12,6 +12,7 @@ from tornado.web import Application
 from tinyms.core.common import Plugin, Utils
 from tinyms.core.point import IWebConfig, ObjectPool
 from tinyms.core.orm import SessionFactory
+from tinyms.core.loader import Loader
 
 Plugin.load()
 
@@ -38,6 +39,7 @@ if web_configs:
         if hasattr(web_config, "get_database_driver"):#Only one in application
             SessionFactory.__engine__ = web_config.get_database_driver()
             SessionFactory.create_tables()
+            Loader.init()
 
 #compress js and css file to one
 Utils.combine_text_files(os.path.join(os.getcwd(), "static/jslib/"), "tinyms.common")

@@ -177,6 +177,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
             self.switchTableAndEditFormPanel(true);
         },
         "Modify": function (btn, record_id) {
+
             this.color_current_row(btn);
             var local_ds = $('#' + this.id()).data("DataSet").aaData;
             var current_row = null;
@@ -187,17 +188,15 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
                 }
             }
             if (current_row != null) {
-                if (this.form_id() == "") {
-                    self.switchTableAndEditFormPanel(true);
-                    try {
-                        for (k in current_row) {
-                            $("#" + self.id + "_EditForm #" + k).val(current_row[k]);
-                        }
-                        if (typeof(datatable_form_fill) != "undefined") {
-                            datatable_form_fill(self.id, current_row);
-                        }
-                    } catch (e) {
+                self.switchTableAndEditFormPanel(true);
+                try {
+                    for (k in current_row) {
+                        $("#" + self.id + "_EditForm #" + k).val(current_row[k]);
                     }
+                    if (typeof(datatable_form_fill) != "undefined") {
+                        datatable_form_fill(self.id, current_row);
+                    }
+                } catch (e) {
                 }
             }
         },

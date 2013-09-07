@@ -1,12 +1,11 @@
 __author__ = 'tinyms'
 
 from sqlalchemy import Column, Integer, String, DateTime, Text, Date, Boolean
-
 from tinyms.core.orm import Entity, Simplify, many_to_one, many_to_many
 
 
 class Archives(Entity, Simplify):
-    name = Column(String(10), nullable=False)
+    name = Column(String(20), nullable=False)
     alias = Column(String(10))
     sex = Column(Integer(1))
     birthday = Column(Date())
@@ -28,7 +27,7 @@ class Account(Entity, Simplify):
 
 @many_to_many("Account")
 class Role(Entity, Simplify):
-    name = Column(String(20), unique=True, nullable=False)
+    name = Column(String(60), unique=True, nullable=False)
     description = Column(Text)
     #securitypoints
     #accounts
@@ -36,10 +35,10 @@ class Role(Entity, Simplify):
 
 @many_to_many("Role")
 class SecurityPoint(Entity, Simplify):
-    key = Column(String(60), unique=True, nullable=False)
+    key_ = Column(String(60), unique=True, nullable=False)
     description = Column(Text)
-    module_name = Column(String(60), nullable=False)
-    pkg_name = Column(String(60), nullable=False)
+    group_ = Column(String(60), nullable=False)
+    category = Column(String(60), nullable=False)
     #roles
 
 

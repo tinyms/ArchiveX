@@ -40,7 +40,7 @@ class Expect(Entity,Simplify):
 @many_to_one("Expect")
 class Betting(Entity,Simplify):
     seq = Column(Integer(),nullable=False)
-    select = Column(String(3),nullable=False)
+    select_ = Column(String(3),nullable=False)
     reason = Column(Text())
     fix = Column(Boolean)
 

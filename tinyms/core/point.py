@@ -1,11 +1,12 @@
 __author__ = 'tinyms'
 
 from functools import wraps
-
+from tinyms.core.entity import SecurityPoint
 #for plugin to extends
 class EmptyClass():pass
 
 class ObjectPool():
+    points = list()
     api = dict()
     ajax = dict()
     security_filter_uri = set()
@@ -26,6 +27,19 @@ class IWebConfig():
         :return:
         """
         return
+
+def reg(key,category="",group_="",description=""):
+    if not key:
+        return
+    for sp in ObjectPool.points:
+        if sp.key_ == key:
+            return
+    point = SecurityPoint()
+    point.key_ = key
+    point.description = description
+    point.group_ = group_
+    point.category = category
+    ObjectPool.points.append(point)
 
 def route(pattern):
     """
