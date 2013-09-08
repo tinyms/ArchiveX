@@ -4,7 +4,7 @@ from tinyms.core.point import route
 from tinyms.core.web import IRequest
 from tinyms.core.common import Utils
 from tinyms.core.orm import SessionFactory
-from tinyms.core.entity import Account,Archives,Role,SecurityPoint
+from tinyms.core.entity import Account,Archives
 
 @route("/login")
 class Login(IRequest):
@@ -36,13 +36,11 @@ class Login(IRequest):
                 .filter(Account.login_name==login_id).filter(Account.login_pwd==Utils.md5(login_pwd)).limit(1).scalar()
 
         if current_account:
-            print(current_account)
             name = cnn.query(Archives.name).filter(Archives.id==current_account.archives_id).limit(1).scalar()
-            points = cnn.query(SecurityPoint.key_)\
-                .join((Role,Account.roles)).join((SecurityPoint,Role.securitypoints)).filter(Account.id==current_account.id).all()
-            print(name,points)
+            self.set_secure_cookie(IRequest.__key_account_id__,"%i" % current_account.id)
+            self.set_secure_cookie(IRequest.__key_account_name__,name)
 
-        self.render("login.html")
+        self.redirect("/workbench/dashboard")
 
 @route("/logout")
 class Logout(IRequest):

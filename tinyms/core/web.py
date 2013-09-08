@@ -4,12 +4,14 @@ import json
 from tornado.web import RequestHandler
 from tinyms.core.common import JsonEncoder
 from tinyms.core.point import EmptyClass, ObjectPool, route
-
+from tinyms.core.orm import SessionFactory
+from tinyms.core.entity import Account,Role,SecurityPoint
+from tinyms.core.cache import CacheManager
 
 class IRequest(RequestHandler):
-    __key_account_id__ = "cookie__key_account_id__"
-    __key_account_points__ = "cookie__key_account_points__"
-    __key_account_summary__ = "cookie__key_account_summary__"
+    __key_account_id__ = "__cookie_account_id__"
+    __key_account_name__ = "__cookie_account_name__"
+    __key_account_points__ = "@cache.cookie.account.securitypoints.%s"
 
     def __init__(self, application, request, **kwargs):
         RequestHandler.__init__(self, application, request, **kwargs)
@@ -26,15 +28,18 @@ class IRequest(RequestHandler):
         return False
 
     def get_login_url(self):
-        self.redirect("/login")
+        return "/login"
 
     def write_error(self, status_code, **kwargs):
         if status_code == 401:
             self.render("login.html")
         elif status_code == 403:
             self.render("err.html", reason="访问禁止")
+        elif status_code == 404:
+            self.clear_all_cookies()
         else:
             self.render("err.html", reason="服务器内部错误")
+
 
     def get_current_user(self):
         """
@@ -51,20 +56,33 @@ class IRequest(RequestHandler):
         account security points: set('key1','key2',..)
         :return:
         """
-        data = self.get_secure_cookie(IRequest.__key_account_points__)
-        if data:
-            return json.loads(data)
-        return set()
+        temp = set()
+        if not self.get_current_user():
+            return temp
 
-    def get_current_account_summary(self):
+        cache = CacheManager.get(500,30*1000)
+        points = cache.get(IRequest.__key_account_points__ % self.get_current_user())
+        if points:
+            print("Exists Cache Account Points")
+            return points
+        else:
+            cnn = SessionFactory.new()
+            points = cnn.query(SecurityPoint.key_)\
+                    .join((Role,Account.roles)).join((SecurityPoint,Role.securitypoints)).filter(Account.id==self.get_current_user()).all()
+            for p in points:
+                temp.add(p[0])
+            print(temp)
+            return temp
+
+    def get_current_account_name(self):
         """
         current account name,sex,post,org etc.
         :return:
         """
-        data = self.get_secure_cookie(IRequest.__key_account_points__)
-        if data:
-            return json.loads(data)
-        return None
+        name = self.get_secure_cookie(IRequest.__key_account_name__)
+        if name:
+            return name
+        return ""
 
     def wrap_entity(self, entity_object, excude_keys=["id"]):
         """
@@ -99,9 +117,11 @@ class IRequest(RequestHandler):
 
 class IAuthRequest(IRequest):
     def __init__(self, application, request, **kwargs):
-        if not self.get_current_user():
-            self.redirect(self.get_login_url())
+        IRequest.__init__(self, application, request, **kwargs)
 
+    def prepare(self):
+        if not self.get_current_user():
+            self.redirect("/login")
 
 @route(r"/api/(.*)/(.*)")
 class ApiHandler(IRequest):

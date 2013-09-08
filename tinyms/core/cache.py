@@ -13,7 +13,7 @@ except ImportError:  # pragma: no cover
 class CacheManager(object):
     __disk_path__ = ""
     @staticmethod
-    def create(threshold=500, default_timeout=300):
+    def get(threshold=500, default_timeout=300):
         if not CacheManager.__disk_path__:
             return SimpleCache(threshold,default_timeout)
         return FileSystemCache(threshold,default_timeout)
