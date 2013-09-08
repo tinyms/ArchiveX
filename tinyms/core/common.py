@@ -352,6 +352,13 @@ class Utils():
                 Utils.text_write(combine_file,all)
         pass
 
+    @staticmethod
+    def is_email(s):
+        p = r"[^@]+@[^@]+\.[^@]+"
+        if re.match(p,s):
+            return True
+        return False
+
 class Plugin():
     ObjectPool = dict()
 

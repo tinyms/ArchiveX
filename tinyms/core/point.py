@@ -9,7 +9,6 @@ class ObjectPool():
     points = list()
     api = dict()
     ajax = dict()
-    security_filter_uri = set()
     url_patterns = list()
     ui_mapping = dict()
 
@@ -17,8 +16,6 @@ class IWebConfig():
     def get_server_port(self):
         return 80
     def get_database_driver(self):
-        return None
-    def security_urls(self,urls=set()):
         return None
     def settings(self, ws_setting):
         """

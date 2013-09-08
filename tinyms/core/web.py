@@ -5,22 +5,14 @@ from tornado.web import RequestHandler
 from tinyms.core.common import JsonEncoder
 from tinyms.core.point import EmptyClass, ObjectPool, route
 
+
 class IRequest(RequestHandler):
-    __key_account_id__ = "__key_account_id__"
-    __key_account_points__ = "__key_account_points__"
-    __key_account_summary__ = "__key_account_summary__"
+    __key_account_id__ = "cookie__key_account_id__"
+    __key_account_points__ = "cookie__key_account_points__"
+    __key_account_summary__ = "cookie__key_account_summary__"
 
     def __init__(self, application, request, **kwargs):
         RequestHandler.__init__(self, application, request, **kwargs)
-        if not self.get_current_user():
-            uri = self.request.uri
-            security_urls = ObjectPool.security_filter_uri
-            ignore = True
-            for url in security_urls:
-                if uri.startswith(url):
-                    ignore = False
-            if not ignore:
-                self.redirect(self.get_login_url())
 
     def auth(self, points=set()):
         """
@@ -103,6 +95,13 @@ class IRequest(RequestHandler):
         for key in args:
             setattr(obj, key, self.get_argument(key))
         return obj
+
+
+class IAuthRequest(IRequest):
+    def __init__(self, application, request, **kwargs):
+        if not self.get_current_user():
+            self.redirect(self.get_login_url())
+
 
 @route(r"/api/(.*)/(.*)")
 class ApiHandler(IRequest):

@@ -9,7 +9,7 @@ class Archives(Entity, Simplify):
     alias = Column(String(10))
     sex = Column(Integer(1))
     birthday = Column(Date())
-    email = Column(String(60))
+    email = Column(String(65),unique=True)
     mobile_phone = Column(String(20))
     #accounts
 

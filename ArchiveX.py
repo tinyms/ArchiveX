@@ -43,6 +43,8 @@ if web_configs:
 
 #compress js and css file to one
 Utils.combine_text_files(os.path.join(os.getcwd(), "static/jslib/"), "tinyms.common")
+for urls in ObjectPool.url_patterns:
+    print("Url Mapping:",urls)
 app = Application(ObjectPool.url_patterns, **ws_settings)
 
 if __name__ == "__main__":
