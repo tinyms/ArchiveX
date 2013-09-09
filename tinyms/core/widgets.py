@@ -191,7 +191,6 @@ class DataTableHandler(IRequest):
 
         #全局搜索处理段落
         default_search_value = Utils.trim(self.get_argument("sSearch"))
-        query_params = self.parse_search_params("sSearch_")
         default_search_fields = DataTableModule.__default_search_fields__.get(id)
         default_search_sqlwhere = ""
         default_search_sqlwhere_params = dict()
@@ -203,13 +202,13 @@ class DataTableHandler(IRequest):
             default_search_sqlwhere = " OR ".join(temp_sql)
 
         #排序处理段落
-        sort_params = self.parse_search_params("iSortCol_")
-        sort_direct_params = self.parse_search_params("sSortDir_")
+        sort_params = self.parse_sort_params()
         order_sqlwhere = ""
         for k, v in sort_params.items():
-            order_sqlwhere += "1=1 ORDER BY %s %s" % (k, sort_direct_params[k])
+            order_sqlwhere += "1=1 ORDER BY %s %s" % (k, v)
             break
-            #DataGrid数据查询段落
+
+        #DataGrid数据查询段落
         cnn = SessionFactory.new()
         #here place custom filter
         total_query = cnn.query(func.count(entity.id))
@@ -217,9 +216,10 @@ class DataTableHandler(IRequest):
         custom_filter = DataTableModule.__filter_mapping__.get(meta["name"])
         if custom_filter:
             custom_filter_obj = custom_filter()
-            if hasattr(custom_filter_obj, "filter"):
-                total_query = custom_filter_obj.total_filter(total_query, query_params, self)
-                ds_query = custom_filter_obj.dataset_filter(ds_query, query_params, self)
+            if hasattr(custom_filter_obj, "total_filter"):
+                total_query = custom_filter_obj.total_filter(total_query, self)
+            if hasattr(custom_filter_obj, "dataset_filter"):
+                ds_query = custom_filter_obj.dataset_filter(ds_query, self)
         if default_search_value:
             total_query = total_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
             ds_query = ds_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
@@ -235,18 +235,9 @@ class DataTableHandler(IRequest):
         results["aaData"] = [item.dict() for item in ds]
         self.write(json.dumps(results, cls=JsonEncoder))
 
-    def parse_search_params(self, prefix):
+    def parse_sort_params(self):
         params = dict()
-        args = self.request.arguments
-        size = len(self.datatable_display_cols)
-        for key in args:
-            if key.find(prefix) != -1:
-                index = Utils.parse_int(key)
-                if size <= index:
-                    continue
-                v = self.get_argument(key)
-                if v:
-                    params[self.datatable_display_cols[index]] = v
-        if len(params.keys()) == 0:
-            return None
+        colIndex = Utils.parse_int(self.get_argument("iSortCol_0"))
+        direct = self.get_argument("sSortDir_0")
+        params[self.datatable_display_cols[colIndex]] = direct
         return params
