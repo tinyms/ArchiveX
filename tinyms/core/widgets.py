@@ -7,9 +7,8 @@ from tinyms.core.common import Utils,JsonEncoder
 from tinyms.core.point import ui, route, ObjectPool
 from tinyms.core.orm import SessionFactory
 from tinyms.core.web import IRequest
-from tinyms.core.entity import Account,Archives
 from sqlalchemy import func
-
+from tinyms.dao.account import AccountHelper
 
 class IWidget(UIModule):
     pass
@@ -17,12 +16,7 @@ class IWidget(UIModule):
 @ui("CurrentAccountName")
 class CurrentAccountName(IWidget):
     def render(self, account_id = None):
-        if not account_id:
-            return ""
-        cnn = SessionFactory.new()
-        name = cnn.query(Archives.name).join(Account)\
-            .filter(Archives.id==Account.archives_id).filter(Account.id==account_id).limit(1).scalar()
-        return name
+        return AccountHelper.name(account_id)
 
 @ui("SideBar")
 class SideBar(IWidget):
@@ -30,35 +24,40 @@ class SideBar(IWidget):
     def render(self, account_id = None):
         if not account_id:
             return ""
+        points = list(AccountHelper.points(account_id))
         custom_menus = ObjectPool.sidebar_menus
         first_levels = list()
         for menu in custom_menus:
-            if menu.count("/")==1:
+            if menu[1].count("/")==1:
                 first_levels.append(menu)
         html_builder = list()
         self.sort_menus(first_levels)
         for first in first_levels:
+            if first[4] and points.count(first[4])==0:
+                continue
             p = '<a href="'+first[2]+'"><i class="'+first[5]+' icon-xlarge"></i><span>'+first[3]+'</span></a>'
             subs = self.children(first[1])
             if len(subs) > 0:
                 html_builder.append('<li class="dropdown-submenu">')
                 html_builder.append(p)
                 html_builder.append('<ul class="dropdown-menu">')
+                self.sort_menus(subs)
                 for sub in subs:
+                    if sub[4] and points.count(sub[4])==0:
+                        continue
                     html_builder.append('<li><a href="'+sub[2]+'">'+sub[3]+'</a></li>')
                     pass
                 html_builder.append('</ul>')
                 html_builder.append('</li>')
             else:
-                html_builder.append(p)
+                html_builder.append("<li>"+p+"</li>")
         menu_html = "".join(html_builder)
-
         return self.render_string("workbench/sidebar.html",menu=menu_html)
 
     def children(self,path):
         subs = list()
         for menu in ObjectPool.sidebar_menus:
-            if menu[1].startswith(path):
+            if menu[1].startswith(path+"/"):
                 subs.append(menu)
         return subs
 

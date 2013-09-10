@@ -6,12 +6,13 @@ import json
 
 from tinyms.core.web import IRequest,route
 from tinyms.core.common import Utils
-from tinyms.core.point import api, ajax, auth
+from tinyms.core.point import api, ajax, auth, sidebar
 from tinyms.core.common import Postgres
 from lottery.parse import MatchAnalyzeThread
 
 
 @route(r"/ui/test")
+@sidebar("/lottery","/","足彩")
 class UITestHandler(IRequest):
     def get(self):
         self.render("ui.html")

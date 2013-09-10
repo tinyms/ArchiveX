@@ -4,9 +4,8 @@ import json
 from tornado.web import RequestHandler
 from tinyms.core.common import JsonEncoder
 from tinyms.core.point import EmptyClass, ObjectPool, route
-from tinyms.core.orm import SessionFactory
-from tinyms.core.entity import Account,Role,SecurityPoint
 from tinyms.core.cache import CacheManager
+from tinyms.dao.account import AccountHelper
 
 class IRequest(RequestHandler):
     __key_account_id__ = "account_id"
@@ -66,11 +65,7 @@ class IRequest(RequestHandler):
             print("Exists Cache Account Points")
             return points
         else:
-            cnn = SessionFactory.new()
-            points = cnn.query(SecurityPoint.key_)\
-                    .join((Role,Account.roles)).join((SecurityPoint,Role.securitypoints)).filter(Account.id==self.get_current_user()).all()
-            for p in points:
-                temp.add(p[0])
+            temp.union(AccountHelper.points(self.get_current_user()))
             return temp
 
     def get_current_account_name(self):

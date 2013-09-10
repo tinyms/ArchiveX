@@ -58,16 +58,27 @@ def route(pattern):
 
 
 def sidebar(path, url, label="", point="", position=0, icon_class="icon-link"):
+
     """
-    url mapping.
+
+    :param path: /dashboard/count etc
+    :param url:
+    :param label:
+    :param point:
+    :param position: 1-1000
+    :param icon_class:
+    :return:
     """
 
     def ref_sidebar(cls):
         if path:
             if not url:
                 return cls
+            label_ = "Uname"
             if not label:
                 label_ = path.split("/")[-1]
+            else:
+                label_ = label
             ObjectPool.sidebar_menus.append((position, path, url, label_, point, icon_class ))
         return cls
 
