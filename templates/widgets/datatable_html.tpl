@@ -1,5 +1,5 @@
-<div id="{{opt['id']}}_wrap">
-<table id="{{opt['id']}}">
+<div id="{{opt['id']}}_wrap"  class="table-responsive">
+<table id="{{opt['id']}}" class="table table-striped datagrid m-b-small">
 <tfoot><tr>{% raw opt['thTags'] %}</tr></tfoot>
 </table>
 </div>

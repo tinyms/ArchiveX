@@ -65,7 +65,6 @@ class SideBar(IWidget):
         context["archives_show"] = self.archives_show
         context["role_org_show"] = self.role_org_show
         context["sys_params_show"] = self.sys_params_show
-        print(context)
         return self.render_string("workbench/sidebar.html",context=context)
 
     def children(self,path):
@@ -183,7 +182,7 @@ class DataTableModule(IWidget):
 
     def css_files(self):
         items = list();
-        items.append("/static/jslib/datatable/css/jquery.dataTables.css")
+        #items.append("/static/jslib/datatable/css/jquery.dataTables.css")
         items.append("/static/jslib/datatable/extras/tabletools/css/TableTools.css")
         return items
 

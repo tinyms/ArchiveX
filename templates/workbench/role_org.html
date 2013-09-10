@@ -1,0 +1,40 @@
+{% extends "master.html" %}
+{% block title %}角色组织{% end %}
+{% block workspace %}
+<div class="clearfix">
+    <h4><i class="icon-magic"></i>角色/组织</h4>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <!-- right tab -->
+        <section class="panel">
+            <header class="panel-heading">
+                <ul class="nav nav-tabs pull-right">
+                    <li class="active"><a href="#profile-1" data-toggle="tab"><i
+                            class="icon-user icon-large text-default"></i>角色</a>
+                    </li>
+                    <li><a href="#settings-1" data-toggle="tab"><i class="icon-sitemap icon-large text-default"></i>组织/部门</a>
+                    </li>
+                </ul>
+            </header>
+            <div class="panel-body">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="profile-1">
+                        <div>
+                            {% module DataTable(id="RoleDataTable",
+                            entity="tinyms.core.entity.Role",
+                            cols=['name','description'],
+                            titles=['名称','说明'],
+                            search_fields="name",
+                            form=""
+                            ) %}
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="settings-1">组织/部门</div>
+                </div>
+            </div>
+        </section>
+        <!-- / right tab -->
+    </div>
+</div>
+{% end %}
