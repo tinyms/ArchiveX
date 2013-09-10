@@ -3,9 +3,14 @@
     <ul class="nav" data-spy="affix" data-offset-top="50">
         <li class="active"><a href="/workbench/dashboard"><i class="icon-dashboard icon-xlarge"></i><span>控制面板</span></a>
         </li>
-        {% raw menu %}
+        {% raw context["menu"] %}
+        {% if context["archives_show"] %}
         <li><a href="form.html"><i class="icon-edit icon-xlarge"></i><span>人员档案</span></a></li>
+        {% end %}
+        {% if context["role_org_show"] %}
         <li><a href="chart.html"><i class="icon-signal icon-xlarge"></i><span>角色组织</span></a></li>
+        {% end %}
+        {% if context["sys_params_show"] %}
         <li class="dropdown-submenu">
             <a href="#"><i class="icon-link icon-xlarge"></i><span>系统参数</span></a>
             <ul class="dropdown-menu">
@@ -18,6 +23,7 @@
                 <li><a href="404.html">404 page</a></li>
             </ul>
         </li>
+        {% end %}
     </ul>
 </nav>
 <!-- / nav -->

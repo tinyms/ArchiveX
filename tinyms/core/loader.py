@@ -71,8 +71,11 @@ class Loader():
 
     @staticmethod
     def create_base_securitypoints():
-        reg("archives_list","人员管理","档案","查看档案列表")
-        reg("archives_add","人员管理","档案","添加人员档案")
-        reg("archives_update","人员管理","档案","修改人员档案")
-        reg("archives_delete","人员管理","档案","删除人员档案")
+        reg("tinyms.sidebar.archives.show","菜单","侧边栏","人员档案")
+        reg("tinyms.sidebar.role_org.show","菜单","侧边栏","角色组织")
+        reg("tinyms.sidebar.sys_params.show","菜单","侧边栏","系统参数")
+        reg("tinyms.archives.list","人员档案","档案","查看档案列表")
+        reg("tinyms.archives.add","人员档案","档案","添加人员档案")
+        reg("tinyms.archives.update","人员档案","档案","修改人员档案")
+        reg("tinyms.archives.delete","人员档案","档案","删除人员档案")
         pass

@@ -20,11 +20,19 @@ class CurrentAccountName(IWidget):
 
 @ui("SideBar")
 class SideBar(IWidget):
-
+    archives_show = False
+    role_org_show = False
+    sys_params_show = False
     def render(self, account_id = None):
         if not account_id:
             return ""
         points = list(AccountHelper.points(account_id))
+        if points.count("tinyms.sidebar.archives.show"):
+            self.archives_show = True
+        if points.count("tinyms.sidebar.role_org.show"):
+            self.role_org_show = True
+        if points.count("tinyms.sidebar.sys_params.show"):
+            self.sys_params_show = True
         custom_menus = ObjectPool.sidebar_menus
         first_levels = list()
         for menu in custom_menus:
@@ -52,7 +60,13 @@ class SideBar(IWidget):
             else:
                 html_builder.append("<li>"+p+"</li>")
         menu_html = "".join(html_builder)
-        return self.render_string("workbench/sidebar.html",menu=menu_html)
+        context = dict()
+        context["menu"] = menu_html
+        context["archives_show"] = self.archives_show
+        context["role_org_show"] = self.role_org_show
+        context["sys_params_show"] = self.sys_params_show
+        print(context)
+        return self.render_string("workbench/sidebar.html",context=context)
 
     def children(self,path):
         subs = list()
