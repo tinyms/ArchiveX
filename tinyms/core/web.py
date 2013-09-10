@@ -9,8 +9,8 @@ from tinyms.core.entity import Account,Role,SecurityPoint
 from tinyms.core.cache import CacheManager
 
 class IRequest(RequestHandler):
-    __key_account_id__ = "__cookie_account_id__"
-    __key_account_name__ = "__cookie_account_name__"
+    __key_account_id__ = "account_id"
+    __key_account_name__ = "account_name"
     __key_account_points__ = "@cache.cookie.account.securitypoints.%s"
 
     def __init__(self, application, request, **kwargs):
@@ -71,7 +71,6 @@ class IRequest(RequestHandler):
                     .join((Role,Account.roles)).join((SecurityPoint,Role.securitypoints)).filter(Account.id==self.get_current_user()).all()
             for p in points:
                 temp.add(p[0])
-            print(temp)
             return temp
 
     def get_current_account_name(self):

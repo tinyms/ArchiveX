@@ -21,6 +21,7 @@ class Loader():
     def create_root_account(super_role):
         cnn = SessionFactory.new()
         num = cnn.query(func.count(Archives.id)).scalar()
+        role_ = cnn.query(Role).get(super_role.id)
         if num == 0:
             usr = Archives()
             usr.name = "超级管理员"
@@ -35,7 +36,6 @@ class Loader():
             a.enabled = True
             a.archives_id = usr.id
             cnn.add(a)
-            role_ = cnn.query(Role).get(super_role.id)
             a.roles.append(role_)
             cnn.commit()
 

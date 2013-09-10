@@ -28,7 +28,7 @@
     <ul class="nav navbar-nav navbar-avatar pull-right">
         <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <span class="hidden-xs-only">张三</span>
+                <span class="hidden-xs-only">{% module CurrentAccountName(current_user) %}</span>
                 <span class="thumb-small avatar inline"><img src="{{ static_url('theme/v.3.2.1/images/avatar.jpg') }}" alt="Mika Sokeil"
                                                              class="img-circle"></span>
                 <b class="caret hidden-xs-only"></b>

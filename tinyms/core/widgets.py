@@ -3,17 +3,26 @@ __author__ = 'tinyms'
 import json
 from tornado.web import UIModule
 from tornado.util import import_object
-from tinyms.core.common import Utils
+from tinyms.core.common import Utils,JsonEncoder
 from tinyms.core.point import ui, route
-from tinyms.core.common import JsonEncoder
 from tinyms.core.orm import SessionFactory
 from tinyms.core.web import IRequest
+from tinyms.core.entity import Account,Archives
 from sqlalchemy import func
 
 
 class IWidget(UIModule):
     pass
 
+@ui("CurrentAccountName")
+class CurrentAccountName(IWidget):
+    def render(self, id = None):
+        if not id:
+            return ""
+        cnn = SessionFactory.new()
+        name = cnn.query(Archives.name).join(Account)\
+            .filter(Archives.id==Account.archives_id).filter(Account.id==id).limit(1).scalar()
+        return name
 
 def datatable_filter(entity_name):
     """

@@ -20,7 +20,7 @@ ws_settings = dict()
 ws_settings["debug"] = True
 ws_settings["static_path"] = os.path.join(os.getcwd(), "static")
 ws_settings["template_path"] = os.path.join(os.getcwd(), "templates")
-ws_settings["cookie_secret"] = (base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)).decode("utf-8")
+ws_settings["cookie_secret"] = "askgpoi45345j2l34j6lkjasljdfpajsfd"#(base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)).decode("utf-8")
 
 ws_settings["ui_modules"] = dict()
 for key in ObjectPool.ui_mapping:
