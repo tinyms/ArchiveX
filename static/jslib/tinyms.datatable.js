@@ -52,8 +52,9 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
             "bServerSide": true,
             "bProcessing": true,
             "asSorting": bSorting,
-            "sDom": '<"#' + self.id + '_NewRowBtnWrap">T<"clear">lfrtip',
-            "oTableTools": {"sSwfPath": "/static/jslib/datatable/extras/tabletools/swf/copy_csv_xls.swf"},
+            "sDom": "<'row'<'col-sm-6'l><'col-sm-6'f>r>t<'row'<'col-sm-6'i><'col col-sm-6'p>>",
+            //"sDom": '<"#' + self.id + '_NewRowBtnWrap">T<"clear">lfrtip',
+            //"oTableTools": {"sSwfPath": "/static/jslib/datatable/extras/tabletools/swf/copy_csv_xls.swf"},
             "sAjaxSource": self.request_url + "list",
             "fnServerParams": function (aoData) {
                 if (typeof(datatable_server_params) != "undefined") {
@@ -96,7 +97,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
         };
         $('#' + self.id).data("EditFormId", self.editFormId);
         self.__dataTable = $('#' + self.id).dataTable(self.config);
-        $('#' + self.id + '_NewRowBtnWrap').html("<button id='" + self.id + "_NewRowBtn'>+</button>");
+        $('#' + self.id + '_length label').append(" <button class='btn btn-sm btn-white' id='" + self.id + "_NewRowBtn'><i class='icon-plus'></i>新增</button>");
         $("#" + self.id + "_NewRowBtn").click(function () {
             self.switchTableAndEditFormPanel(true);
         });

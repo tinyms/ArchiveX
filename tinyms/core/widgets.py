@@ -175,15 +175,15 @@ class DataTableModule(IWidget):
     def javascript_files(self):
         items = list();
         items.append("/static/jslib/datatable/js/jquery.dataTables.1.9.4.modified.js")
-        items.append("/static/jslib/datatable/extras/tabletools/js/ZeroClipboard.js")
-        items.append("/static/jslib/datatable/extras/tabletools/js/TableTools.min.js")
+        #items.append("/static/jslib/datatable/extras/tabletools/js/ZeroClipboard.js")
+        #items.append("/static/jslib/datatable/extras/tabletools/js/TableTools.min.js")
         items.append("/static/jslib/tinyms.datatable.js")
         return items
 
     def css_files(self):
         items = list();
         #items.append("/static/jslib/datatable/css/jquery.dataTables.css")
-        items.append("/static/jslib/datatable/extras/tabletools/css/TableTools.css")
+        #items.append("/static/jslib/datatable/extras/tabletools/css/TableTools.css")
         return items
 
 
