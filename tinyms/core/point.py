@@ -57,16 +57,18 @@ def route(pattern):
     return ref_pattern
 
 
-def sidebar(path, label="", position=0):
+def sidebar(path, url, label="", point="", position=0, icon_class="icon-link"):
     """
     url mapping.
     """
 
     def ref_sidebar(cls):
         if path:
+            if not url:
+                return cls
             if not label:
                 label_ = path.split("/")[-1]
-            ObjectPool.sidebar_menus.append((path, label_, position))
+            ObjectPool.sidebar_menus.append((position, path, url, label_, point, icon_class ))
         return cls
 
     return ref_sidebar
