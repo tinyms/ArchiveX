@@ -38,9 +38,10 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
             if (typeof(datatable_render_actionbar) != "undefined") {
                 return datatable_render_actionbar(self.id, "id", v, row);
             }
-            var action_btns = '<a href="#" onclick="' + self.id + '_.RecordSetProvider.New(this);">增</a>';
-            action_btns += ' <a href="#" onclick="' + self.id + '_.RecordSetProvider.Modify(this,' + v + ');">改</a>';
-            action_btns += ' <a href="#" onclick="' + self.id + '_.RecordSetProvider.Delete(this,' + v + ');">删</a>';
+            var action_btns = '<a href="#" title="查看" onclick="' + self.id + '_.RecordSetProvider.Modify(this,' + v + ');"><i class="icon-list-alt"></i></a>';
+            action_btns += ' <a href="#" title="添加" onclick="' + self.id + '_.RecordSetProvider.New(this);"><i class="icon-plus"></i></a>';
+            action_btns += ' <a href="#" title="修改" onclick="' + self.id + '_.RecordSetProvider.Modify(this,' + v + ');"><i class="icon-pencil"></i></a>';
+            action_btns += ' <a href="#" title="删除" onclick="' + self.id + '_.RecordSetProvider.Delete(this,' + v + ');"><i class="icon-remove"></i></a>';
             return action_btns;
         }});
 
@@ -81,7 +82,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
             "oLanguage": {
                 "sLengthMenu": "每页显示 _MENU_ 条记录",
                 "sZeroRecords": "抱歉， 没有找到",
-                "sInfo": "从_START_到_END_ / 共_TOTAL_条数据",
+                "sInfo": "从_START_到_END_ / 共<span style='color: #ff5f5f;'>_TOTAL_</span>条数据",
                 "sInfoEmpty": "没有数据",
                 "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
                 "sZeroRecords": "没有检索到数据",
@@ -114,6 +115,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
             $("#" + self.id + "_wrap").hide();
             $("#" + self.id + "_form_container").show();
         } else {
+            $("#" + self.id + "_EditForm").resetForm();
             $("#" + self.id + "_wrap").show();
             $("#" + self.id + "_form_container").hide();
         }
@@ -178,7 +180,6 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
             self.switchTableAndEditFormPanel(true);
         },
         "Modify": function (btn, record_id) {
-
             this.color_current_row(btn);
             var local_ds = $('#' + this.id()).data("DataSet").aaData;
             var current_row = null;
