@@ -35,13 +35,13 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
             }
         }
         self.cols.push({"mData": "id", "sTitle": "#", "mRender": function (col, v, type, row) {
+            var action_btns = '<a class="btn-link" title="查看" onclick="' + self.id + '_.RecordSetProvider.Modify(this,' + v + ');"><i class="icon-list-alt"></i></a>';
             if (typeof(datatable_render_actionbar) != "undefined") {
-                return datatable_render_actionbar(self.id, "id", v, row);
+                action_btns += datatable_render_actionbar(self.id, "id", v, row);
             }
-            var action_btns = '<a href="#" title="查看" onclick="' + self.id + '_.RecordSetProvider.Modify(this,' + v + ');"><i class="icon-list-alt"></i></a>';
-            action_btns += ' <a href="#" title="添加" onclick="' + self.id + '_.RecordSetProvider.New(this);"><i class="icon-plus"></i></a>';
-            action_btns += ' <a href="#" title="修改" onclick="' + self.id + '_.RecordSetProvider.Modify(this,' + v + ');"><i class="icon-pencil"></i></a>';
-            action_btns += ' <a href="#" title="删除" onclick="' + self.id + '_.RecordSetProvider.Delete(this,' + v + ');"><i class="icon-remove"></i></a>';
+            action_btns += ' <a class="btn-link" title="添加" onclick="' + self.id + '_.RecordSetProvider.New(this);"><i class="icon-plus"></i></a>';
+            action_btns += ' <a class="btn-link" title="修改" onclick="' + self.id + '_.RecordSetProvider.Modify(this,' + v + ');"><i class="icon-pencil"></i></a>';
+            action_btns += ' <a class="btn-link" title="删除" onclick="' + self.id + '_.RecordSetProvider.Delete(this,' + v + ');"><i class="icon-remove"></i></a>';
             return action_btns;
         }});
 
@@ -89,8 +89,8 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
                 "sSearch": "搜索:",
                 "oPaginate": {
                     "sFirst": "首页",
-                    "sPrevious": "前一页",
-                    "sNext": "后一页",
+                    "sPrevious": "前页",
+                    "sNext": "后页",
                     "sLast": "尾页"
                 }
 

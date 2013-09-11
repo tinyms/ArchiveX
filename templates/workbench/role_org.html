@@ -1,6 +1,53 @@
 {% extends "master.html" %}
 {% block title %}角色组织{% end %}
 {% block workspace %}
+<script type="text/javascript">
+    function datatable_render_actionbar(id, col, val, row) {
+        if (id == "RoleDataTable") {
+            return ' <a class="btn-link" title="赋予权限" onclick=""><i class="icon-key text-danger"></i></a>';
+        }
+        return "";
+    }
+    function check_or_uncheck(link, mode) {
+        if ($(link).data("state") == undefined) {
+            $(link).data("state", true);
+        } else {
+            if (!$(link).data("state")) {
+                $(link).data("state", true);
+            } else {
+                $(link).data("state", false);
+            }
+        }
+        var cks = undefined;
+        if (mode == "sub") {
+            cks = $(link).parent().parent().find(":checkbox");
+        } else if (mode == "all") {
+            cks = $(link).parent().parent().parent().find(":checkbox");
+        }
+        if (cks != undefined) {
+            $.each(cks, function (k, elem) {
+                if ($(link).data("state")) {
+                    $(elem).prop("checked", true);
+                } else {
+                    $(elem).prop("checked", false);
+                }
+            });
+        }
+    }
+    function security_points_save(link) {
+        var cks = $(link).parent().parent().parent().find(":checkbox");
+        var items = [];
+        $.each(cks,function(k,elem){
+            if($(elem).prop("checked")){
+                items.push($(elem).val());
+            }
+        });
+        console.log(items);
+    }
+    $(document).ready(function () {
+        $('#security_points_tab a:first').tab('show');
+    });
+</script>
 <div class="clearfix">
     <h4><i class="icon-magic"></i>角色/组织</h4>
 </div>
@@ -35,6 +82,49 @@
             </div>
         </section>
         <!-- / right tab -->
+        <!-- left tab -->
+        <section class="panel">
+            <header class="panel-heading text-left">
+                <ul class="nav nav-tabs pull-right" id="security_points_tab">
+                    {% for cat in data["categories"] %}
+                    <li><a href="#points_group_{{ cat[2] }}" data-toggle="tab">{{ cat[0] }}</a></li>
+                    {% end %}
+                </ul>
+                <span class="hidden-sm"><a class="btn-link" onclick="check_or_uncheck(this,'all');">全选/反选</a> <a
+                        class="btn-link" onclick="security_points_save(this);"><i class="icon-save"></i>保存</a></span>
+            </header>
+            <div class="panel-body">
+                <div class="tab-content">
+                    {% for cat in data["categories"] %}
+                    <div class="tab-pane fade" id="points_group_{{ cat[2] }}">
+                        <div class="row">
+                            {% for g in cat[1] %}
+                            <div class="col-sm-6 col-md-3">
+                                <div class="thumbnail" style="border: 0px;">
+                                    <section class="panel">
+                                        <header class="panel-heading">{{ g[0] }}
+                                            <a class="pull-right btn-link"
+                                               onclick="check_or_uncheck(this,'sub');">全选/反选</a>
+                                        </header>
+                                        <ul class="list-group">
+                                            {% for p in g[1] %}
+                                            <li class="list-group-item">
+                                                <input type="checkbox" datakey="{{ p.key_ }}" value="{{ p.id }}"
+                                                       id="security_point_{{ p.id }}"/> {{ p.description }}
+                                            </li>
+                                            {% end %}
+                                        </ul>
+                                    </section>
+                                </div>
+                            </div>
+                            {% end %}
+                        </div>
+                    </div>
+                    {% end %}
+                </div>
+            </div>
+        </section>
+        <!-- / left tab -->
     </div>
 </div>
 {% end %}
