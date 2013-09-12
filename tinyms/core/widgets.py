@@ -3,27 +3,31 @@ __author__ = 'tinyms'
 import json
 from tornado.web import UIModule
 from tornado.util import import_object
-from tinyms.core.common import Utils,JsonEncoder
+from tinyms.core.common import Utils, JsonEncoder
 from tinyms.core.point import ui, route, ObjectPool
 from tinyms.core.orm import SessionFactory
 from tinyms.core.web import IRequest
 from sqlalchemy import func
 from tinyms.dao.account import AccountHelper
 
+
 class IWidget(UIModule):
     pass
 
+
 @ui("CurrentAccountName")
 class CurrentAccountName(IWidget):
-    def render(self, account_id = None):
+    def render(self, account_id=None):
         return AccountHelper.name(account_id)
+
 
 @ui("SideBar")
 class SideBar(IWidget):
     archives_show = False
     role_org_show = False
     sys_params_show = False
-    def render(self, account_id = None):
+
+    def render(self, account_id=None):
         if not account_id:
             return ""
         points = list(AccountHelper.points(account_id))
@@ -36,14 +40,15 @@ class SideBar(IWidget):
         custom_menus = ObjectPool.sidebar_menus
         first_levels = list()
         for menu in custom_menus:
-            if menu[1].count("/")==1:
+            if menu[1].count("/") == 1:
                 first_levels.append(menu)
         html_builder = list()
         self.sort_menus(first_levels)
         for first in first_levels:
-            if first[4] and points.count(first[4])==0:
+            if first[4] and points.count(first[4]) == 0:
                 continue
-            p = '<a href="'+first[2]+'"><i class="'+first[5]+' icon-xlarge"></i><span>'+first[3]+'</span></a>'
+            p = '<a href="' + first[2] + '"><i class="' + first[5] + ' icon-xlarge"></i><span>' + first[
+                3] + '</span></a>'
             subs = self.children(first[1])
             if len(subs) > 0:
                 html_builder.append('<li class="dropdown-submenu">')
@@ -51,31 +56,32 @@ class SideBar(IWidget):
                 html_builder.append('<ul class="dropdown-menu">')
                 self.sort_menus(subs)
                 for sub in subs:
-                    if sub[4] and points.count(sub[4])==0:
+                    if sub[4] and points.count(sub[4]) == 0:
                         continue
-                    html_builder.append('<li><a href="'+sub[2]+'">'+sub[3]+'</a></li>')
+                    html_builder.append('<li><a href="' + sub[2] + '">' + sub[3] + '</a></li>')
                     pass
                 html_builder.append('</ul>')
                 html_builder.append('</li>')
             else:
-                html_builder.append("<li>"+p+"</li>")
+                html_builder.append("<li>" + p + "</li>")
         menu_html = "".join(html_builder)
         context = dict()
         context["menu"] = menu_html
         context["archives_show"] = self.archives_show
         context["role_org_show"] = self.role_org_show
         context["sys_params_show"] = self.sys_params_show
-        return self.render_string("workbench/sidebar.html",context=context)
+        return self.render_string("workbench/sidebar.html", context=context)
 
-    def children(self,path):
+    def children(self, path):
         subs = list()
         for menu in ObjectPool.sidebar_menus:
-            if menu[1].startswith(path+"/"):
+            if menu[1].startswith(path + "/"):
                 subs.append(menu)
         return subs
 
-    def sort_menus(self,items):
-        items.sort(key=lambda x:x[0])
+    def sort_menus(self, items):
+        items.sort(key=lambda x: x[0])
+
 
 def datatable_filter(entity_name):
     """
@@ -88,6 +94,44 @@ def datatable_filter(entity_name):
         return cls
 
     return ref_pattern
+
+
+@ui("DataComboBox")
+class DataComboBoxModule(IWidget):
+    def render(self, **prop):
+        self.dom_id = prop.get("id")
+        self.cols = prop.get("cols")
+        self.sort_sql = prop.get("sort_sql")
+        self.entity_full_name = prop.get("entity")
+        self.query_class = prop.get("query_class") # obj prop `data` func return [(k,v),(k,v)...]
+        self.allow_blank_select = prop.get("allow_blank_select")
+        html = list()
+        html.append("<select id='%s' name='%s'>" % (self.dom_id, self.dom_id))
+        if self.allow_blank_select:
+            html.append("<option value=''> </option>")
+        if not self.query:
+            if not self.entity_full_name:
+                return "<small>Require entity full name.</small>"
+            if not self.entity_full_name:
+                cls = import_object(self.entity_full_name)
+                cnn = SessionFactory.new()
+                q = cnn.query(cls)
+                if self.sort_sql:
+                    q = q.order_by(self.sort_sql)
+                items = q.all()
+                all = list()
+                for item in items:
+                    all.append([(getattr(item, col)) for col in self.cols])
+                for opt in all:
+                    html.append("<option value='%s'>%s</option>" % (opt[0], opt[1]))
+        else:
+            obj = import_object(self.query_class)()
+            if hasattr(obj, "data"):
+                items = getattr(obj, "data")()
+                for item in items:
+                    html.append("<option value='%s'>%s</option>" % (item[0], item[1]))
+        html.append("</select>")
+        return "".join(html)
 
 
 @ui("DataTable")
@@ -136,7 +180,8 @@ class DataTableModule(IWidget):
         index = 0
         for col in self.cols:
             html_col.append(
-                {"mData": col, "sTitle": self.titles[index], "sClass": "datatable_column_" + col, "sDefaultContent": ""})
+                {"mData": col, "sTitle": self.titles[index], "sClass": "datatable_column_" + col,
+                 "sDefaultContent": ""})
             index += 1
 
         opt["col_defs"] = json.dumps(html_col)
