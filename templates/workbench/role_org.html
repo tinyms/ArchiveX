@@ -1,6 +1,6 @@
 {% extends "master.html" %}
 {% block title %}角色组织{% end %}
-{% block workspace %}
+{% block header %}
 <script type="text/javascript" src="/ajax/RoleSecurityPointsAssign.js"></script>
 <script type="text/javascript">
     function datatable_render_actionbar(id, col, val, row) {
@@ -10,11 +10,12 @@
         return "";
     }
     function assign_security_points(elem,role_id){
+        var row = RoleDataTable_.GetRow(role_id);
+        $("#role_name_to_assign").text(row.name);
         $("#RoleDataTable tr").removeAttr("style");
         $(elem).parent().parent().attr("style", "background-color:#99CC99;");
         $("#security_points_tab").data("RoleId",role_id);
         tinyms.controller.role_org.RoleSecurityPointsEdit.list({id:role_id},function(b,data){
-            console.log(data);
             $("#security_points_edit_panel :checkbox").each(function(i,elem){
                 $(elem).prop("checked",false)
             });
@@ -59,13 +60,20 @@
         });
         var params = {"id":$("#security_points_tab").data("RoleId"),"points":JSON.stringify(items)};
         tinyms.controller.role_org.RoleSecurityPointsEdit.save(params,function(b,data){
-            console.log(data);
+            var msg = data[0];
+            if(msg=="Success"){
+                toastr.success("保存成功!")
+            }else{
+                toastr.error("保存失败!")
+            }
         });
     }
     $(document).ready(function () {
         $('#security_points_tab a:first').tab('show');
     });
 </script>
+{% end %}
+{% block workspace %}
 <div class="clearfix">
     <h4><i class="icon-magic"></i>角色/组织</h4>
 </div>
@@ -109,7 +117,9 @@
                     {% end %}
                 </ul>
                 <span class="hidden-sm"><a class="btn-link" onclick="check_or_uncheck(this,'all');">全选/反选</a> <a
-                        class="btn-link" onclick="security_points_save(this);"><i class="icon-save"></i>保存</a></span>
+                        class="btn-link" onclick="security_points_save(this);"><i class="icon-save"></i>保存</a>
+                    <small><em>( 给`<span class="text-danger" id="role_name_to_assign">角色</span>`指定权限 )</em></small>
+                </span>
             </header>
             <div class="panel-body" id="security_points_edit_panel">
                 <div class="tab-content">

@@ -127,6 +127,17 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
     this.DataSet = function () {
         return $('#' + self.id).data("DataSet");
     };
+    this.GetRow = function (id) {
+        var ds = $('#' + self.id).data("DataSet");
+        if (ds != undefined) {
+            for (var k = 0; k < ds.aaData.length; k++) {
+                if (ds.aaData[k].id == id) {
+                    return ds.aaData[k];
+                }
+            }
+        }
+        return null;
+    };
     this.form = {
         "cancel": function (btn) {
             self.switchTableAndEditFormPanel(false);
@@ -141,6 +152,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
                 },
                 "success": function (data, statusText, xhr, $form) {
                     if (data.success) {
+                        toastr.success("保存成功!")
                         if (data.msg == "Updated") {
                             if (typeof(datatable_data_add) != "undefined") {
                                 return datatable_data_add(self.id, null);
@@ -154,10 +166,12 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
                             $("#" + self.id + "_EditForm").resetForm();
                         }
                         self.Refresh();
+                    }else{
+                        toastr.error("保存失败!")
                     }
                 },
                 "error": function () {
-                    alert("Server Error.");
+                    toastr.error("服务器内部错误!")
                 }
             });
         },
@@ -211,10 +225,13 @@ function DataTableX(id_, entityName_, cols_, editFormId_) {
             if (confirm(label)) {
                 $.post(self.request_url + "delete", {id: record_id}, function (data) {
                     if (data.success) {
+                        toastr.success("删除成功!")
                         if (typeof(datatable_data_delete) != "undefined") {
                             return datatable_data_delete(self.id, record_id);
                         }
                         self.Refresh();
+                    }else{
+                        toastr.error("删除失败!")
                     }
                 }, "json");
             }
