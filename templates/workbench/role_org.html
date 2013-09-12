@@ -1,12 +1,27 @@
 {% extends "master.html" %}
 {% block title %}角色组织{% end %}
 {% block workspace %}
+<script type="text/javascript" src="/ajax/RoleSecurityPointsAssign.js"></script>
 <script type="text/javascript">
     function datatable_render_actionbar(id, col, val, row) {
         if (id == "RoleDataTable") {
-            return ' <a class="btn-link" title="赋予权限" onclick=""><i class="icon-key text-danger"></i></a>';
+            return ' <a class="btn-link" title="指定权限" onclick="assign_security_points(this,'+val+');"><i class="icon-key text-danger"></i></a>';
         }
         return "";
+    }
+    function assign_security_points(elem,role_id){
+        $("#RoleDataTable tr").removeAttr("style");
+        $(elem).parent().parent().attr("style", "background-color:#99CC99;");
+        $("#security_points_tab").data("RoleId",role_id);
+        tinyms.controller.role_org.RoleSecurityPointsEdit.list({id:role_id},function(b,data){
+            console.log(data);
+            $("#security_points_edit_panel :checkbox").each(function(i,elem){
+                $(elem).prop("checked",false)
+            });
+            $.each(data,function(i,v){
+                $("#security_point_"+v).prop("checked",true);
+            });
+        });
     }
     function check_or_uncheck(link, mode) {
         if ($(link).data("state") == undefined) {
@@ -42,7 +57,10 @@
                 items.push($(elem).val());
             }
         });
-        console.log(items);
+        var params = {"id":$("#security_points_tab").data("RoleId"),"points":JSON.stringify(items)};
+        tinyms.controller.role_org.RoleSecurityPointsEdit.save(params,function(b,data){
+            console.log(data);
+        });
     }
     $(document).ready(function () {
         $('#security_points_tab a:first').tab('show');
@@ -93,7 +111,7 @@
                 <span class="hidden-sm"><a class="btn-link" onclick="check_or_uncheck(this,'all');">全选/反选</a> <a
                         class="btn-link" onclick="security_points_save(this);"><i class="icon-save"></i>保存</a></span>
             </header>
-            <div class="panel-body">
+            <div class="panel-body" id="security_points_edit_panel">
                 <div class="tab-content">
                     {% for cat in data["categories"] %}
                     <div class="tab-pane fade" id="points_group_{{ cat[2] }}">

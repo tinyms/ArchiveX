@@ -1,5 +1,5 @@
 <div id="{{opt['id']}}_wrap"  class="table-responsive">
-<table id="{{opt['id']}}" class="table table-striped table-hover m-b-none">
+<table id="{{opt['id']}}" class="table table-condensed table-hover m-b-none">
 <tfoot><tr>{% raw opt['thTags'] %}</tr></tfoot>
 </table>
 </div>

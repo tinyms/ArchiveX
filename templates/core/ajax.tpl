@@ -1,6 +1,6 @@
-{{ module_name }}_{{ class_name }} = {};
+namespace("{{ module_name }}.{{ class_name }}");
 {% for method_name in methods %}
-{{ module_name }}_{{ class_name }}.{{ method_name }} = function(params, callback, data_type){
+{{ module_name }}.{{ class_name }}.{{ method_name }} = function(params, callback, data_type){
 	if(typeof(params)=="undefined"){params={};}
 	params.__method_name__ = "{{ method_name }}";
 	if(typeof(callback)=="undefined"){callback=function(b,d){};}

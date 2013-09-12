@@ -3288,3 +3288,20 @@ a-(e.init<0?1:0);e.c=g-this.value.length;e.init=1;f.data("numFormat",e)}else if(
 		min: $.validator.format("请输入一个最小为 {0} 的值")
 	});
 }(jQuery));
+/**
+ * User: tinyms
+ * Date: 13-9-12
+ * Time: 下午12:09
+ */
+function namespace() {
+    var a = arguments, o = null, i, j, d;
+    for (i = 0; i < a.length; i = i + 1) {
+        d = a[i].split(".");
+        o = window;
+        for (j = 0; j < d.length; j = j + 1) {
+            o[d[j]] = o[d[j]] || {};
+            o = o[d[j]];
+        }
+    }
+    return o;
+}
