@@ -99,7 +99,7 @@
                             cols=['name','description'],
                             titles=['名称','说明'],
                             search_fields="name",
-                            form=""
+                            form="RoleDataTable_EditFormTemplate"
                             ) %}
                         </div>
                     </div>
@@ -155,4 +155,34 @@
         <!-- / left tab -->
     </div>
 </div>
+<script id="RoleDataTable_EditFormTemplate" type="text/x-jsrender">
+	<div class="form-group">
+	<div class="col-lg-9 col-lg-offset-3">
+	<input type="button" class="btn btn-white btn-sm " id="RoleDataTable_form_return"  onclick="RoleDataTable_.form.cancel(this);" value="返回"></input>
+	</div>
+	</div>
+
+	<div class="form-group">
+		<label for="name" class="col-lg-3 control-label">名称</label>
+		<div class="col-lg-8">
+		  <input type="text" class="form-control" id="name" name="name" required >
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="description" class="col-lg-3 control-label">说明/备注</label>
+		<div class="col-lg-8">
+		  <input type="text" class="form-control" id="description" name="description"  >
+		</div>
+	</div>
+
+	<div class="form-group">
+	<div class="col-lg-9 col-lg-offset-3">
+		<input type="button" class="btn btn-primary btn-sm" id="RoleDataTable_form_save" onclick="RoleDataTable_.form.save(this,'');" value="保存"></button>
+		<input type="button" class="btn btn-white btn-sm" id="RoleDataTable_form_save_continue" onclick="RoleDataTable_.form.save(this,'clear');" value="保存并继续"></button>
+		<input type="button" class="btn btn-white btn-sm" id="RoleDataTable_form_reset" onclick="RoleDataTable_.form.reset(this);" value="重填"></button>
+	</div>
+	<div class="col-lg-10"></div>
+	</div>
+</script>
 {% end %}
