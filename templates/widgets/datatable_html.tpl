@@ -20,7 +20,7 @@ $(document).ready(function () {
 <script id='{{ opt["id"] }}_EditFormTemplate' type="text/x-jsrender">
 	<div class="form-group">
 	<div class="col-lg-9 col-lg-offset-3">
-	<input type="button" class="btn btn-white btn-sm " id="{{opt['id']}}_form_return"  onclick="{{opt['id']}}_.form.cancel(this);" value="返回"></input>
+	<input type="button" class="btn btn-white btn-sm " id="{{opt['id']}}_form_return"  onclick="{{opt['id']}}_.form.cancel(this);" value="返回"/>
 	</div>
 	</div>
 	{% for item in opt["cols"] %}

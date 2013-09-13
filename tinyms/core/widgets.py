@@ -110,13 +110,13 @@ class DataComboBoxModule(IWidget):
         self.query_class = prop.get("query_class") # obj prop `data` func return [(k,v),(k,v)...]
         self.allow_blank_select = prop.get("allow_blank_select")
         html = list()
-        html.append("<select id='%s' name='%s'>" % (self.dom_id, self.dom_id))
+        html.append("<select id='%s' name='%s' class='form-control'>" % (self.dom_id, self.dom_id))
         if self.allow_blank_select:
             html.append("<option value=''> </option>")
-        if not self.query:
+        if not self.query_class:
             if not self.entity_full_name:
                 return "<small>Require entity full name.</small>"
-            if not self.entity_full_name:
+            if self.entity_full_name:
                 cls = import_object(self.entity_full_name)
                 cnn = SessionFactory.new()
                 q = cnn.query(cls)
@@ -125,7 +125,7 @@ class DataComboBoxModule(IWidget):
                 items = q.all()
                 all = list()
                 for item in items:
-                    all.append([(getattr(item, col)) for col in self.cols])
+                    all.append([(getattr(item, col)) for col in self.cols.split(",")])
                 for opt in all:
                     html.append("<option value='%s'>%s</option>" % (opt[0], opt[1]))
         else:

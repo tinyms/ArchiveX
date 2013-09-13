@@ -11,11 +11,12 @@ from tinyms.core.common import Postgres
 from lottery.parse import MatchAnalyzeThread
 
 
-@route(r"/ui/test")
-@sidebar("/lottery","/","足彩")
+@route(r"/lottery/betting")
+@sidebar("/lottery","/lottery/betting","足彩")
+@sidebar("/lottery/betting","/lottery/betting","投注")
 class UITestHandler(IRequest):
     def get(self):
-        self.render("ui.html")
+        self.render("betting.html")
 
 @api("test")
 class ApiTest():
