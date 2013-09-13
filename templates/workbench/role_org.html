@@ -16,7 +16,7 @@
         $("#RoleDataTable tr").removeAttr("style");
         $(elem).parent().parent().attr("style", "background-color:#99CC99;");
         $("#security_points_tab").data("RoleId",role_id);
-        tinyms.controller.role_org.RoleSecurityPointsEdit.list({id:role_id},function(b,data){
+        tinyms.controller.security.RoleSecurityPointsEdit.list({id:role_id},function(b,data){
             $("#security_points_edit_panel :checkbox").each(function(i,elem){
                 $(elem).prop("checked",false)
             });
@@ -62,7 +62,7 @@
             }
         });
         var params = {"id":$("#security_points_tab").data("RoleId"),"points":JSON.stringify(items)};
-        tinyms.controller.role_org.RoleSecurityPointsEdit.save(params,function(b,data){
+        tinyms.controller.security.RoleSecurityPointsEdit.save(params,function(b,data){
             var msg = data[0];
             if(msg=="Success"){
                 toastr.success("保存成功!")

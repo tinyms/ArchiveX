@@ -2,13 +2,15 @@ __author__ = 'tinyms'
 import json
 from tinyms.core.common import Utils
 from tinyms.core.web import IAuthRequest
-from tinyms.core.point import route,ajax
+from tinyms.core.point import route,ajax,auth
 from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import SecurityPoint,Role
 
 @ajax("RoleSecurityPointsAssign")
 class RoleSecurityPointsEdit():
     __export__ = ["list","save"]
+
+    @auth({"tinyms.entity.role.points.view"},[])
     def list(self):
         role_id = self.param("id")
         if not role_id:
@@ -17,6 +19,7 @@ class RoleSecurityPointsEdit():
         points = cnn.query(SecurityPoint.id).join((Role,SecurityPoint.roles)).filter(Role.id == role_id).all()
         return [p[0] for p in points]
 
+    @auth({"tinyms.entity.role.points.update"},["UnAuth"])
     def save(self):
         role_id = self.param("id")
         if not role_id:
@@ -37,8 +40,8 @@ class RoleSecurityPointsEdit():
 @route("/workbench/security")
 class RoleOrg(IAuthRequest):
     def get(self, *args, **kwargs):
+        context = dict()
         categories = self.role_categories()
-
         all = list()
         for c in categories:
             sub = list()
@@ -47,7 +50,7 @@ class RoleOrg(IAuthRequest):
                 sub.append((g, self.points(c, g)))
                 pass
             all.append((c, sub, Utils.md5(c)))
-        context = dict()
+
         context["categories"] = all
         return self.render("workbench/role_org.html", data=context)
 

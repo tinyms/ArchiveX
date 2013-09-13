@@ -85,7 +85,7 @@ def sidebar(path, url, label="", point="", position=0, icon_class="icon-link"):
     return ref_sidebar
 
 
-def auth(points=set()):
+def auth(points=set(),default_value=None):
     def handle_func(func):
         @wraps(func)
         def returned_func(*args, **kwargs):
@@ -96,10 +96,9 @@ def auth(points=set()):
             points_ = self_.request.get_current_account_points()
             diff = points & points_
             if len(diff) > 0:
-                print(True)
+                return func(*args, **kwargs)
             else:
-                print(False)
-            return func(*args, **kwargs)
+                return default_value
 
         return returned_func
 
