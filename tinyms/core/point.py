@@ -31,7 +31,7 @@ class IWebConfig():
         return
 
 
-def reg(key, category="", group_="", description=""):
+def reg_point(key, category="", group_="", description=""):
     if not key:
         return
     for sp in ObjectPool.points:

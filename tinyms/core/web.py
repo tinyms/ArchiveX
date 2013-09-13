@@ -26,6 +26,21 @@ class IRequest(RequestHandler):
             return True
         return False
 
+    def get_template_namespace(self):
+        namespace = dict(
+            handler=self,
+            request=self.request,
+            current_user=self.current_user,
+            locale=self.locale,
+            _=self.locale.translate,
+            static_url=self.static_url,
+            xsrf_form_html=self.xsrf_form_html,
+            reverse_url=self.reverse_url,
+            auth = self.auth # Add to auth current user security points
+        )
+        namespace.update(self.ui)
+        return namespace
+
     def get_login_url(self):
         return "/login"
 
@@ -58,14 +73,13 @@ class IRequest(RequestHandler):
         temp = set()
         if not self.get_current_user():
             return temp
-
         cache = CacheManager.get(500,30*1000)
         points = cache.get(IRequest.__key_account_points__ % self.get_current_user())
         if points:
             print("Exists Cache Account Points")
             return points
         else:
-            temp.union(AccountHelper.points(self.get_current_user()))
+            temp = temp.union(AccountHelper.points(self.get_current_user()))
             return temp
 
     def get_current_account_name(self):

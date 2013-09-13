@@ -5,7 +5,7 @@ from sqlalchemy import func
 from tinyms.core.common import Utils
 from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import Role, Archives, Account, SecurityPoint
-from tinyms.core.point import ObjectPool,reg
+from tinyms.core.point import ObjectPool,reg_point
 
 
 class Loader():
@@ -71,11 +71,12 @@ class Loader():
 
     @staticmethod
     def create_base_securitypoints():
-        reg("tinyms.sidebar.archives.show","菜单","侧边栏","人员档案")
-        reg("tinyms.sidebar.role_org.show","菜单","侧边栏","角色组织")
-        reg("tinyms.sidebar.sys_params.show","菜单","侧边栏","系统参数")
-        reg("tinyms.archives.list","人员档案","档案","查看档案列表")
-        reg("tinyms.archives.add","人员档案","档案","添加人员档案")
-        reg("tinyms.archives.update","人员档案","档案","修改人员档案")
-        reg("tinyms.archives.delete","人员档案","档案","删除人员档案")
-        pass
+        reg_point("tinyms.sidebar.archives.show","菜单","侧边栏","人员档案")
+        reg_point("tinyms.sidebar.role_org.show","菜单","侧边栏","角色组织")
+        reg_point("tinyms.sidebar.sys_params.show","菜单","侧边栏","系统参数")
+        reg_point("tinyms.entity.role.list","角色组织","角色","查看角色列表")
+        reg_point("tinyms.entity.role.add","角色组织","角色","添加角色")
+        reg_point("tinyms.entity.role.update","角色组织","角色","修改角色")
+        reg_point("tinyms.entity.role.delete","角色组织","角色","删除角色")
+        reg_point("tinyms.entity.role.points.view","角色组织","权限","查看角色权限点")
+        reg_point("tinyms.entity.role.points.update","角色组织","权限","修改角色权限")

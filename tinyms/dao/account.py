@@ -14,6 +14,7 @@ class AccountHelper():
         all = cnn.query(SecurityPoint.key_) \
             .join((Role, Account.roles)).join((SecurityPoint, Role.securitypoints)).filter(
             Account.id == account_id).all()
+
         for p in all:
             tmp.add(p[0])
         return tmp

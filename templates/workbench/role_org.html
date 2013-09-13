@@ -3,6 +3,7 @@
 {% block header %}
 <script type="text/javascript" src="/ajax/RoleSecurityPointsAssign.js"></script>
 <script type="text/javascript">
+    {% if auth({'tinyms.entity.role.points.view'}) %}
     function datatable_render_actionbar(id, col, val, row) {
         if (id == "RoleDataTable") {
             return ' <a class="btn-link" title="指定权限" onclick="assign_security_points(this,'+val+');"><i class="icon-key text-danger"></i></a>';
@@ -24,6 +25,7 @@
             });
         });
     }
+    {% end %}
     function check_or_uncheck(link, mode) {
         if ($(link).data("state") == undefined) {
             $(link).data("state", true);
@@ -50,6 +52,7 @@
             });
         }
     }
+    {% if auth({'tinyms.entity.role.points.update'}) %}
     function security_points_save(link) {
         var cks = $(link).parent().parent().parent().find(":checkbox");
         var items = [];
@@ -68,7 +71,9 @@
             }
         });
     }
+    {% end %}
     $(document).ready(function () {
+        $('#role_org_tab a:first').tab('show');
         $('#security_points_tab a:first').tab('show');
     });
 </script>
@@ -82,16 +87,19 @@
         <!-- right tab -->
         <section class="panel">
             <header class="panel-heading">
-                <ul class="nav nav-tabs pull-right">
+                <ul class="nav nav-tabs pull-right" id="role_org_tab">
+                    {% if auth({'tinyms.entity.role.list'}) %}
                     <li class="active"><a href="#profile-1" data-toggle="tab"><i
                             class="icon-user icon-large text-default"></i>角色</a>
                     </li>
+                    {% end %}
                     <li><a href="#settings-1" data-toggle="tab"><i class="icon-sitemap icon-large text-default"></i>组织/部门</a>
                     </li>
                 </ul>
             </header>
             <div class="panel-body">
                 <div class="tab-content">
+                    {% if auth({'tinyms.entity.role.list'}) %}
                     <div class="tab-pane active" id="profile-1">
                         <div>
                             {% module DataTable(id="RoleDataTable",
@@ -103,6 +111,7 @@
                             ) %}
                         </div>
                     </div>
+                    {% end %}
                     <div class="tab-pane" id="settings-1">组织/部门</div>
                 </div>
             </div>
@@ -116,9 +125,9 @@
                     <li><a href="#points_group_{{ cat[2] }}" data-toggle="tab">{{ cat[0] }}</a></li>
                     {% end %}
                 </ul>
-                <span class="hidden-sm"><a class="btn-link" onclick="check_or_uncheck(this,'all');">全选/反选</a> <a
+                <span class="hidden-sm"><a class="btn-link" onclick="check_or_uncheck(this,'all');">全选/反选</a> {% if auth({'tinyms.entity.role.points.update'}) %} <a
                         class="btn-link" onclick="security_points_save(this);"><i class="icon-save"></i>保存</a>
-                    <small><em>( 给`<span class="text-danger" id="role_name_to_assign">角色</span>`指定权限 )</em></small>
+                    <small><em>( 给`<span class="text-danger" id="role_name_to_assign">角色</span>`指定权限 )</em></small> {% end %}
                 </span>
             </header>
             <div class="panel-body" id="security_points_edit_panel">
