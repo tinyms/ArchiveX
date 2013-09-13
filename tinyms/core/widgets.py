@@ -4,7 +4,7 @@ import json
 from tornado.web import UIModule
 from tornado.util import import_object
 from tinyms.core.common import Utils, JsonEncoder
-from tinyms.core.point import ui, route, ObjectPool
+from tinyms.core.point import ui, route, ObjectPool, EmptyClass
 from tinyms.core.orm import SessionFactory
 from tinyms.core.web import IRequest
 from sqlalchemy import func
@@ -14,10 +14,12 @@ from tinyms.dao.account import AccountHelper
 class IWidget(UIModule):
     pass
 
+
 @ui("Version")
 class VersionModule(IWidget):
     def render(self, *args, **kwargs):
         return "&copy; ArchiveX 2013, v1.0"
+
 
 @ui("CurrentAccountName")
 class CurrentAccountName(IWidget):
@@ -137,11 +139,13 @@ class DataComboBoxModule(IWidget):
         html.append("</select>")
         return "".join(html)
 
+
 @ui("DataTable")
 class DataTableModule(IWidget):
     __filter_mapping__ = dict()
     __entity_mapping__ = dict()
     __default_search_fields__ = dict()
+    __security_points__ = dict()
 
     def render(self, **prop):
         self.dom_id = prop.get("id")#client dom id
@@ -150,12 +154,18 @@ class DataTableModule(IWidget):
         self.entity_full_name = prop.get("entity")#entity name
         self.form_id = prop.get("form")#Edit form id
         self.search_fields = prop.get("search_fields")#default search field name,and text type,
+        self.point = EmptyClass()
+        self.point.list = prop.get("point_list")
+        self.point.add = prop.get("point_add")
+        self.point.update = prop.get("point_update")
+        self.point.delete = prop.get("point_delete")
 
         if not self.form_id:
             self.form_id = ""
         if not self.entity_full_name:
             return "Require entity full name."
         self.datatable_key = Utils.md5(self.entity_full_name)
+        DataTableModule.__security_points__[self.datatable_key] = self.point
         if self.search_fields:
             DataTableModule.__default_search_fields__[self.datatable_key] = self.search_fields.split(",")
         else:
@@ -171,6 +181,7 @@ class DataTableModule(IWidget):
         tag += "<th>#</th>"
 
         opt = dict()
+        opt["point"] = self.point
         opt["id"] = self.dom_id
         opt["thTags"] = tag
         opt["entity_name_md5"] = self.datatable_key
@@ -238,14 +249,34 @@ class DataTableModule(IWidget):
 @route(r"/datatable/(.*)/(.*)")
 class DataTableHandler(IRequest):
     def post(self, id, act):
+        point = DataTableModule.__security_points__.get(id)
+        message = dict()
         if act == "list":
-            self.list(id)
+            if not self.auth({point.list}):
+                self.write(dict())
+            else:
+                self.list(id)
         elif act == "save":
-            self.update(id)
+            if not self.auth({point.update}):
+                message["success"] = False
+                message["msg"] = "UnAuth"
+                self.write(json.dumps(message))
+            else:
+                self.update(id)
         elif act == "saveNext":
-            self.update(id)
+            if not self.auth({point.update}):
+                message["success"] = False
+                message["msg"] = "UnAuth"
+                self.write(json.dumps(message))
+            else:
+                self.update(id)
         elif act == "delete":
-            self.delete(id)
+            if not self.auth({point.delete}):
+                message["success"] = False
+                message["msg"] = "UnAuth"
+                self.write(json.dumps(message))
+            else:
+                self.delete(id)
 
     def delete(self, id):
         self.set_header("Content-Type", "text/json;charset=utf-8")
@@ -264,12 +295,12 @@ class DataTableHandler(IRequest):
         self.write(json.dumps(message))
 
     def update(self, id):
+        message = dict()
         self.set_header("Content-Type", "text/json;charset=utf-8")
         meta = DataTableModule.__entity_mapping__.get(id)
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
-        message = dict()
         rec_id = self.get_argument("id")
         if not rec_id:
             obj = self.wrap_entity(entity())
@@ -288,66 +319,68 @@ class DataTableHandler(IRequest):
             message["msg"] = "Updated"
             self.write(json.dumps(message))
 
-    def list(self, id):
-        meta = DataTableModule.__entity_mapping__.get(id)
-        if not meta:
-            self.set_status(403, "Error!")
-        entity = import_object(meta["name"])
-        self.datatable_display_cols = meta["cols"]
-        self.set_header("Content-Type", "text/json;charset=utf-8")
-        display_start = Utils.parse_int(self.get_argument("iDisplayStart"))
-        display_length = Utils.parse_int(self.get_argument("iDisplayLength"))
-        #cols_num = self.get_argument("iColumns")
 
-        #全局搜索处理段落
-        default_search_value = Utils.trim(self.get_argument("sSearch"))
-        default_search_fields = DataTableModule.__default_search_fields__.get(id)
-        default_search_sqlwhere = ""
-        default_search_sqlwhere_params = dict()
-        if default_search_value and default_search_fields:
-            temp_sql = list()
-            for field_name in default_search_fields:
-                temp_sql.append("%s like :%s" % (field_name, field_name))
-                default_search_sqlwhere_params[field_name] = "%" + default_search_value + "%"
-            default_search_sqlwhere = " OR ".join(temp_sql)
+def list(self, id):
+    meta = DataTableModule.__entity_mapping__.get(id)
+    if not meta:
+        self.set_status(403, "Error!")
+    entity = import_object(meta["name"])
+    self.datatable_display_cols = meta["cols"]
+    self.set_header("Content-Type", "text/json;charset=utf-8")
+    display_start = Utils.parse_int(self.get_argument("iDisplayStart"))
+    display_length = Utils.parse_int(self.get_argument("iDisplayLength"))
+    #cols_num = self.get_argument("iColumns")
 
-        #排序处理段落
-        sort_params = self.parse_sort_params()
-        order_sqlwhere = ""
-        for k, v in sort_params.items():
-            order_sqlwhere += "1=1 ORDER BY %s %s" % (k, v)
-            break
+    #全局搜索处理段落
+    default_search_value = Utils.trim(self.get_argument("sSearch"))
+    default_search_fields = DataTableModule.__default_search_fields__.get(id)
+    default_search_sqlwhere = ""
+    default_search_sqlwhere_params = dict()
+    if default_search_value and default_search_fields:
+        temp_sql = list()
+        for field_name in default_search_fields:
+            temp_sql.append("%s like :%s" % (field_name, field_name))
+            default_search_sqlwhere_params[field_name] = "%" + default_search_value + "%"
+        default_search_sqlwhere = " OR ".join(temp_sql)
 
-        #DataGrid数据查询段落
-        cnn = SessionFactory.new()
-        #here place custom filter
-        total_query = cnn.query(func.count(entity.id))
-        ds_query = cnn.query(entity)
-        custom_filter = DataTableModule.__filter_mapping__.get(meta["name"])
-        if custom_filter:
-            custom_filter_obj = custom_filter()
-            if hasattr(custom_filter_obj, "total_filter"):
-                total_query = custom_filter_obj.total_filter(total_query, self)
-            if hasattr(custom_filter_obj, "dataset_filter"):
-                ds_query = custom_filter_obj.dataset_filter(ds_query, self)
-        if default_search_value:
-            total_query = total_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
-            ds_query = ds_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
-        if order_sqlwhere:
-            ds_query = ds_query.filter(order_sqlwhere)
-        total = total_query.scalar()
-        ds = ds_query.offset(display_start).limit(display_length)
+    #排序处理段落
+    sort_params = self.parse_sort_params()
+    order_sqlwhere = ""
+    for k, v in sort_params.items():
+        order_sqlwhere += "1=1 ORDER BY %s %s" % (k, v)
+        break
 
-        results = dict()
-        results["sEcho"] = self.get_argument("sEcho")
-        results["iTotalRecords"] = total
-        results["iTotalDisplayRecords"] = total
-        results["aaData"] = [item.dict() for item in ds]
-        self.write(json.dumps(results, cls=JsonEncoder))
+    #DataGrid数据查询段落
+    cnn = SessionFactory.new()
+    #here place custom filter
+    total_query = cnn.query(func.count(entity.id))
+    ds_query = cnn.query(entity)
+    custom_filter = DataTableModule.__filter_mapping__.get(meta["name"])
+    if custom_filter:
+        custom_filter_obj = custom_filter()
+        if hasattr(custom_filter_obj, "total_filter"):
+            total_query = custom_filter_obj.total_filter(total_query, self)
+        if hasattr(custom_filter_obj, "dataset_filter"):
+            ds_query = custom_filter_obj.dataset_filter(ds_query, self)
+    if default_search_value:
+        total_query = total_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
+        ds_query = ds_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
+    if order_sqlwhere:
+        ds_query = ds_query.filter(order_sqlwhere)
+    total = total_query.scalar()
+    ds = ds_query.offset(display_start).limit(display_length)
 
-    def parse_sort_params(self):
-        params = dict()
-        colIndex = Utils.parse_int(self.get_argument("iSortCol_0"))
-        direct = self.get_argument("sSortDir_0")
-        params[self.datatable_display_cols[colIndex]] = direct
-        return params
+    results = dict()
+    results["sEcho"] = self.get_argument("sEcho")
+    results["iTotalRecords"] = total
+    results["iTotalDisplayRecords"] = total
+    results["aaData"] = [item.dict() for item in ds]
+    self.write(json.dumps(results, cls=JsonEncoder))
+
+
+def parse_sort_params(self):
+    params = dict()
+    colIndex = Utils.parse_int(self.get_argument("iSortCol_0"))
+    direct = self.get_argument("sSortDir_0")
+    params[self.datatable_display_cols[colIndex]] = direct
+    return params

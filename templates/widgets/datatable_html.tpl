@@ -1,3 +1,4 @@
+{% if auth({opt["point"].list}) %}
 <div id="{{opt['id']}}_wrap"  class="table-responsive">
 <table id="{{opt['id']}}" class="table table-condensed table-hover m-b-none">
 <tfoot><tr>{% raw opt['thTags'] %}</tr></tfoot>
@@ -10,9 +11,25 @@
 </div>
 <script type="text/javascript">
 var {{opt["id"]}}_ = null;
+function {{opt["id"]}}_actionbar_render(col,v,type,row){
+	var action_btns = '<a class="btn-link" title="查看" onclick="{{opt["id"]}}_.RecordSetProvider.Modify(this,' + v + ');"><i class="icon-list-alt"></i></a>';
+	if (typeof(datatable_render_actionbar) != "undefined") {
+		action_btns += datatable_render_actionbar('{{opt["id"]}}', "id", v, row);
+	}
+	{% if auth({opt["point"].add}) %}
+	action_btns += ' <a class="btn-link" title="添加" onclick="{{opt["id"]}}_.RecordSetProvider.New(this);"><i class="icon-plus"></i></a>';
+	{% end %}
+	{% if auth({opt["point"].update}) %}
+	action_btns += ' <a class="btn-link" title="修改" onclick="{{opt["id"]}}_.RecordSetProvider.Modify(this,' + v + ');"><i class="icon-pencil"></i></a>';
+	{% end %}
+	{% if auth({opt["point"].delete}) %}
+	action_btns += ' <a class="btn-link" title="删除" onclick="{{opt["id"]}}_.RecordSetProvider.Delete(this,' + v + ');"><i class="icon-remove"></i></a>';
+	{% end %}
+	return action_btns;
+}
 $(document).ready(function () {
     $("#{{opt['id']}}_form_container").hide();
-	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},'{{opt["edit_form_id"]}}');
+	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},'{{opt["edit_form_id"]}}',{{opt["id"]}}_actionbar_render);
 	{{opt["id"]}}_.Create();
 });
 </script>
@@ -40,4 +57,5 @@ $(document).ready(function () {
 	<div class="col-lg-10"></div>
 	</div>
 </script>
+{% end %}
 {% end %}

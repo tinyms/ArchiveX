@@ -24,7 +24,7 @@
             <div class="panel-body">
                 {% module DataTable(id="BettingDataTable",
                 entity="lottery.entity.Betting",
-                cols=['seq','select','reason','fix'],
+                cols=['seq','select_','reason','fix'],
                 titles=['序号','选择','原因','稳胆'],
                 search_fields="select_",
                 form="BettingDataTable_EditFormTemplate"
