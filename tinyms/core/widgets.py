@@ -14,6 +14,10 @@ from tinyms.dao.account import AccountHelper
 class IWidget(UIModule):
     pass
 
+@ui("Version")
+class VersionModule(IWidget):
+    def render(self, *args, **kwargs):
+        return "&copy; ArchiveX 2013, v1.0"
 
 @ui("CurrentAccountName")
 class CurrentAccountName(IWidget):
@@ -132,7 +136,6 @@ class DataComboBoxModule(IWidget):
                     html.append("<option value='%s'>%s</option>" % (item[0], item[1]))
         html.append("</select>")
         return "".join(html)
-
 
 @ui("DataTable")
 class DataTableModule(IWidget):
