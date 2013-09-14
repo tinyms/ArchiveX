@@ -80,3 +80,7 @@ class Loader():
         reg_point("tinyms.entity.role.delete","角色组织","角色","删除角色")
         reg_point("tinyms.entity.role.points.view","角色组织","权限","查看角色权限点")
         reg_point("tinyms.entity.role.points.update","角色组织","权限","修改角色权限")
+        reg_point("tinyms.entity.jobtitle.list","角色组织","头衔","查看头衔列表")
+        reg_point("tinyms.entity.jobtitle.add","角色组织","头衔","添加头衔")
+        reg_point("tinyms.entity.jobtitle.update","角色组织","头衔","修改头衔")
+        reg_point("tinyms.entity.jobtitle.delete","角色组织","头衔","删除头衔")

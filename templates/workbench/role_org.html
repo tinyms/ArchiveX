@@ -3,79 +3,83 @@
 {% block header %}
 <script type="text/javascript" src="/ajax/RoleSecurityPointsAssign.js"></script>
 <script type="text/javascript">
-    {% if auth({'tinyms.entity.role.points.view'}) %}
-    function datatable_render_actionbar(id, col, val, row) {
-        if (id == "RoleDataTable") {
-            return ' <a class="btn-link" title="指定权限" onclick="assign_security_points(this,'+val+');"><i class="icon-key text-danger"></i></a>';
+        {% if auth({'tinyms.entity.role.points.view'}) %}
+        function datatable_render_actionbar(id, col, val, row) {
+            if (id == "RoleDataTable") {
+                return ' <a class="btn-link" title="指定权限" onclick="assign_security_points(this,' + val + ');"><i class="icon-key text-danger"></i></a>';
+            }
+            return "";
         }
-        return "";
-    }
-    function assign_security_points(elem,role_id){
-        var row = RoleDataTable_.GetRow(role_id);
-        $("#role_name_to_assign").text(row.name);
-        $("#RoleDataTable tr").removeAttr("style");
-        $(elem).parent().parent().attr("style", "background-color:#99CC99;");
-        $("#security_points_tab").data("RoleId",role_id);
-        tinyms.controller.security.RoleSecurityPointsEdit.list({id:role_id},function(b,data){
-            $("#security_points_edit_panel :checkbox").each(function(i,elem){
-                $(elem).prop("checked",false)
+
+        function assign_security_points(elem, role_id) {
+            var row = RoleDataTable_.GetRow(role_id);
+            $("#role_name_to_assign").text(row.name);
+            $("#RoleDataTable tr").removeAttr("style");
+            $(elem).parent().parent().attr("style", "background-color:#99CC99;");
+            $("#security_points_tab").data("RoleId", role_id);
+            tinyms.controller.security.RoleSecurityPointsEdit.list({id: role_id}, function (b, data) {
+                $("#security_points_edit_panel :checkbox").each(function (i, elem) {
+                    $(elem).prop("checked", false)
+                });
+                $.each(data, function (i, v) {
+                    $("#security_point_" + v).prop("checked", true);
+                });
             });
-            $.each(data,function(i,v){
-                $("#security_point_"+v).prop("checked",true);
-            });
-        });
-    }
-    {% end %}
-    function check_or_uncheck(link, mode) {
-        if ($(link).data("state") == undefined) {
-            $(link).data("state", true);
-        } else {
-            if (!$(link).data("state")) {
+        }
+
+        {% end %}
+        function check_or_uncheck(link, mode) {
+            if ($(link).data("state") == undefined) {
                 $(link).data("state", true);
             } else {
-                $(link).data("state", false);
-            }
-        }
-        var cks = undefined;
-        if (mode == "sub") {
-            cks = $(link).parent().parent().find(":checkbox");
-        } else if (mode == "all") {
-            cks = $(link).parent().parent().parent().find(":checkbox");
-        }
-        if (cks != undefined) {
-            $.each(cks, function (k, elem) {
-                if ($(link).data("state")) {
-                    $(elem).prop("checked", true);
+                if (!$(link).data("state")) {
+                    $(link).data("state", true);
                 } else {
-                    $(elem).prop("checked", false);
+                    $(link).data("state", false);
                 }
-            });
+            }
+            var cks = undefined;
+            if (mode == "sub") {
+                cks = $(link).parent().parent().find(":checkbox");
+            } else if (mode == "all") {
+                cks = $(link).parent().parent().parent().find(":checkbox");
+            }
+            if (cks != undefined) {
+                $.each(cks, function (k, elem) {
+                    if ($(link).data("state")) {
+                        $(elem).prop("checked", true);
+                    } else {
+                        $(elem).prop("checked", false);
+                    }
+                });
+            }
         }
-    }
-    {% if auth({'tinyms.entity.role.points.update'}) %}
-    function security_points_save(link) {
-        var cks = $(link).parent().parent().parent().find(":checkbox");
-        var items = [];
-        $.each(cks,function(k,elem){
-            if($(elem).prop("checked")){
-                items.push($(elem).val());
+
+        {% if auth({'tinyms.entity.role.points.update'}) %}
+            function security_points_save(link) {
+                var cks = $(link).parent().parent().parent().find(":checkbox");
+                var items = [];
+                $.each(cks, function (k, elem) {
+                    if ($(elem).prop("checked")) {
+                        items.push($(elem).val());
+                    }
+                });
+                var params = {"id": $("#security_points_tab").data("RoleId"), "points": JSON.stringify(items)};
+                tinyms.controller.security.RoleSecurityPointsEdit.save(params, function (b, data) {
+                    var msg = data[0];
+                    if (msg == "Success") {
+                        toastr.success("保存成功!")
+                    } else {
+                        toastr.error("保存失败!")
+                    }
+                });
             }
-        });
-        var params = {"id":$("#security_points_tab").data("RoleId"),"points":JSON.stringify(items)};
-        tinyms.controller.security.RoleSecurityPointsEdit.save(params,function(b,data){
-            var msg = data[0];
-            if(msg=="Success"){
-                toastr.success("保存成功!")
-            }else{
-                toastr.error("保存失败!")
-            }
-        });
-    }
-    {% end %}
-    $(document).ready(function () {
-        $('#role_org_tab a:first').tab('show');
-        $('#security_points_tab a:first').tab('show');
-    });
+
+            {% end %}
+            $(document).ready(function () {
+                $('#role_org_tab a:first').tab('show');
+                $('#security_points_tab a:first').tab('show');
+            });
 </script>
 {% end %}
 {% block workspace %}
@@ -93,7 +97,7 @@
                             class="icon-user icon-large text-default"></i>角色</a>
                     </li>
                     {% end %}
-                    <li><a href="#settings-1" data-toggle="tab"><i class="icon-sitemap icon-large text-default"></i>组织/部门</a>
+                    <li><a href="#org_post_panel" data-toggle="tab"><i class="icon-sitemap icon-large text-default"></i>组织/部门</a>
                     </li>
                 </ul>
             </header>
@@ -116,7 +120,68 @@
                         </div>
                     </div>
                     {% end %}
-                    <div class="tab-pane" id="settings-1">组织/部门</div>
+                    <div class="tab-pane" id="org_post_panel">
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <div class="panel">
+                                    <header class="panel-heading">组织/部门</header>
+                                </div>
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="panel">
+                                    <header class="panel-heading">头衔</header>
+                                    <div class="panel-body">
+                                        {% module DataTable(id="JobTitleDataTable",
+                                        entity="tinyms.core.entity.JobTitle",
+                                        cols=['name'],
+                                        titles=['名称'],
+                                        search_fields="name",
+                                        form="JobTitleDataTable_EditFormTemplate",
+                                        point_list = "tinyms.entity.jobtitle.list",
+                                        point_add = "tinyms.entity.jobtitle.add",
+                                        point_update = "tinyms.entity.jobtitle.update",
+                                        point_delete = "tinyms.entity.jobtitle.delete"
+                                        ) %}
+                                    </div>
+                                    <script id="JobTitleDataTable_EditFormTemplate" type="text/x-jsrender">
+                                        <div class="form-group">
+                                            <div class="col-lg-9 col-lg-offset-3">
+                                                <input type="button" class="btn btn-white btn-sm "
+                                                       id="JobTitleDataTable_form_return"
+                                                       onclick="JobTitleDataTable_.form.cancel(this);" value="返回"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="name" class="col-lg-3 control-label">名称</label>
+
+                                            <div class="col-lg-8">
+                                                <input type="text" class="form-control" id="name" name="name" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-lg-9 col-lg-offset-3">
+                                                <input type="button" class="btn btn-primary btn-sm"
+                                                       id="JobTitleDataTable_form_save"
+                                                       onclick="JobTitleDataTable_.form.save(this,'');"
+                                                       value="保存"></button>
+                                                <input type="button" class="btn btn-white btn-sm"
+                                                       id="JobTitleDataTable_form_save_continue"
+                                                       onclick="JobTitleDataTable_.form.save(this,'clear');"
+                                                       value="保存并继续"></button>
+                                                <input type="button" class="btn btn-white btn-sm"
+                                                       id="JobTitleDataTable_form_reset"
+                                                       onclick="JobTitleDataTable_.form.reset(this);"
+                                                       value="重填"></button>
+                                            </div>
+                                            <div class="col-lg-10"></div>
+                                        </div>
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -171,33 +236,39 @@
     </div>
 </div>
 <script id="RoleDataTable_EditFormTemplate" type="text/x-jsrender">
-	<div class="form-group">
-	<div class="col-lg-9 col-lg-offset-3">
-	<input type="button" class="btn btn-white btn-sm " id="RoleDataTable_form_return"  onclick="RoleDataTable_.form.cancel(this);" value="返回"></input>
-	</div>
-	</div>
+    <div class="form-group">
+        <div class="col-lg-9 col-lg-offset-3">
+            <input type="button" class="btn btn-white btn-sm " id="RoleDataTable_form_return"
+                   onclick="RoleDataTable_.form.cancel(this);" value="返回"></input>
+        </div>
+    </div>
 
-	<div class="form-group">
-		<label for="name" class="col-lg-3 control-label">名称</label>
-		<div class="col-lg-8">
-		  <input type="text" class="form-control" id="name" name="name" required >
-		</div>
-	</div>
+    <div class="form-group">
+        <label for="name" class="col-lg-3 control-label">名称</label>
 
-	<div class="form-group">
-		<label for="description" class="col-lg-3 control-label">说明/备注</label>
-		<div class="col-lg-8">
-		  <input type="text" class="form-control" id="description" name="description"  >
-		</div>
-	</div>
+        <div class="col-lg-8">
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+    </div>
 
-	<div class="form-group">
-	<div class="col-lg-9 col-lg-offset-3">
-		<input type="button" class="btn btn-primary btn-sm" id="RoleDataTable_form_save" onclick="RoleDataTable_.form.save(this,'');" value="保存"></button>
-		<input type="button" class="btn btn-white btn-sm" id="RoleDataTable_form_save_continue" onclick="RoleDataTable_.form.save(this,'clear');" value="保存并继续"></button>
-		<input type="button" class="btn btn-white btn-sm" id="RoleDataTable_form_reset" onclick="RoleDataTable_.form.reset(this);" value="重填"></button>
-	</div>
-	<div class="col-lg-10"></div>
-	</div>
+    <div class="form-group">
+        <label for="description" class="col-lg-3 control-label">说明/备注</label>
+
+        <div class="col-lg-8">
+            <input type="text" class="form-control" id="description" name="description">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-lg-9 col-lg-offset-3">
+            <input type="button" class="btn btn-primary btn-sm" id="RoleDataTable_form_save"
+                   onclick="RoleDataTable_.form.save(this,'');" value="保存"></button>
+            <input type="button" class="btn btn-white btn-sm" id="RoleDataTable_form_save_continue"
+                   onclick="RoleDataTable_.form.save(this,'clear');" value="保存并继续"></button>
+            <input type="button" class="btn btn-white btn-sm" id="RoleDataTable_form_reset"
+                   onclick="RoleDataTable_.form.reset(this);" value="重填"></button>
+        </div>
+        <div class="col-lg-10"></div>
+    </div>
 </script>
 {% end %}

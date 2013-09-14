@@ -98,6 +98,7 @@ function show_baseface(self, match_id) {
         var html = Mustache.render($("#match_details_tpl").html(), detail);
         $("#base_tab").html(html);
         $("#baseface_url_iframe").attr("src", "http://odds.500.com/fenxi/shuju-" + match_id + "-show-1#team_jiaozhan");
+        $("#base_face_bifen_tab_iframe").attr("src", "http://odds.500.com/fenxi/bifen-" + match_id + "-show-1#c1");
         $("#extern_url_iframe").attr("src", "http://odds.500.com/fenxi/ouzhi-" + match_id + "-show-1#datatb");
         var ctx = document.getElementById("team_force_chart").getContext("2d");
         var chart_data = {

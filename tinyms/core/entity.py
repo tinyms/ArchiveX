@@ -41,6 +41,8 @@ class SecurityPoint(Entity, Simplify):
     category = Column(String(60), nullable=False)
     #roles
 
+class JobTitle(Entity,Simplify):
+    name = Column(String(60), unique=True, nullable=False)
 
 class Term(Entity, Simplify):
     name = Column(String(20), unique=True, nullable=False)
