@@ -36,7 +36,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
             }
         }
         self.cols.push({"mData": "id", "sTitle": "#", "mRender": function (col, v, type, row) {
-            self.actionbar_render(col,v,type,row);
+            return self.actionbar_render(col,v,type,row);
         }});
 
         var bSorting = true;

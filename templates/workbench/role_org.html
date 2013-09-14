@@ -107,7 +107,11 @@
                             cols=['name','description'],
                             titles=['名称','说明'],
                             search_fields="name",
-                            form="RoleDataTable_EditFormTemplate"
+                            form="RoleDataTable_EditFormTemplate",
+                            point_list = "tinyms.entity.role.list",
+                            point_add = "tinyms.entity.role.add",
+                            point_update = "tinyms.entity.role.update",
+                            point_delete = "tinyms.entity.role.delete"
                             ) %}
                         </div>
                     </div>
@@ -130,6 +134,7 @@
                     <small><em>( 给`<span class="text-danger" id="role_name_to_assign">角色</span>`指定权限 )</em></small> {% end %}
                 </span>
             </header>
+            {% if auth({'tinyms.entity.role.points.view'}) %}
             <div class="panel-body" id="security_points_edit_panel">
                 <div class="tab-content">
                     {% for cat in data["categories"] %}
@@ -160,6 +165,7 @@
                     {% end %}
                 </div>
             </div>
+            {% end %}
         </section>
         <!-- / left tab -->
     </div>

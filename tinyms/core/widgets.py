@@ -320,67 +320,67 @@ class DataTableHandler(IRequest):
             self.write(json.dumps(message))
 
 
-def list(self, id):
-    meta = DataTableModule.__entity_mapping__.get(id)
-    if not meta:
-        self.set_status(403, "Error!")
-    entity = import_object(meta["name"])
-    self.datatable_display_cols = meta["cols"]
-    self.set_header("Content-Type", "text/json;charset=utf-8")
-    display_start = Utils.parse_int(self.get_argument("iDisplayStart"))
-    display_length = Utils.parse_int(self.get_argument("iDisplayLength"))
-    #cols_num = self.get_argument("iColumns")
+    def list(self, id):
+        meta = DataTableModule.__entity_mapping__.get(id)
+        if not meta:
+            self.set_status(403, "Error!")
+        entity = import_object(meta["name"])
+        self.datatable_display_cols = meta["cols"]
+        self.set_header("Content-Type", "text/json;charset=utf-8")
+        display_start = Utils.parse_int(self.get_argument("iDisplayStart"))
+        display_length = Utils.parse_int(self.get_argument("iDisplayLength"))
+        #cols_num = self.get_argument("iColumns")
 
-    #全局搜索处理段落
-    default_search_value = Utils.trim(self.get_argument("sSearch"))
-    default_search_fields = DataTableModule.__default_search_fields__.get(id)
-    default_search_sqlwhere = ""
-    default_search_sqlwhere_params = dict()
-    if default_search_value and default_search_fields:
-        temp_sql = list()
-        for field_name in default_search_fields:
-            temp_sql.append("%s like :%s" % (field_name, field_name))
-            default_search_sqlwhere_params[field_name] = "%" + default_search_value + "%"
-        default_search_sqlwhere = " OR ".join(temp_sql)
+        #全局搜索处理段落
+        default_search_value = Utils.trim(self.get_argument("sSearch"))
+        default_search_fields = DataTableModule.__default_search_fields__.get(id)
+        default_search_sqlwhere = ""
+        default_search_sqlwhere_params = dict()
+        if default_search_value and default_search_fields:
+            temp_sql = list()
+            for field_name in default_search_fields:
+                temp_sql.append("%s like :%s" % (field_name, field_name))
+                default_search_sqlwhere_params[field_name] = "%" + default_search_value + "%"
+            default_search_sqlwhere = " OR ".join(temp_sql)
 
-    #排序处理段落
-    sort_params = self.parse_sort_params()
-    order_sqlwhere = ""
-    for k, v in sort_params.items():
-        order_sqlwhere += "1=1 ORDER BY %s %s" % (k, v)
-        break
+        #排序处理段落
+        sort_params = self.parse_sort_params()
+        order_sqlwhere = ""
+        for k, v in sort_params.items():
+            order_sqlwhere += "1=1 ORDER BY %s %s" % (k, v)
+            break
 
-    #DataGrid数据查询段落
-    cnn = SessionFactory.new()
-    #here place custom filter
-    total_query = cnn.query(func.count(entity.id))
-    ds_query = cnn.query(entity)
-    custom_filter = DataTableModule.__filter_mapping__.get(meta["name"])
-    if custom_filter:
-        custom_filter_obj = custom_filter()
-        if hasattr(custom_filter_obj, "total_filter"):
-            total_query = custom_filter_obj.total_filter(total_query, self)
-        if hasattr(custom_filter_obj, "dataset_filter"):
-            ds_query = custom_filter_obj.dataset_filter(ds_query, self)
-    if default_search_value:
-        total_query = total_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
-        ds_query = ds_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
-    if order_sqlwhere:
-        ds_query = ds_query.filter(order_sqlwhere)
-    total = total_query.scalar()
-    ds = ds_query.offset(display_start).limit(display_length)
+        #DataGrid数据查询段落
+        cnn = SessionFactory.new()
+        #here place custom filter
+        total_query = cnn.query(func.count(entity.id))
+        ds_query = cnn.query(entity)
+        custom_filter = DataTableModule.__filter_mapping__.get(meta["name"])
+        if custom_filter:
+            custom_filter_obj = custom_filter()
+            if hasattr(custom_filter_obj, "total_filter"):
+                total_query = custom_filter_obj.total_filter(total_query, self)
+            if hasattr(custom_filter_obj, "dataset_filter"):
+                ds_query = custom_filter_obj.dataset_filter(ds_query, self)
+        if default_search_value:
+            total_query = total_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
+            ds_query = ds_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
+        if order_sqlwhere:
+            ds_query = ds_query.filter(order_sqlwhere)
+        total = total_query.scalar()
+        ds = ds_query.offset(display_start).limit(display_length)
 
-    results = dict()
-    results["sEcho"] = self.get_argument("sEcho")
-    results["iTotalRecords"] = total
-    results["iTotalDisplayRecords"] = total
-    results["aaData"] = [item.dict() for item in ds]
-    self.write(json.dumps(results, cls=JsonEncoder))
+        results = dict()
+        results["sEcho"] = self.get_argument("sEcho")
+        results["iTotalRecords"] = total
+        results["iTotalDisplayRecords"] = total
+        results["aaData"] = [item.dict() for item in ds]
+        self.write(json.dumps(results, cls=JsonEncoder))
 
 
-def parse_sort_params(self):
-    params = dict()
-    colIndex = Utils.parse_int(self.get_argument("iSortCol_0"))
-    direct = self.get_argument("sSortDir_0")
-    params[self.datatable_display_cols[colIndex]] = direct
-    return params
+    def parse_sort_params(self):
+        params = dict()
+        colIndex = Utils.parse_int(self.get_argument("iSortCol_0"))
+        direct = self.get_argument("sSortDir_0")
+        params[self.datatable_display_cols[colIndex]] = direct
+        return params

@@ -58,7 +58,6 @@ def route(pattern):
 
 
 def sidebar(path, url, label="", point="", position=0, icon_class="icon-link"):
-
     """
 
     :param path: /dashboard/count etc
@@ -85,7 +84,7 @@ def sidebar(path, url, label="", point="", position=0, icon_class="icon-link"):
     return ref_sidebar
 
 
-def auth(points=set(),default_value=None):
+def auth(points=set(), default_value=None):
     def handle_func(func):
         @wraps(func)
         def returned_func(*args, **kwargs):
