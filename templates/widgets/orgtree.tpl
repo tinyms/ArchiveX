@@ -60,7 +60,7 @@ function onRemove(e, treeId, treeNode) {
 function beforeRename(treeId, treeNode, newName, isCancel) {
 	className = (className === "dark" ? "":"dark");
 	if (newName.length == 0) {
-		toastr.error("组织名称必须填写")
+		toastr.error("组织名称必须填写!")
 		var zTree = $.fn.zTree.getZTreeObj("org_tree");
 		setTimeout(function(){zTree.editName(treeNode)}, 10);
 		return false;
@@ -69,7 +69,7 @@ function beforeRename(treeId, treeNode, newName, isCancel) {
 }
 
 function onRename(e, treeId, treeNode, isCancel) {
-	
+	console.log(treeNode);
 }
 
 var newCount = 1;
