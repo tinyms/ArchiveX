@@ -125,7 +125,12 @@
                             <div class="col-lg-5">
                                 <div class="panel">
                                     <header class="panel-heading">组织/部门</header>
+                                    <div class="panel-body">
+                                        {% module OrgTree(current_user) %}
+                                    </div>
                                 </div>
+
+
                             </div>
                             <div class="col-lg-7">
                                 <div class="panel">

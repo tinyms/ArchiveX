@@ -24,10 +24,10 @@
             <div class="panel-body">
                 {% module DataTable(id="BettingDataTable",
                 entity="lottery.entity.Betting",
-                cols=['seq','select_','reason','fix'],
-                titles=['序号','选择','原因','稳胆'],
-                search_fields="select_",
-                form="BettingDataTable_EditFormTemplate"
+                cols=['seq','select_3_to_2','select_2_to_1','last_first_select_rate','fix'],
+                titles=['序号','三选二','二选一','首选概率','稳胆'],
+                search_fields="reason",
+                form=""
                 ) %}
             </div>
         </section>
@@ -46,57 +46,7 @@
     </div>
 </div>
 <!--EditForms-->
-<script id="BettingDataTable_EditFormTemplate" type="text/x-jsrender">
-	<div class="form-group">
-	<div class="col-lg-9 col-lg-offset-3">
-	<input type="button" class="btn btn-white btn-sm " id="BettingDataTable_form_return"  onclick="BettingDataTable_.form.cancel(this);" value="返回"/>
-	</div>
-	</div>
 
-	<div class="form-group">
-		<label for="seq" class="col-lg-3 control-label">序号</label>
-		<div class="col-lg-8">
-		  <input type="text" class="form-control" id="seq" name="seq" required digits>
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label for="select_" class="col-lg-3 control-label">选择</label>
-		<div class="col-lg-8">
-		  <input type="text" class="form-control" id="select_" name="select_" required >
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label for="reason" class="col-lg-3 control-label">原因</label>
-		<div class="col-lg-8">
-          <textarea class="form-control" id="reason" name="reason"></textarea>
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label for="fix" class="col-lg-3 control-label">稳胆</label>
-		<div class="col-lg-8">
-		  <input type="text" class="form-control" id="fix" name="fix"  digits>
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label for="expect_id" class="col-lg-3 control-label">期号</label>
-		<div class="col-lg-8">
-		  {% module DataComboBox(id="expect_id",entity="lottery.entity.Expect",cols="no,no") %}
-		</div>
-	</div>
-
-	<div class="form-group">
-	<div class="col-lg-9 col-lg-offset-3">
-		<input type="button" class="btn btn-primary btn-sm" id="BettingDataTable_form_save" onclick="BettingDataTable_.form.save(this,'');" value="保存"></button>
-		<input type="button" class="btn btn-white btn-sm" id="BettingDataTable_form_save_continue" onclick="BettingDataTable_.form.save(this,'clear');" value="保存并继续"></button>
-		<input type="button" class="btn btn-white btn-sm" id="BettingDataTable_form_reset" onclick="BettingDataTable_.form.reset(this);" value="重填"></button>
-	</div>
-	<div class="col-lg-10"></div>
-	</div>
-</script>
 <script id="ExpectDataTable_EditFormTemplate" type="text/x-jsrender">
 	<div class="form-group">
 	<div class="col-lg-9 col-lg-offset-3">

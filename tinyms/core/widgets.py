@@ -384,3 +384,20 @@ class DataTableHandler(IRequest):
         direct = self.get_argument("sSortDir_0")
         params[self.datatable_display_cols[colIndex]] = direct
         return params
+
+@ui("OrgTree")
+class OrgTree(IWidget):
+    def render(self, account_id = None):
+        opt = dict()
+        return self.render_string("widgets/orgtree.tpl",opt = opt)
+
+    def css_files(self):
+        items = list()
+        items.append("/static/jslib/ztree/zTreeStyle.css")
+        return items
+    def javascript_files(self):
+        items = list()
+        items.append("/static/jslib/ztree/jquery.ztree.core-3.5.min.js")
+        items.append("/static/jslib/ztree/jquery.ztree.exedit-3.5.min.js")
+        items.append("/static/jslib/ztree/jquery.ztree.excheck-3.5.min.js")
+        return items

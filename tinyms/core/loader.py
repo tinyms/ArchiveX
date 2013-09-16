@@ -11,17 +11,17 @@ from tinyms.core.point import ObjectPool,reg_point
 class Loader():
     @staticmethod
     def init():
-        role_ = Loader.create_super_role()
-        if not role_:
+        role_id = Loader.create_super_role()
+        if not role_id:
             return
-        Loader.create_root_account(role_)
+        Loader.create_root_account(role_id)
         Loader.create_base_securitypoints()
-        Loader.assign_points_to__superadmin(role_)
+        Loader.assign_points_to__superadmin(role_id)
     @staticmethod
-    def create_root_account(super_role):
+    def create_root_account(role_id):
         cnn = SessionFactory.new()
         num = cnn.query(func.count(Archives.id)).scalar()
-        role_ = cnn.query(Role).get(super_role.id)
+        role_ = cnn.query(Role).get(role_id)
         if num == 0:
             usr = Archives()
             usr.name = "超级管理员"
@@ -44,18 +44,18 @@ class Loader():
         cnn = SessionFactory.new()
         role_ = cnn.query(Role).filter(Role.name == "SuperAdmin").limit(1).scalar()
         if role_:
-            return role_
+            return role_.id
         role_ = Role()
         role_.name = "SuperAdmin"
         role_.description = "超级管理员"
         cnn.add(role_)
         cnn.commit()
-        return role_
+        return role_.id
 
     @staticmethod
-    def assign_points_to__superadmin(super_role):
+    def assign_points_to__superadmin(role_id):
         cnn = SessionFactory.new()
-        role_ = cnn.query(Role).get(super_role.id)
+        role_ = cnn.query(Role).get(role_id)
         changes = list()
         for point in ObjectPool.points:
             p = cnn.query(SecurityPoint).filter(SecurityPoint.key_ == point.key_).limit(1).scalar()
