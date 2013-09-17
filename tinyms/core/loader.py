@@ -6,17 +6,23 @@ from tinyms.core.common import Utils
 from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import Role, Archives, Account, SecurityPoint
 from tinyms.core.point import ObjectPool,reg_point
-
+from tinyms.dao.category import CategoryHelper
 
 class Loader():
     @staticmethod
     def init():
+
+        #Create Root Category
+        helper = CategoryHelper()
+        if not helper.exists("ROOT"):
+            helper.create("ROOT")
         role_id = Loader.create_super_role()
         if not role_id:
             return
         Loader.create_root_account(role_id)
         Loader.create_base_securitypoints()
         Loader.assign_points_to__superadmin(role_id)
+
     @staticmethod
     def create_root_account(role_id):
         cnn = SessionFactory.new()

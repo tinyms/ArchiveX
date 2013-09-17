@@ -82,7 +82,11 @@ function addHoverDom(treeId, treeNode) {
 	var btn = $("#addBtn_"+treeNode.tId);
 	if (btn) btn.bind("click", function(){
 		var zTree = $.fn.zTree.getZTreeObj("org_tree");
-		zTree.addNodes(treeNode, {id:(100 + newCount), pId:treeNode.id, name:"new node" + (newCount++)});
+		var catName = window.prompt("组织/部门名称","");
+		if(catName.length==0){
+			return;
+		}
+		zTree.addNodes(treeNode, {id:(100 + newCount), pId:treeNode.id, name:catName});
 		return false;
 	});
 };

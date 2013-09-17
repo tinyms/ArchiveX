@@ -23,34 +23,45 @@ class CategoryHelper():
             return term.id
         return id
 
-    def create_or_update_category(self, name_, parent_id=None):
+    def update(self, id, name_, parent_id):
         term_id = self.create_term(name_)
         parent_path = self.get_path(parent_id)
         cnn = SessionFactory.new()
-        exists_tt = cnn.query(TermTaxonomy).filter(TermTaxonomy.term_id == term_id) \
-            .filter(TermTaxonomy.taxonomy == self.taxonomy).limit(1).scalar()
-        if not exists_tt:
-            tt = TermTaxonomy()
-            tt.parent_id = parent_id
+        tt = cnn.query(TermTaxonomy).filter(TermTaxonomy.id == id).limit(1).scalar()
+        if tt:
             tt.term_id = term_id
-            tt.taxonomy = self.taxonomy
-            tt.object_count = 0
-            tt.path = parent_path
-            cnn.add(tt)
-            cnn.commit()
+            tt.parent_id = parent_id
             tt.path = "%s/%s" % (parent_path, tt.id)
             cnn.commit()
-            return tt.id
+            return ["Success"]
         else:
-            exists_tt.term_id = term_id
-            exists_tt.parent_id = parent_id
-            cnn.commit()
-            return exists_tt.id
+            return ["Failure"]
 
-    def exists(self, name_, parent_id=None):
+    def create(self, name_, parent_id=None):
+        term_id = self.create_term(name_)
+        parent_path = self.get_path(parent_id)
         cnn = SessionFactory.new()
-        num = cnn.query(func.count(TermTaxonomy.id)).filter(TermTaxonomy.term.name == Utils.trim(name_)) \
-            .filter(TermTaxonomy.taxonomy == self.taxonomy).filter(TermTaxonomy.parent_id == parent_id)\
+        tt = TermTaxonomy()
+        tt.parent_id = parent_id
+        tt.term_id = term_id
+        tt.taxonomy = self.taxonomy
+        tt.object_count = 0
+        tt.path = parent_path
+        cnn.add(tt)
+        cnn.commit()
+        tt.path = "%s/%s" % (parent_path, tt.id)
+        cnn.commit()
+        return tt.id
+
+    def remove(self, id):
+        cnn = SessionFactory.new()
+        cnn.query(TermTaxonomy).filter(TermTaxonomy.id == id).delete()
+        cnn.commit()
+
+    def exists(self, name_):
+        cnn = SessionFactory.new()
+        num = cnn.query(func.count(TermTaxonomy.id)).filter(TermTaxonomy.term.has(name=Utils.trim(name_))) \
+            .filter(TermTaxonomy.taxonomy == self.taxonomy) \
             .limit(1).scalar()
         if num > 0:
             return True
@@ -61,18 +72,21 @@ class CategoryHelper():
         cnn = SessionFactory.new()
         path = cnn.query(TermTaxonomy.path).filter(TermTaxonomy.id == id).limit(1).scalar()
         if not path:
-            return "/"
+            return ""
         return path
+
 
     def get_name(self, id):
         cnn = SessionFactory.new()
         name = cnn.query(TermTaxonomy.term.name).filter(TermTaxonomy.id == id).limit(1).scalar()
         return name
 
+
     def get_object_count(self, id):
         cnn = SessionFactory.new()
         object_count = cnn.query(TermTaxonomy.object_count).filter(TermTaxonomy.id == id).limit(1).scalar()
         return object_count
+
 
     def set_object_count(self, id, chang_num=0):
         cnn = SessionFactory.new()
