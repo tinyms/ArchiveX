@@ -13,7 +13,7 @@ class Loader():
     def init():
 
         #Create Root Category
-        helper = CategoryHelper()
+        helper = CategoryHelper("ROOT")
         if not helper.exists("ROOT"):
             helper.create("ROOT")
         role_id = Loader.create_super_role()

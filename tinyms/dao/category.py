@@ -10,6 +10,18 @@ class CategoryHelper():
     def __init__(self, taxonomy="Org"):
         self.taxonomy = taxonomy
 
+    def list(self):
+        cnn = SessionFactory.new()
+        items = cnn.query(TermTaxonomy).all()
+        nodes = list()
+        for item in items:
+            node = dict()
+            node["id"]=item.id
+            node["pId"]=item.parent_id
+            node["name"]=item.term.name
+            nodes.append(node)
+        return nodes
+
     def create_term(self, name):
         name_ = Utils.trim(name)
         cnn = SessionFactory.new()
@@ -33,9 +45,9 @@ class CategoryHelper():
             tt.parent_id = parent_id
             tt.path = "%s/%s" % (parent_path, tt.id)
             cnn.commit()
-            return ["Success"]
+            return "Success"
         else:
-            return ["Failure"]
+            return "Failure"
 
     def create(self, name_, parent_id=None):
         term_id = self.create_term(name_)
@@ -55,12 +67,23 @@ class CategoryHelper():
 
     def remove(self, id):
         cnn = SessionFactory.new()
-        cnn.query(TermTaxonomy).filter(TermTaxonomy.id == id).delete()
+        cnn.query(TermTaxonomy).filter(TermTaxonomy.id == id).filter(TermTaxonomy.term.has(Term.name!="ROOT")).delete()
         cnn.commit()
+        return "Success"
 
     def exists(self, name_):
         cnn = SessionFactory.new()
         num = cnn.query(func.count(TermTaxonomy.id)).filter(TermTaxonomy.term.has(name=Utils.trim(name_))) \
+            .filter(TermTaxonomy.taxonomy == self.taxonomy) \
+            .limit(1).scalar()
+        if num > 0:
+            return True
+        return False
+
+    def exists_other(self, id, name_):
+        cnn = SessionFactory.new()
+        num = cnn.query(func.count(TermTaxonomy.id)).filter(TermTaxonomy.id!=id)\
+            .filter(TermTaxonomy.term.has(name=Utils.trim(name_))) \
             .filter(TermTaxonomy.taxonomy == self.taxonomy) \
             .limit(1).scalar()
         if num > 0:

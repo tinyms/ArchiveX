@@ -1,3 +1,4 @@
+
 <SCRIPT type="text/javascript">
 <!--
 var setting = {
@@ -12,7 +13,10 @@ var setting = {
 	},
 	data: {
 		simpleData: {
-			enable: true
+			enable: true,
+			idKey: "id",
+			pIdKey: "pId",
+			rootPId: 1
 		}
 	},
 	callback: {
@@ -86,7 +90,15 @@ function addHoverDom(treeId, treeNode) {
 		if(catName.length==0){
 			return;
 		}
-		zTree.addNodes(treeNode, {id:(100 + newCount), pId:treeNode.id, name:catName});
+		p = {};
+		p.cat_name = catName;
+		p.parent_id = 1
+		tinyms.controller.org.OrgEdit.add(p,function(b,id){
+			if(b&&id>0){
+				zTree.addNodes(treeNode, {id:id, pId:treeNode.id, name:catName});
+			}
+		});
+		
 		return false;
 	});
 };
@@ -95,7 +107,29 @@ function removeHoverDom(treeId, treeNode) {
 };
 
 $(document).ready(function(){
+	tinyms.controller.org.OrgEdit.list({},function(b,data){console.log(data);});
 	$.fn.zTree.init($("#org_tree"), setting, zNodes);
+	$("#btn_for_org_topcreate").click(function(){
+		var v = $.trim($("#input_for_org_topcreate").val());
+		if(v.length<=0){
+			toastr.error("组织名称必须填写!")
+			return;
+		}
+		p = {};
+		p.cat_name = v;
+		p.parent_id = 1;
+		tinyms.controller.org.OrgEdit.add(p,function(b,data){
+			if(b){
+				if(data[0]=="Exists"){
+					$("#input_for_org_topcreate").val("");
+					toastr.error(v+"已经存在!");
+				}else if(data[0]>0){
+					$("#input_for_org_topcreate").val("");
+					toastr.success(v+"创建成功!");
+				}
+			}
+		});
+	});
 });
 //-->
 </SCRIPT>

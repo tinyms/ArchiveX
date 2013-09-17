@@ -3,3 +3,4 @@ from tinyms.core.entity import *
 from tinyms.controller.anonymous import *
 from tinyms.controller.dashboard import *
 from tinyms.controller.security import *
+from tinyms.controller.org import *

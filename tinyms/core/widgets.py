@@ -400,4 +400,5 @@ class OrgTree(IWidget):
         items.append("/static/jslib/ztree/jquery.ztree.core-3.5.min.js")
         items.append("/static/jslib/ztree/jquery.ztree.exedit-3.5.min.js")
         items.append("/static/jslib/ztree/jquery.ztree.excheck-3.5.min.js")
+        items.append("/ajax/OrgEdit.js")
         return items

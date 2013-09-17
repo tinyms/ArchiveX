@@ -7,21 +7,34 @@ from tinyms.dao.category import CategoryHelper
 
 @ajax("OrgEdit")
 class OrgEdit():
-    __export__ = ["list","save","delete"]
+    __export__ = ["list","add","update","delete"]
 
     def list(self):
-        pass
+        category = CategoryHelper()
+        simple_nodes = category.list()
+        print(simple_nodes)
+        return simple_nodes
 
-    def save(self):
+    def add(self):
         parent_id = self.param("parent_id")
         cat_name = self.param("cat_name")
-        helper = CategoryHelper()
-        if helper.exists(cat_name,parent_id):
+        category = CategoryHelper()
+        if category.exists(cat_name):
             return ["Exists"]
-        new_cat_id = helper.create_or_update_category(cat_name,parent_id)
-        if not new_cat_id:
-            return ["-1"]
-        return ["%s" % new_cat_id]
+        id = category.create(cat_name,parent_id)
+        return [id]
+
+    def update(self):
+        id = self.param("id")
+        parent_id = self.param("parent_id")
+        cat_name = self.param("cat_name")
+        category = CategoryHelper()
+        if category.exists_other(cat_name):
+            return ["Exists"]
+        msg = category.update(id,cat_name,parent_id)
+        return [msg]
 
     def delete(self):
-        pass
+        id = self.param("id")
+        category = CategoryHelper()
+        return [category.remove(id)]
