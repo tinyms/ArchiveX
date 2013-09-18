@@ -156,4 +156,20 @@ $(document).ready(function(){
 });
 //-->
 </SCRIPT>
-<ul id="org_tree" class="ztree"></ul>
+<div class="panel">
+<header class="panel-heading">
+<div class="row">
+	<div class="col-lg-12">
+		<div class="input-group">
+	  <input type="text" class="form-control" placeholder="组织/部门" id="input_for_org_topcreate">
+	  <span class="input-group-btn">
+		<button class="btn btn-default" type="button" id="btn_for_org_topcreate"><i class="icon-plus icon-large"></i></button>
+	  </span>
+	</div>
+	</div>
+</div>
+</header>
+<div class="panel-body">
+	<ul id="org_tree" class="ztree"></ul>
+</div>
+</div>
