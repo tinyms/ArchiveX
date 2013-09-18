@@ -26,10 +26,10 @@ class OrgEdit():
 
     def update(self):
         id = self.param("id")
-        parent_id = self.param("parent_id")
-        cat_name = self.param("cat_name")
+        parent_id = self.param("pId")
+        cat_name = self.param("name")
         category = CategoryHelper()
-        if category.exists_other(cat_name):
+        if category.exists_other(id,cat_name):
             return ["Exists"]
         msg = category.update(id,cat_name,parent_id)
         return [msg]

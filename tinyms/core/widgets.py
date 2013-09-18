@@ -402,3 +402,5 @@ class OrgTree(IWidget):
         items.append("/static/jslib/ztree/jquery.ztree.excheck-3.5.min.js")
         items.append("/ajax/OrgEdit.js")
         return items
+    def embedded_css(self):
+        return ".ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}"

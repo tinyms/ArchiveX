@@ -12,7 +12,7 @@ class CategoryHelper():
 
     def list(self):
         cnn = SessionFactory.new()
-        items = cnn.query(TermTaxonomy).all()
+        items = cnn.query(TermTaxonomy).filter(TermTaxonomy.term.has(Term.name!="ROOT")).all()
         nodes = list()
         for item in items:
             node = dict()
@@ -67,7 +67,8 @@ class CategoryHelper():
 
     def remove(self, id):
         cnn = SessionFactory.new()
-        cnn.query(TermTaxonomy).filter(TermTaxonomy.id == id).filter(TermTaxonomy.term.has(Term.name!="ROOT")).delete()
+        node = cnn.query(TermTaxonomy).filter(TermTaxonomy.id == id).filter(TermTaxonomy.term.has(Term.name!="ROOT")).limit(1).scalar()
+        cnn.delete(node)
         cnn.commit()
         return "Success"
 

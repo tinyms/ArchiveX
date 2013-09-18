@@ -25,24 +25,11 @@ var setting = {
 		beforeRemove: beforeRemove,
 		beforeRename: beforeRename,
 		onRemove: onRemove,
-		onRename: onRename
+		onRename: onRename,
+		onDrop: onDrop
 	}
 };
 
-var zNodes =[
-	{ id:1, pId:0, name:"父节点 1", open:true},
-	{ id:11, pId:1, name:"叶子节点 1-1"},
-	{ id:12, pId:1, name:"叶子节点 1-2"},
-	{ id:13, pId:1, name:"叶子节点 1-3"},
-	{ id:2, pId:0, name:"父节点 2", open:true},
-	{ id:21, pId:2, name:"叶子节点 2-1"},
-	{ id:22, pId:2, name:"叶子节点 2-2"},
-	{ id:23, pId:2, name:"叶子节点 2-3"},
-	{ id:3, pId:0, name:"父节点 3", open:true},
-	{ id:31, pId:3, name:"叶子节点 3-1"},
-	{ id:32, pId:3, name:"叶子节点 3-2"},
-	{ id:33, pId:3, name:"叶子节点 3-3"}
-];
 var className = "dark";
 function beforeDrag(treeId, treeNodes) {
 	return true;
@@ -58,8 +45,29 @@ function beforeRemove(treeId, treeNode) {
 	zTree.selectNode(treeNode);
 	return confirm("如果删除,其下的组织结构将会一并删除,确定要删除`" + treeNode.name + "`吗?");
 }
-function onRemove(e, treeId, treeNode) {
-	
+function onRemove(e, treeId, node) {
+	tinyms.controller.org.OrgEdit.delete({id:node.id},function(b,data){
+		if(b&&data[0]=="Success"){
+			toastr.success(node.name+"删除成功!");
+		}else{
+			toastr.error(node.name+"删除失败!");
+		}
+	});
+	console.log(node);
+}
+function onDrop(e, treeId, treeNodes, targetNode, moveType){
+	$.each(treeNodes,function(i,node){
+		var params = {"id":node.id,"pId":node.pId,"name":node.name};
+		tinyms.controller.org.OrgEdit.update(params,function(b,data){
+			if(b){
+				if(data[0]=="Success"){
+					toastr.success(node.name+"修改成功!");
+				}else{
+					toastr.error(node.name+"修改失败!");
+				}
+			}
+		});
+	});
 }
 function beforeRename(treeId, treeNode, newName, isCancel) {
 	className = (className === "dark" ? "":"dark");
@@ -73,7 +81,16 @@ function beforeRename(treeId, treeNode, newName, isCancel) {
 }
 
 function onRename(e, treeId, treeNode, isCancel) {
-	console.log(treeNode);
+	var params = {"id":treeNode.id,"pId":treeNode.pId,"name":treeNode.name};
+	tinyms.controller.org.OrgEdit.update(params,function(b,data){
+		if(b){
+			if(data[0]=="Success"){
+				toastr.success(treeNode.name+"修改成功!");
+			}else{
+				toastr.error(treeNode.name+"修改失败!");
+			}
+		}
+	});
 }
 
 var newCount = 1;
@@ -92,7 +109,7 @@ function addHoverDom(treeId, treeNode) {
 		}
 		p = {};
 		p.cat_name = catName;
-		p.parent_id = 1
+		p.parent_id = treeNode.id
 		tinyms.controller.org.OrgEdit.add(p,function(b,id){
 			if(b&&id>0){
 				zTree.addNodes(treeNode, {id:id, pId:treeNode.id, name:catName});
@@ -107,8 +124,11 @@ function removeHoverDom(treeId, treeNode) {
 };
 
 $(document).ready(function(){
-	tinyms.controller.org.OrgEdit.list({},function(b,data){console.log(data);});
-	$.fn.zTree.init($("#org_tree"), setting, zNodes);
+	
+	var zTree = $.fn.zTree.getZTreeObj("org_tree");
+	tinyms.controller.org.OrgEdit.list({},function(b,data){
+		$.fn.zTree.init($("#org_tree"), setting, data);
+	});
 	$("#btn_for_org_topcreate").click(function(){
 		var v = $.trim($("#input_for_org_topcreate").val());
 		if(v.length<=0){
@@ -124,6 +144,9 @@ $(document).ready(function(){
 					$("#input_for_org_topcreate").val("");
 					toastr.error(v+"已经存在!");
 				}else if(data[0]>0){
+					var zTree = $.fn.zTree.getZTreeObj("org_tree");
+					var node = {"id":data[0],"name":p.cat_name};
+					zTree.addNodes(null,node);
 					$("#input_for_org_topcreate").val("");
 					toastr.success(v+"创建成功!");
 				}
@@ -133,7 +156,4 @@ $(document).ready(function(){
 });
 //-->
 </SCRIPT>
-<style type="text/css">
-.ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}
-</style>
 <ul id="org_tree" class="ztree"></ul>
