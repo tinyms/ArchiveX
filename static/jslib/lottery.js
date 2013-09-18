@@ -76,7 +76,7 @@ function show_baseface(self, match_id) {
         detail.last_10 = current.last_10_text_style;
         detail.last_6 = current.last_6_text_style;
         detail.last_4 = current.last_4_text_style;
-        detail.ball_diff = current.ball_diff;
+        detail.ball_diff = current.ball_diff+"("+current.full_balls+")";
         detail.last_battle = color_battle(current.last_4_status_text_style);
         detail.last_mix_battle = color_battle(current.mix_310);
         detail.detect_result = current.detect_result;
@@ -98,6 +98,7 @@ function show_baseface(self, match_id) {
         var html = Mustache.render($("#match_details_tpl").html(), detail);
         $("#base_tab").html(html);
         $("#baseface_url_iframe").attr("src", "http://odds.500.com/fenxi/shuju-" + match_id + "-show-1#team_jiaozhan");
+        $("#base_face_daxiao_tab_iframe").attr("src", "http://odds.500.com/fenxi/daxiao-" + match_id + "-show-1#datatb");
         $("#base_face_bifen_tab_iframe").attr("src", "http://odds.500.com/fenxi/bifen-" + match_id + "-show-1#c1");
         $("#extern_url_iframe").attr("src", "http://odds.500.com/fenxi/ouzhi-" + match_id + "-show-1#datatb");
         var ctx = document.getElementById("team_force_chart").getContext("2d");
