@@ -225,11 +225,13 @@ class MatchAnalyzeThread(threading.Thread):
             "formula_last6"].avg_balls + match[
                          "formula_last4"].avg_balls) / 3
         num = round(avg_balls, 2)
+        full_balls = (match["formula_last10"].full_io_balls + match["formula_last6"].full_io_balls + match["formula_last4"].full_io_balls)/3
         #scores += match["formula_last_mid"].to_results()
         #r = Result(scores,match["odds"])
         #match["result"]=r.detect(match["formula_last4"])
         diff = abs(num)
         match["ball_diff"] = num
+        match["full_balls"] = round(full_balls,2)
         if diff <= 0.25:
             match["detect_result"] = "1"
         elif 0.25 < diff < 0.7:

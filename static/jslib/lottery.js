@@ -281,12 +281,12 @@ $(document).ready(function () {
     });
 
     $("#matchs_table").JsonTable({
-        head: ['赛事', '球差', '预测', '赛果', '初盘(威廉)', '对阵球队', '比分', '比赛日期', '#'],
+        head: ['赛事', '球差', '预测(盘口)', '赛果', '初盘(威廉)', '对阵球队', '比分', '比赛日期', '#'],
         json: ['season_name', 'ball_diff', 'detect_result', 'actual_result',
             'Odds_WL', 'team_names', 'score', 'match_date', 'match_id'],
         render: function (name, value, row) {
             if(name=="detect_result"){
-                return color_battle(value);
+                return color_battle(value)+"("+row["full_balls"]+")";
             }
             if (name == "actual_result") {
                 if(value!=-1){
