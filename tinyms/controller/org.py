@@ -1,9 +1,8 @@
 __author__ = 'tinyms'
 
-import json
-from tinyms.core.common import Utils
-from tinyms.core.point import ajax,auth
+from tinyms.core.point import ajax,ObjectPool
 from tinyms.dao.category import CategoryHelper
+from tinyms.dao.account import AccountHelper
 
 @ajax("OrgEdit")
 class OrgEdit():
@@ -11,13 +10,16 @@ class OrgEdit():
 
     def list(self):
         tt = self.param("taxonomy")
+        if not AccountHelper.auth(self.request.current_user,{ObjectPool.treeview[tt].list}):
+            return []
         category = CategoryHelper(tt)
         simple_nodes = category.list()
-        print(simple_nodes)
         return simple_nodes
 
     def add(self):
         tt = self.param("taxonomy")
+        if not AccountHelper.auth(self.request.current_user,{ObjectPool.treeview[tt].add}):
+            return ["UnAuth"]
         parent_id = self.param("parent_id")
         cat_name = self.param("cat_name")
         category = CategoryHelper(tt)
@@ -28,6 +30,8 @@ class OrgEdit():
 
     def update(self):
         tt = self.param("taxonomy")
+        if not AccountHelper.auth(self.request.current_user,{ObjectPool.treeview[tt].update}):
+            return ["UnAuth"]
         id = self.param("id")
         parent_id = self.param("pId")
         cat_name = self.param("name")
@@ -39,6 +43,8 @@ class OrgEdit():
 
     def delete(self):
         tt = self.param("taxonomy")
+        if not AccountHelper.auth(self.request.current_user,{ObjectPool.treeview[tt].delete}):
+            return ["UnAuth"]
         id = self.param("id")
         category = CategoryHelper(tt)
         return [category.remove(id)]
