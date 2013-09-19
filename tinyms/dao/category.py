@@ -12,7 +12,7 @@ class CategoryHelper():
 
     def list(self):
         cnn = SessionFactory.new()
-        items = cnn.query(TermTaxonomy).filter(TermTaxonomy.term.has(Term.name!="ROOT")).all()
+        items = cnn.query(TermTaxonomy).filter(TermTaxonomy.term.has(Term.name!="ROOT")).filter(TermTaxonomy.taxonomy==self.taxonomy).all()
         nodes = list()
         for item in items:
             node = dict()

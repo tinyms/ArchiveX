@@ -387,9 +387,13 @@ class DataTableHandler(IRequest):
 
 @ui("OrgTree")
 class OrgTree(IWidget):
-    def render(self, account_id = None):
+    def render(self, **p):
         opt = dict()
-        return self.render_string("widgets/orgtree.tpl",opt = opt)
+        dom_id = p["id"]
+        account_id = p["account_id"]
+        placeholder = p["placeholder"]
+        opt["taxonomy"] = p["taxonomy"]
+        return self.render_string("widgets/orgtree.tpl",id=dom_id,ph=placeholder,opt = opt)
 
     def css_files(self):
         items = list()

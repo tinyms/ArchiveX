@@ -123,7 +123,7 @@
                     <div class="tab-pane" id="org_post_panel">
                         <div class="row">
                             <div class="col-lg-5">
-                                {% module OrgTree(current_user) %}
+                                {% module OrgTree(id="OrgTreeView",taxonomy="Product",account_id=current_user,placeholder="产品分类") %}
                             </div>
                             <div class="col-lg-7">
                                 <div class="panel">
