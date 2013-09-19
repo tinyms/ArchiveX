@@ -13,6 +13,7 @@ class ObjectPool():
     url_patterns = list()
     sidebar_menus = list()
     ui_mapping = dict()
+    treeview = dict()
 
 
 class IWebConfig():

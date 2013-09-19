@@ -147,6 +147,11 @@ function {{id}}_create_top_level(btn){
 	});
 }
 $(document).ready(function(){
+	$("#{{ id }}_toplevel_name").keypress(function(e){
+		if(e.which==13){
+			{{id}}_create_top_level(null);
+		}
+	});
 	tinyms.controller.org.OrgEdit.list({taxonomy:{{id}}_taxonomy},function(b,data){
 		$.fn.zTree.init($("#{{id}}"), {{id}}_setting, data);
 	});

@@ -393,7 +393,16 @@ class OrgTree(IWidget):
         account_id = p["account_id"]
         placeholder = p["placeholder"]
         opt["taxonomy"] = p["taxonomy"]
-        return self.render_string("widgets/orgtree.tpl",id=dom_id,ph=placeholder,opt = opt)
+        self.point = EmptyClass()
+        self.point.list = p.get("point_list")
+        self.point.add = p.get("point_add")
+        self.point.update = p.get("point_update")
+        self.point.delete = p.get("point_delete")
+        opt["point"] = self.point
+        ObjectPool.treeview[opt["taxonomy"]]=self.point
+        if AccountHelper.auth(account_id,{self.point.list}):
+            return self.render_string("widgets/orgtree.tpl",id=dom_id,ph=placeholder,opt = opt)
+        return ""
 
     def css_files(self):
         items = list()

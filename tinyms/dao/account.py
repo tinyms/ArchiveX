@@ -20,6 +20,12 @@ class AccountHelper():
         return tmp
 
     @staticmethod
+    def auth(account_id=None,points={}):
+        if len(points & AccountHelper.points(account_id)) > 0:
+            return True
+        return False
+
+    @staticmethod
     def name(account_id=None):
         if not account_id:
             return ""
