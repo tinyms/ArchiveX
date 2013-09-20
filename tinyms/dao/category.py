@@ -4,11 +4,12 @@ from sqlalchemy import func
 from tinyms.core.common import Utils
 from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import Term, TermTaxonomy
-
+from tinyms.dao.point import DynamicPointHelper
 
 class CategoryHelper():
-    def __init__(self, taxonomy="Org"):
+    def __init__(self, taxonomy="Org",tt_desc="组织/部门"):
         self.taxonomy = taxonomy
+        self.dph = DynamicPointHelper("分类视图",tt_desc)
 
     def list(self):
         cnn = SessionFactory.new()
@@ -45,6 +46,7 @@ class CategoryHelper():
             tt.parent_id = parent_id
             tt.path = "%s/%s" % (parent_path, tt.id)
             cnn.commit()
+            self.dph.update("tinyms.treeview.%s.%s" % (self.taxonomy,tt.id),name_)
             return "Success"
         else:
             return "Failure"
@@ -63,6 +65,7 @@ class CategoryHelper():
         cnn.commit()
         tt.path = "%s/%s" % (parent_path, tt.id)
         cnn.commit()
+        self.dph.add("tinyms.treeview.%s.%s" % (self.taxonomy,tt.id),name_)
         return tt.id
 
     def remove(self, id):
@@ -70,6 +73,7 @@ class CategoryHelper():
         node = cnn.query(TermTaxonomy).filter(TermTaxonomy.id == id).filter(TermTaxonomy.term.has(Term.name!="ROOT")).limit(1).scalar()
         cnn.delete(node)
         cnn.commit()
+        self.dph.delete("tinyms.treeview.%s.%s" % (self.taxonomy,id))
         return "Success"
 
     def exists(self, name_):
