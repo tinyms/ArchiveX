@@ -4,13 +4,25 @@
 var {{id}}_taxonomy = '{{opt["taxonomy"]}}';
 var {{id}}_setting = {
 	view: {
+		{% if auth({opt["point"].add}) %}
 		addHoverDom: {{id}}_addHoverDom,
 		removeHoverDom: {{id}}_removeHoverDom,
+		{% end %}
 		selectedMulti: false
 	},
 	edit: {
 		enable: true,
-		editNameSelectAll: true
+		editNameSelectAll: true,
+		{% if auth({opt["point"].delete}) %}
+		showRemoveBtn: true,
+		{% else %}
+		showRemoveBtn: false,
+		{% end %}
+		{% if auth({opt["point"].delete}) %}
+		showRenameBtn: true
+		{% else %}
+		showRenameBtn: false
+		{% end %}
 	},
 	data: {
 		simpleData: {
