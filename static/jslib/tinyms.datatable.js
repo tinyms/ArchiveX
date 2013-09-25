@@ -8,6 +8,7 @@
  * function datatable_form_fill(id,row){}
  * function datatable_render(id,k,v,row){}
  * function datatable_render_actionbar(id,k,v,row){}
+ * function datatable_data_before_add(id,form_data){}
  * function datatable_data_add(id,form_data){}
  * function datatable_data_update(id,pk,form_data){}
  * function datatable_data_delete(id,pk){}
@@ -139,6 +140,11 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
         "save": function (btn, state) {
             if (!$("#" + self.id + "_EditForm").valid()) {
                 return;
+            }
+            if(typeof(datatable_data_before_add)!=undefined){
+                if(!datatable_data_before_add(self.id,null)){
+                    return;
+                }
             }
             $("#" + self.id + "_EditForm").ajaxSubmit({
                 "dataType": "json", "url": self.request_url + "save", "type": "post",

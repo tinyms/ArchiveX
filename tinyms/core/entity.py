@@ -91,6 +91,30 @@ class LearningExperience(Entity,Simplify):
     #毕(结、肆)业
     finished = Column(String(10))
 
+#工作经历
+@many_to_one("Archives")
+class WorkExperience(Entity,Simplify):
+    #开始日期
+    start_date = Column(Date())
+    #结束日期
+    end_date = Column(Date())
+    #工作单位或部门
+    work_unit = Column(String(200))
+    #职务
+    post = Column(String(30))
+
+#培训经历
+@many_to_one("Archives")
+class TrainingExperience(Entity,Simplify):
+    #开始日期
+    start_date = Column(Date())
+    #结束日期
+    end_date = Column(Date())
+    #组织
+    organization = Column(String(60))
+    #证书
+    certificate = Column(String(60))
+
 #账户
 @many_to_one("Archives")
 class Account(Entity, Simplify):
