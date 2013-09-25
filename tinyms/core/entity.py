@@ -3,7 +3,7 @@ __author__ = 'tinyms'
 from sqlalchemy import Column, Integer, String, DateTime, Text, Date, Boolean, Numeric
 from tinyms.core.orm import Entity, Simplify, many_to_one, many_to_many
 
-
+#人员档案
 class Archives(Entity, Simplify):
     #姓名
     name = Column(String(20), nullable=False)
@@ -67,9 +67,31 @@ class Archives(Entity, Simplify):
     email = Column(String(65), unique=True)
     #移动电话
     mobile_phone = Column(String(20))
+    #奖罚
+    reward_punishment = Column(String(100))
+    #自我评价
+    self_evaluation = Column(String(500))
+    #职业理想
+    dream_job = Column(String(100))
+    #其它说明
+    other_description = Column(String(500))
     #accounts
 
-#档案
+#学习经历
+@many_to_one("Archives")
+class LearningExperience(Entity,Simplify):
+    #开始日期
+    start_date = Column(Date())
+    #结束日期
+    end_date = Column(Date())
+    #学校名称
+    school_name = Column(String(60))
+    #专业领域
+    specialized_field = Column(String(30))
+    #毕(结、肆)业
+    finished = Column(String(10))
+
+#账户
 @many_to_one("Archives")
 class Account(Entity, Simplify):
     login_name = Column(String(20), unique=True, nullable=False)
@@ -80,7 +102,7 @@ class Account(Entity, Simplify):
     #archives
     #roles
 
-#账户
+#角色
 @many_to_many("Account")
 class Role(Entity, Simplify):
     name = Column(String(60), unique=True, nullable=False)
