@@ -3,11 +3,12 @@ __author__ = 'tinyms'
 import json
 from tornado.web import UIModule
 from tornado.util import import_object
+from sqlalchemy import func
 from tinyms.core.common import Utils, JsonEncoder
 from tinyms.core.point import ui, route, ObjectPool, EmptyClass
 from tinyms.core.orm import SessionFactory
 from tinyms.core.web import IRequest
-from sqlalchemy import func
+from tinyms.core.entity import Term, TermTaxonomy
 from tinyms.dao.account import AccountHelper
 
 
@@ -101,6 +102,30 @@ def datatable_filter(entity_name):
 
     return ref_pattern
 
+
+@ui("TermTaxonomyComboBox")
+class TermTaxonomyComboBox(IWidget):
+
+    def render(self, **prop):
+        domId = prop["id"]
+        items = self.list(prop["taxonomy"])
+        allowed_blank = prop.get("allowed_blank")
+        html = list()
+        html.append("<select id='%s' name='%s' class='form-control'>" % (domId,domId))
+        if allowed_blank:
+            html.append("<option value=''> </option>")
+        for item in items:
+            html.append("<option value='%i'>%s</option>" % (item[0],item[1]))
+        html.append("</select>")
+        return "".join(html)
+
+    def list(self, taxonomy):
+        cnn = SessionFactory.new()
+        items = cnn.query(TermTaxonomy.id,Term.name)\
+            .outerjoin((Term,Term.id==TermTaxonomy.term_id))\
+            .filter(TermTaxonomy.taxonomy==taxonomy)\
+            .all()
+        return items
 
 @ui("DataComboBox")
 class DataComboBoxModule(IWidget):
@@ -385,6 +410,7 @@ class DataTableHandler(IRequest):
         params[self.datatable_display_cols[colIndex]] = direct
         return params
 
+
 @ui("OrgTree")
 class OrgTree(IWidget):
     def render(self, **p):
@@ -399,15 +425,16 @@ class OrgTree(IWidget):
         self.point.update = p.get("point_update")
         self.point.delete = p.get("point_delete")
         opt["point"] = self.point
-        ObjectPool.treeview[opt["taxonomy"]]=self.point
-        if AccountHelper.auth(account_id,{self.point.list}):
-            return self.render_string("widgets/orgtree.tpl",id=dom_id,ph=placeholder,opt = opt)
+        ObjectPool.treeview[opt["taxonomy"]] = self.point
+        if AccountHelper.auth(account_id, {self.point.list}):
+            return self.render_string("widgets/orgtree.tpl", id=dom_id, ph=placeholder, opt=opt)
         return ""
 
     def css_files(self):
         items = list()
         items.append("/static/jslib/ztree/zTreeStyle.css")
         return items
+
     def javascript_files(self):
         items = list()
         items.append("/static/jslib/ztree/jquery.ztree.core-3.5.min.js")
@@ -415,5 +442,6 @@ class OrgTree(IWidget):
         items.append("/static/jslib/ztree/jquery.ztree.excheck-3.5.min.js")
         items.append("/ajax/OrgEdit.js")
         return items
+
     def embedded_css(self):
         return ".ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}"
