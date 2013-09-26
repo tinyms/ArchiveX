@@ -1,0 +1,37 @@
+{% extends "master.html" %}
+{% block title %}档案管理{% end %}
+{% block header %}
+{% end %}
+{% block workspace %}
+    <section class="main padder">
+        <div class="clearfix">
+            <h4><i class="icon-book"></i>人员档案管理</h4>
+        </div>
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="panel">
+                    <div class="panel-heading">组织/部门</div>
+                    <div class="panel-body">dd</div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="panel">
+                    <div class="panel-heading">人员列表</div>
+                    <div class="panel-body">
+                        {% module DataTable(id="JobTitleDataTable",
+						entity="tinyms.core.entity.Archives",
+						cols=['name'],
+						titles=['名称'],
+						search_fields="name",
+						form="",
+						point_list = "tinyms.entity.archives.list",
+						point_add = "tinyms.entity.archives.add",
+						point_update = "tinyms.entity.archives.update",
+						point_delete = "tinyms.entity.archives.delete"
+						) %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% end %}

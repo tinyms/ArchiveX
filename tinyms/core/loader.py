@@ -80,12 +80,18 @@ class Loader():
         #Menu
         reg_point("tinyms.sidebar.archives.show","菜单","侧边栏","人员档案")
         reg_point("tinyms.sidebar.role_org.show","菜单","侧边栏","角色组织")
+        reg_point("tinyms.sidebar.sys_categories.show","菜单","侧边栏","系统分类")
         reg_point("tinyms.sidebar.sys_params.show","菜单","侧边栏","系统参数")
         #OrgTreeView
         reg_point("tinyms.view.orgtree.list","角色组织","组织","查看组织列表")
         reg_point("tinyms.view.orgtree.add","角色组织","组织","添加组织")
         reg_point("tinyms.view.orgtree.update","角色组织","组织","修改组织")
         reg_point("tinyms.view.orgtree.delete","角色组织","组织","删除组织")
+        #分类管理
+        reg_point("tinyms.view.termtaxonomy.list","角色组织","分类","查看分类列表")
+        reg_point("tinyms.view.termtaxonomy.add","角色组织","分类","添加分类")
+        reg_point("tinyms.view.termtaxonomy.update","角色组织","分类","修改分类")
+        reg_point("tinyms.view.termtaxonomy.delete","角色组织","分类","删除分类")
         #Role
         reg_point("tinyms.entity.role.list","角色组织","角色","查看角色列表")
         reg_point("tinyms.entity.role.add","角色组织","角色","添加角色")
@@ -98,3 +104,10 @@ class Loader():
         reg_point("tinyms.entity.jobtitle.add","角色组织","头衔","添加头衔")
         reg_point("tinyms.entity.jobtitle.update","角色组织","头衔","修改头衔")
         reg_point("tinyms.entity.jobtitle.delete","角色组织","头衔","删除头衔")
+        #档案管理
+        reg_point("tinyms.entity.archives.list","档案管理","人员","查看人员列表")
+        reg_point("tinyms.entity.archives.add","档案管理","人员","添加人员")
+        reg_point("tinyms.entity.archives.update","档案管理","人员","修改人员")
+        reg_point("tinyms.entity.archives.delete","档案管理","人员","删除人员")
+
+

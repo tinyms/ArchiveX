@@ -157,7 +157,7 @@ class Term(Entity, Simplify):
 @many_to_one("Term")
 @many_to_one("TermTaxonomy")
 class TermTaxonomy(Entity, Simplify):
-    taxonomy = Column(String(30), nullable=False)
+    taxonomy = Column(String(60), nullable=False)
     path = Column(Text, nullable=False)
     object_count = Column(Integer)
     description = Column(Text)
