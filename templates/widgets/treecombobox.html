@@ -1,0 +1,73 @@
+<script type="text/javascript">
+    <!--
+    var {{id}}_setting = {
+        view: {
+            dblClickExpand: false
+        },
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+        callback: {
+            beforeClick: {{id}}_beforeClick,
+            onClick: {{id}}_onClick
+        }
+    };
+
+    function {{id}}_beforeClick(treeId, treeNode) {
+        var check = (treeNode && !treeNode.isParent);
+        if (!check) alert("只能选择城市...");
+        return check;
+    }
+
+    function {{id}}_onClick(e, treeId, treeNode) {
+        var zTree = $.fn.zTree.getZTreeObj("{{ id }}_tree"),
+                nodes = zTree.getSelectedNodes(),
+                v = "";
+        nodes.sort(function compare(a, b) {
+            return a.id - b.id;
+        });
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            v += nodes[i].name + ",";
+        }
+        if (v.length > 0) v = v.substring(0, v.length - 1);
+        var cityObj = $("#citySel");
+        cityObj.attr("value", v);
+    }
+
+    function {{id}}_showMenu() {
+        var cityObj = $("#citySel");
+        var cityOffset = $("#citySel").offset();
+        $("#menuContent").css({left: cityOffset.left + "px", top: cityOffset.top + cityObj.outerHeight() + "px"}).slideDown("fast");
+
+        $("body").bind("mousedown", {{id}}_onBodyDown);
+    }
+
+    function {{id}}_hideMenu() {
+        $("#menuContent").fadeOut("fast");
+        $("body").unbind("mousedown", {{id}}_onBodyDown);
+    }
+
+    function {{id}}_onBodyDown(event) {
+        if (!(event.target.id == "menuBtn" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length > 0)) {
+            {{id}}_hideMenu();
+        }
+    }
+
+    $(document).ready(function () {
+        tinyms.controller.org.OrgEdit.list({taxonomy:'{{opt["taxonomy"]}}',function(b,data){
+		    $.fn.zTree.init($("#{{id}}_tree"), {{id}}_setting, data);
+	    });
+    });
+    -->
+</script>
+<div class="input-group">
+    <input type="text" class="form-control" id="{{ id }}_category_name">
+      <span class="input-group-btn">
+        <a class="btn-link" onclick="{{ id }}_showMenu();"><i class="icon-sitemap"></i></a>
+      </span>
+</div>
+<div id="{{ id }}_tree_menu" class="panel" style="display:none; position: absolute;">
+	<ul id="{{ id }}_tree" class="ztree" style="margin-top:0; width:160px;"></ul>
+</div>

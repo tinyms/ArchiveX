@@ -224,7 +224,7 @@ class DataTableModule(IWidget):
             index += 1
 
         opt["col_defs"] = json.dumps(html_col)
-        return self.render_string("widgets/datatable_html.tpl", opt=opt)
+        return self.render_string("widgets/datatable_html.html", opt=opt)
 
     def create_editform(self):
         data = dict()
@@ -410,7 +410,7 @@ class DataTableHandler(IRequest):
         params[self.datatable_display_cols[colIndex]] = direct
         return params
 
-
+#可以编辑树节点的控件
 @ui("OrgTree")
 class OrgTree(IWidget):
     def render(self, **p):
@@ -427,7 +427,7 @@ class OrgTree(IWidget):
         opt["point"] = self.point
         ObjectPool.treeview[opt["taxonomy"]] = self.point
         if AccountHelper.auth(account_id, {self.point.list}):
-            return self.render_string("widgets/orgtree.tpl", id=dom_id, ph=placeholder, opt=opt)
+            return self.render_string("widgets/orgtree.html", id=dom_id, ph=placeholder, opt=opt)
         return ""
 
     def css_files(self):
@@ -445,3 +445,19 @@ class OrgTree(IWidget):
 
     def embedded_css(self):
         return ".ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}"
+
+#分类选择器,单选、多选
+@ui("TreeComboBox")
+class TreeComboBox(OrgTree):
+    def render(self, **prop):
+        dom_id = prop["id"]
+        opt = dict()
+        opt["taxonomy"] = prop["taxonomy"]
+        account_id = prop["account_id"]
+        placeholder = prop["placeholder"]
+        self.point = EmptyClass()
+        self.point.list = prop.get("point_list")
+        if AccountHelper.auth(account_id, {self.point.list}):
+            return self.render_string("widgets/treecombobox.html", id=dom_id, ph=placeholder, opt=opt)
+        return ""
+    pass
