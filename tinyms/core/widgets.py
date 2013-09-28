@@ -453,8 +453,8 @@ class TreeComboBox(OrgTree):
         dom_id = prop["id"]
         opt = dict()
         opt["taxonomy"] = prop["taxonomy"]
-        account_id = prop["account_id"]
-        placeholder = prop["placeholder"]
+        account_id = prop.get("account_id")
+        placeholder = prop.get("placeholder")
         self.point = EmptyClass()
         self.point.list = prop.get("point_list")
         if AccountHelper.auth(account_id, {self.point.list}):

@@ -32,6 +32,9 @@
                         {%
                             module TermTaxonomyComboBox(id="TestCat",taxonomy="Product")
                         %}
+                        {%
+                            module TreeComboBox(id="TestTreeComboBox",taxonomy="Product",account_id=current_user,point_list="tinyms.view.orgtree.list")
+                        %}
                     </div>
                 </div>
             </div>
