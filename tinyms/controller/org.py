@@ -3,10 +3,11 @@ __author__ = 'tinyms'
 from tinyms.core.point import ajax,ObjectPool
 from tinyms.dao.category import CategoryHelper
 from tinyms.dao.account import AccountHelper
+from tinyms.core.common import Utils
 
 @ajax("OrgEdit")
 class OrgEdit():
-    __export__ = ["list","add","update","delete"]
+    __export__ = ["list","add","update","delete","names"]
 
     def list(self):
         tt = self.param("taxonomy")
@@ -49,3 +50,16 @@ class OrgEdit():
         id = self.param("id")
         category = CategoryHelper(tt)
         return [category.remove(id)]
+
+    def names(self):
+        idArray = self.param("idArray")
+        tt = self.param("taxonomy")
+        if idArray:
+            ids = Utils.parse_int_array(idArray)
+            names = list()
+            category = CategoryHelper(tt)
+            for id_ in ids:
+                name_ = category.get_name(id_)
+                names.append(name_)
+            return ",".join(names)
+        return ""

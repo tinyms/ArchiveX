@@ -106,8 +106,10 @@ class CategoryHelper():
 
     def get_name(self, id):
         cnn = SessionFactory.new()
-        name = cnn.query(TermTaxonomy.term.name).filter(TermTaxonomy.id == id).limit(1).scalar()
-        return name
+        tt = cnn.query(TermTaxonomy).filter(TermTaxonomy.id == id).limit(1).scalar()
+        if tt:
+            return tt.term.name
+        return ""
 
 
     def get_object_count(self, id):
