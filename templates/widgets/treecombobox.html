@@ -17,7 +17,7 @@
 
     function {{id}}_beforeClick(treeId, treeNode) {
         var check = (treeNode && !treeNode.isParent);
-        if (!check) alert("只能选择城市...");
+        if (!check) alert("只能选择子部门.");
         return check;
     }
 
@@ -37,19 +37,28 @@
         var name = $("#{{ id }}_category_name");
         name.attr("value", v);
         $("#{{ id }}").attr("value", values);
+        /**
+         * @plugin:
+         * tree_combobox_select_finished(id,val)
+         */
+        if(typeof(tree_combobox_select_completed)!="undefined"){
+            tree_combobox_select_completed("{{ id }}",values);
+        }
     }
+
     //供外部表单赋值调用，触发获取分类名称事件
-    function {{id}}_value(val){
-        $("#{{ id }}").val(val).trigger("change");
+    function tree_combobox_value(id,val){
+        $("#"+id).val(val).trigger("change");
         if(val.length>0){
             var ids = val.split(",");
-            var zTree = $.fn.zTree.getZTreeObj("{{ id }}_tree");
+            var zTree = $.fn.zTree.getZTreeObj(id+"_tree");
             for(var k=0;k<ids.length;k++){
                 var node = zTree.getNodeByParam("id",new Number(ids[k]));
                 zTree.selectNode(node);
             }
         }
     }
+
     $(document).ready(function () {
         tinyms.controller.org.OrgEdit.list({taxonomy:'{{opt["taxonomy"]}}'},function(b,data){
 		    $.fn.zTree.init($("#{{id}}_tree"), {{id}}_setting, data);
@@ -71,12 +80,12 @@
     <li>
         <div class="m-t m-b-small" id="{{ id }}-panel-tree">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <input type="text" class="form-control" id="{{ id }}_category_name">
+              <input type="text" class="form-control" id="{{ id }}_category_name" placeholder="{{ph}}">
               <input type="hidden" id="{{ id }}"/>
           </a>
           <section class="dropdown-menu m-l-small m-t-mini">
             <section class="panel panel-large arrow arrow-top">
-              <header class="panel-heading bg-white">Please select org or group.</header>
+              <header class="panel-heading bg-white"></header>
               <ul id="{{ id }}_tree" class="ztree"></ul>
               <footer class="panel-footer text-small">
               </footer>

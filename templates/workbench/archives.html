@@ -1,6 +1,18 @@
 {% extends "master.html" %}
 {% block title %}档案管理{% end %}
 {% block header %}
+<script type="text/javascript">
+    function datatable_server_params(id,aoData){
+        if(id=="ArchivesDataTable"){
+            aoData.push({name:"OrgId",value:$("#OrgTreeComboBox").val()});
+        }
+    }
+    function tree_combobox_select_completed(id,vals){
+        if(id=="OrgTreeComboBox"){
+            ArchivesDataTable_.Refresh();
+        }
+    }
+</script>
 {% end %}
 {% block workspace %}
     <section class="main padder">
@@ -8,17 +20,16 @@
             <h4><i class="icon-book"></i>人员档案管理</h4>
         </div>
         <div class="row">
-            <div class="col-lg-3">
-                <div class="panel">
-                    <div class="panel-heading">组织/部门</div>
-                    <div class="panel-body">dd</div>
-                </div>
+            <div class="col-lg-12">
+                {% module TreeComboBox(id="OrgTreeComboBox",taxonomy="Product",account_id=current_user,point_list="tinyms.view.orgtree.list",placeholder="选择(组织/部门)") %}
             </div>
-            <div class="col-lg-8">
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
                 <div class="panel">
                     <div class="panel-heading">人员列表</div>
                     <div class="panel-body">
-                        {% module DataTable(id="JobTitleDataTable",
+                        {% module DataTable(id="ArchivesDataTable",
 						entity="tinyms.core.entity.Archives",
 						cols=['name'],
 						titles=['名称'],
@@ -32,9 +43,7 @@
                         {%
                             module TermTaxonomyComboBox(id="TestCat",taxonomy="Product")
                         %}
-                        {%
-                            module TreeComboBox(id="TestTreeComboBox",taxonomy="Product",account_id=current_user,point_list="tinyms.view.orgtree.list")
-                        %}
+
                     </div>
                 </div>
             </div>

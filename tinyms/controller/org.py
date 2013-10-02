@@ -11,7 +11,6 @@ class OrgEdit():
 
     def list(self):
         tt = self.param("taxonomy")
-        print(ObjectPool.treeview)
         if not AccountHelper.auth(self.request.current_user,{ObjectPool.treeview[tt].list}):
             return []
         category = CategoryHelper(tt)

@@ -455,8 +455,11 @@ class TreeComboBox(OrgTree):
         opt["taxonomy"] = prop["taxonomy"]
         account_id = prop.get("account_id")
         placeholder = prop.get("placeholder")
-        self.point = EmptyClass()
-        self.point.list = prop.get("point_list")
+        self.point = ObjectPool.treeview.get(opt["taxonomy"])
+        if not self.point:
+            self.point = EmptyClass()
+            self.point.list = prop.get("point_list")
+            ObjectPool.treeview[opt["taxonomy"]] = self.point
         if AccountHelper.auth(account_id, {self.point.list}):
             return self.render_string("widgets/treecombobox.html", id=dom_id, ph=placeholder, opt=opt)
         return ""
