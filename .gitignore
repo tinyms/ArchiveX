@@ -2,6 +2,7 @@
 cache_web_pages
 cache
 matchs
+gen
 *.py[cod]
 
 # C extensions
