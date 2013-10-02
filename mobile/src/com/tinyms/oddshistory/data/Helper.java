@@ -9,7 +9,7 @@ import android.util.Log;
 
 public class Helper {
 	
-	public static boolean isDebug = true;
+	public static boolean isDebug = false;
 	
 	public static void log(String msg){
 		if(isDebug){

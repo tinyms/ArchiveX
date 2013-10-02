@@ -163,6 +163,7 @@ public class WorkbenchActivity extends BaseMenuDrawer {
     	Query.P_EVENT_NAME = Query.paramValue("event_name_", key);
     	Query.P_DETECT_RESULT = Query.paramValue("diff_", key);
     	Query.P_RESULT = Query.paramValue("result_", key);
+    	Query.P_MODEL = Query.paramValue("odds_model_", key);
     	//v = Query.paramValue("quick_", key);
     	this.load_data();
         mMenuDrawer.closeMenu();

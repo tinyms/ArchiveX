@@ -18,6 +18,7 @@ public class Query {
 	public static String P_EVENT_NAME = "";
 	public static String P_DETECT_RESULT = "";//detect_result
 	public static String P_RESULT = "";
+	public static String P_MODEL = "";
 	//End
 	public static String DB_NAME = "matchs";
 	public static List<Map<String,String>> matchs_dataset = new ArrayList<Map<String,String>>();
@@ -67,8 +68,9 @@ public class Query {
     	matchs_dataset.clear();
     	SQLite sql = new SQLite(context,DatabasePath(),null,3);
     	SQLiteDatabase db = sql.getReadableDatabase();
-    	String querySQL = "SELECT id,score,actual_result,detect_result,balls_diff,vs_team," +
-    			"last_mix,last_10,last_6,last_4,last_mix_battle,last_battle,url_key,vs_date,evt_name FROM lottery_battle WHERE 1=1 ";
+    	String querySQL = "SELECT a.id,a.score,a.actual_result,a.detect_result,a.balls_diff,a.vs_team," +
+    			"a.last_mix,a.last_10,a.last_6,a.last_4,a.last_mix_battle,a.last_battle,a.url_key,a.vs_date,a.evt_name,"
+    			+ "b.r_3,b.r_1,b.r_0,abs(b.r_3-b.r_0) as model FROM lottery_battle as a LEFT OUTER JOIN lottery_odds as b ON a.id=b.battle_id WHERE b.com_name='WL' ";
 		/*动态查询*/
     	if(!Helper.empty(P_EVENT_NAME)){
     		querySQL += " AND evt_name = '"+P_EVENT_NAME+"'";
@@ -82,6 +84,14 @@ public class Query {
     	}
     	if(!Helper.empty(P_RESULT)){
     		querySQL += " AND actual_result = "+P_RESULT;
+    	}
+    	
+    	if(!Helper.empty(P_MODEL)){
+    		if("deep".equals(P_MODEL)){
+    			querySQL += " AND model >= 4";
+    		}else{
+    			querySQL += " AND model < 4";
+    		}
     	}
     	/*End 动态查询*/
     	querySQL+=" ORDER BY RANDOM() LIMIT 14";
@@ -104,12 +114,13 @@ public class Query {
     		item.put("url_key", c.getString(12));
     		item.put("vs_date", c.getString(13));
     		item.put("evt_name", c.getString(14));
+    		item.put("wl_odds", Helper.FormatFloatWith2Bit(c.getDouble(15))+" "+Helper.FormatFloatWith2Bit(c.getDouble(16))+" "+Helper.FormatFloatWith2Bit(c.getDouble(17)));
     		
-    		item.put("ItemTitle", "["+item.get("evt_name")+"]"+item.get("vs_team"));
+    		item.put("ItemTitle", "["+item.get("evt_name")+"] "+item.get("vs_team"));
     		StringBuffer sb_tip = new StringBuffer();
-			sb_tip.append("实力: <font color='#336699'>"+item.get("balls_diff")+"</font>");
+			sb_tip.append("("+Helper.GetResultChineseStyle(item.get("actual_result"))+") 实力: <font color='#336699'>"+item.get("balls_diff")+"</font>");
 			sb_tip.append(" 预测: <font color='#FF0033'>"+item.get("detect_result")+"</font>");
-			sb_tip.append(" 赛果: "+Helper.GetResultChineseStyle(item.get("actual_result"))+" <font color='#CC6600'>"+item.get("score")+"</font>");
+			sb_tip.append(" 初陪: "+ item.get("wl_odds"));
     		item.put("ItemText", sb_tip.toString());
     		matchs_dataset.add(item);
     		c.moveToNext();

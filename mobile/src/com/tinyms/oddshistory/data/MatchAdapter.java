@@ -83,7 +83,7 @@ public class MatchAdapter extends BaseAdapter {
 		Map<String,String> item = this.getMatchData().get(position);
 		TextView title = (TextView)view.findViewById(R.id.ItemTitle);
 		TextView sub_title = (TextView)view.findViewById(R.id.ItemText);
-		title.setText(item.get("ItemTitle"));
+		title.setText(Html.fromHtml(item.get("ItemTitle")));
 		sub_title.setText(Html.fromHtml(item.get("ItemText")));
 		return view;
 	}
