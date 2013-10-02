@@ -41,6 +41,14 @@
     //供外部表单赋值调用，触发获取分类名称事件
     function {{id}}_value(val){
         $("#{{ id }}").val(val).trigger("change");
+        if(val.length>0){
+            var ids = val.split(",");
+            var zTree = $.fn.zTree.getZTreeObj("{{ id }}_tree");
+            for(var k=0;k<ids.length;k++){
+                var node = zTree.getNodeByParam("id",new Number(ids[k]));
+                zTree.selectNode(node);
+            }
+        }
     }
     $(document).ready(function () {
         tinyms.controller.org.OrgEdit.list({taxonomy:'{{opt["taxonomy"]}}'},function(b,data){

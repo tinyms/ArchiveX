@@ -84,13 +84,13 @@ function show_baseface(self, match_id) {
         var odds = [];
         odds[0] = odds_style("威廉", current.Odds_WL, current.Odds_WL_Change);
         odds[1] = odds_style("立博", current.Odds_LB, current.Odds_LB_Change);
-		odds[2] = odds_style("韦德", current.Odds_WD, current.Odds_WD_Change);
-        odds[3] = odds_style("贝塔", current.Odds_365, current.Odds_365_Change);
-        odds[4] = odds_style("必赢", current.Odds_Bwin, current.Odds_Bwin_Change);
-		odds[5] = odds_style("易博", current.Odds_YSB, current.Odds_YSB_Change);
-        odds[6] = odds_style("澳门", current.Odds_AM, current.Odds_AM_Change);
-        //odds[6] = odds_style("因特", current.Odds_Inerwetten, current.Odds_Inerwetten_Change);//other
-        //odds[6] = odds_style("皇冠", current.Odds_HG, current.Odds_HG_Change);
+        odds[2] = odds_style("易博", current.Odds_YSB, current.Odds_YSB_Change);
+        odds[3] = odds_style("澳门", current.Odds_AM, current.Odds_AM_Change);
+		odds[4] = odds_style("韦德", current.Odds_WD, current.Odds_WD_Change);
+        odds[5] = odds_style("贝塔", current.Odds_365, current.Odds_365_Change);
+        odds[6] = odds_style("必赢", current.Odds_Bwin, current.Odds_Bwin_Change);
+        odds[7] = odds_style("因特", current.Odds_Inerwetten, current.Odds_Inerwetten_Change);//other
+        odds[8] = odds_style("皇冠", current.Odds_HG, current.Odds_HG_Change);
 
         //odds[9] = odds_style("十贝", current.Odds_10bet, current.Odds_10bet_Change);
         detail.odds = odds;
