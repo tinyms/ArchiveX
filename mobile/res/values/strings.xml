@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">球典</string>
+    <string name="action_settings">Settings1</string>
+    <string name="hello_world">Hello world!</string>
+	<string name="sample_content">aaaaaaaaaa</string>
+	<string name="match_search_change">更换</string>
+</resources>
