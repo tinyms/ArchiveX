@@ -30,9 +30,24 @@
                         <div class="col-sm-6 col-md-3">
                             <div class="thumbnail" style="border: 0px;">
                                 <section class="panel">
-                                    <header class="panel-heading">专业</header>
+                                    <header class="panel-heading">政治面貌</header>
                                     <div class="panel-body">
-                                        {% module OrgTree(id="SpecialtyTreeView",taxonomy="Specialty",account_id=current_user,placeholder="专业",
+                                        {% module OrgTree(id="PoliticalLandscapeTreeView",taxonomy="PoliticalLandscape",account_id=current_user,placeholder="政治面貌",
+                                        point_list = "tinyms.view.termtaxonomy.list",
+                                        point_add = "tinyms.view.termtaxonomy.add",
+                                        point_update = "tinyms.view.termtaxonomy.update",
+                                        point_delete = "tinyms.view.termtaxonomy.delete"
+                                        ) %}
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="thumbnail" style="border: 0px;">
+                                <section class="panel">
+                                    <header class="panel-heading">婚姻状况</header>
+                                    <div class="panel-body">
+                                        {% module OrgTree(id="MaritalStatusTreeView",taxonomy="MaritalStatus",account_id=current_user,placeholder="婚姻状况",
                                         point_list = "tinyms.view.termtaxonomy.list",
                                         point_add = "tinyms.view.termtaxonomy.add",
                                         point_update = "tinyms.view.termtaxonomy.update",

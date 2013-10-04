@@ -40,10 +40,6 @@
 						point_update = "tinyms.entity.archives.update",
 						point_delete = "tinyms.entity.archives.delete"
 						) %}
-                        {%
-                            module TermTaxonomyComboBox(id="TestCat",taxonomy="Product")
-                        %}
-
                     </div>
                 </div>
             </div>
@@ -60,6 +56,31 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="Archives_Base">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="name" class="col-lg-3 control-label">入职时间</label>
+                        <div class="col-lg-8">
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="name" class="col-lg-3 control-label">入职时间</label>
+                        <div class="col-lg-8">
+                        <input type="date" class="form-control" id="join_date" name="join_date" required >
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="name" class="col-lg-3 control-label">离职时间</label>
+                        <div class="col-lg-8">
+                        <input type="date" class="form-control" id="leave_date" name="leave_date" required >
+                        </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-lg-4">
                         <div class="form-group">
@@ -162,7 +183,9 @@
                         <div class="form-group">
                         <label for="marital_status" class="col-lg-3 control-label">婚姻状况</label>
                         <div class="col-lg-8">
-                        <input type="text" class="form-control" id="marital_status" name="marital_status"  digits>
+                        {%
+                            module TermTaxonomyComboBox(id="marital_status",taxonomy="MaritalStatus")
+                        %}
                         </div>
                         </div>
                     </div>
@@ -195,7 +218,9 @@
                         <div class="form-group">
                         <label for="educational_background" class="col-lg-3 control-label">学历</label>
                         <div class="col-lg-8">
-                        <input type="text" class="form-control" id="educational_background" name="educational_background"  digits>
+                        {%
+                            module TermTaxonomyComboBox(id="educational_background",taxonomy="EducationalBackground")
+                        %}
                         </div>
                         </div>
                     </div>
@@ -222,7 +247,9 @@
                         <div class="form-group">
                         <label for="political_landscape" class="col-lg-3 control-label">政治面貌</label>
                         <div class="col-lg-8">
-                        <input type="text" class="form-control" id="political_landscape" name="political_landscape"  digits>
+                        {%
+                            module TermTaxonomyComboBox(id="political_landscape",taxonomy="PoliticalLandscape")
+                        %}
                         </div>
                         </div>
                     </div>

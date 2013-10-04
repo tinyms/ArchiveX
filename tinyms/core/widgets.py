@@ -464,3 +464,17 @@ class TreeComboBox(OrgTree):
             return self.render_string("widgets/treecombobox.html", id=dom_id, ph=placeholder, opt=opt)
         return ""
     pass
+
+###################################常用部件#########################################
+#婚姻状况
+# @ui("MaritalStatusComboBox")
+# class MaritalStatusComboBox(IWidget):
+#     def render(self, **params):
+#         id = params.get("id")
+#         html = list()
+#         html.append("<select id='%s' name='%s' class='form-control'>" % (id,id))
+#         html.append("<option value='%s'>%s</option>" % ("未婚","未婚"))
+#         html.append("<option value='%s'>%s</option>" % ("已婚","已婚"))
+#         html.append("<option value='%s'>%s</option>" % ("离异","离异"))
+#         html.append("</select>")
+#         return "".join(html)
