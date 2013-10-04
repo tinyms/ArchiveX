@@ -34,7 +34,7 @@
 						cols=['name'],
 						titles=['名称'],
 						search_fields="name",
-						form="",
+						form="ArchivesDataTable_EditFormTemplate",
 						point_list = "tinyms.entity.archives.list",
 						point_add = "tinyms.entity.archives.add",
 						point_update = "tinyms.entity.archives.update",
@@ -49,4 +49,351 @@
             </div>
         </div>
     </section>
+   <script id="ArchivesDataTable_EditFormTemplate" type="text/x-jsrender">
+        <input type="button" class="btn btn-white btn-sm " id="ArchivesDataTable_form_return" onclick="ArchivesDataTable_.form.cancel(this);" value="返回"/>
+        <ul class="nav nav-tabs" style="margin-top:12px;">
+          <li class="active"><a href="#Archives_Base" data-toggle="tab">基本资料</a></li>
+          <li><a href="#Archives_WorkExperience" data-toggle="tab">工作经历</a></li>
+          <li><a href="#Archives_LearningExperience" data-toggle="tab">学习经历</a></li>
+          <li><a href="#Archives_TrainingExperience" data-toggle="tab">培训经历</a></li>
+          <li><a href="#Archives_FamilyRelations" data-toggle="tab">家庭成员关系</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="Archives_Base">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="name" class="col-lg-3 control-label">姓名</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="name" name="name" required >
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="sex" class="col-lg-3 control-label">性别</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="sex" name="sex"  >
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="birthday" class="col-lg-3 control-label">出生日期</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="birthday" name="birthday"  >
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="alias" class="col-lg-3 control-label">别名</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="alias" name="alias"  >
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="weight" class="col-lg-3 control-label">体重</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="weight" name="weight"  number>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="height" class="col-lg-3 control-label">身高</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="height" name="height"  number>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="nation" class="col-lg-3 control-label">民族</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="nation" name="nation"  >
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="hometown" class="col-lg-3 control-label">籍贯</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="hometown" name="hometown"  >
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="vision" class="col-lg-3 control-label">视力</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="vision" name="vision"  number>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="post" class="col-lg-3 control-label">职位</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="post" name="post"  digits>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="health_state" class="col-lg-3 control-label">健康状况</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="health_state" name="health_state"  >
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="marital_status" class="col-lg-3 control-label">婚姻状况</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="marital_status" name="marital_status"  digits>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                        <label for="id_card" class="col-lg-1 control-label">身份证</label>
+                        <div class="col-lg-11">
+                        <input type="text" class="form-control" id="id_card" name="id_card"  >
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                        <label for="household_register" class="col-lg-1 control-label">户籍地</label>
+                        <div class="col-lg-11">
+                        <input type="text" class="form-control" id="household_register" name="household_register"  >
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="educational_background" class="col-lg-3 control-label">学历</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="educational_background" name="educational_background"  digits>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="specialty" class="col-lg-3 control-label">专业</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="specialty" name="specialty"  digits>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="last_leave_school" class="col-lg-3 control-label">毕业院校</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="last_leave_school" name="last_leave_school"  >
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                        <label for="political_landscape" class="col-lg-3 control-label">政治面貌</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="political_landscape" name="political_landscape"  digits>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                        <label for="profession_level" class="col-lg-3 control-label">职称等级</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="profession_level" name="profession_level"  >
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                        <label for="hobby" class="col-lg-1 control-label">爱好</label>
+                        <div class="col-lg-11">
+                        <input type="text" class="form-control" id="hobby" name="hobby"  >
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                        <label for="disposition" class="col-lg-1 control-label">兴趣</label>
+                        <div class="col-lg-11">
+                        <input type="text" class="form-control" id="disposition" name="disposition"  >
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                        <label for="strong_point" class="col-lg-1 control-label">特长</label>
+                        <div class="col-lg-11">
+                        <input type="text" class="form-control" id="strong_point" name="strong_point"  >
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                        <label for="comple_skills" class="col-lg-1 control-label">技能</label>
+                        <div class="col-lg-11">
+                        <input type="text" class="form-control" id="comple_skills" name="comple_skills" placeholder="综合技能" >
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="current_address" class="col-lg-4 control-label">现住址</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="current_address" name="current_address"  >
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="current_address_phone" class="col-lg-3 control-label">现电话</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="current_address_phone" name="current_address_phone" placeholder="本人的固话、移动电话"  >
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label for="email" class="col-lg-3 control-label">邮箱</label>
+                        <div class="col-lg-8">
+                        <input type="text" class="form-control" id="email" name="email"  >
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                            <label for="employment_pathways" class="col-lg-3 control-label">录用途径</label>
+                            <div class="col-lg-8">
+                            <input type="text" class="form-control" id="employment_pathways" name="employment_pathways"  digits>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                            <label for="employment_referrals" class="col-lg-3 control-label">介绍人</label>
+                            <div class="col-lg-8">
+                            <input type="text" class="form-control" id="employment_referrals" name="employment_referrals"  >
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                            <label for="emergency_contact" class="col-lg-3 control-label">紧急联系人</label>
+                            <div class="col-lg-8">
+                            <input type="text" class="form-control" id="emergency_contact" name="emergency_contact"  >
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                            <label for="emergency_contact_phone" class="col-lg-3 control-label">紧急联系人电话</label>
+                            <div class="col-lg-8">
+                            <input type="text" class="form-control" id="emergency_contact_phone" name="emergency_contact_phone"  >
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                        <label for="reward_punishment" class="col-lg-1 control-label">奖罚</label>
+                        <div class="col-lg-11">
+                            <textarea class="form-control" id="reward_punishment" name="reward_punishment"></textarea>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                        <label for="self_evaluation" class="col-lg-1 control-label">自我评价</label>
+                        <div class="col-lg-11">
+                            <textarea class="form-control" id="self_evaluation" name="self_evaluation"></textarea>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                        <label for="dream_job" class="col-lg-1 control-label">职业理想</label>
+                        <div class="col-lg-11">
+                            <textarea class="form-control" id="dream_job" name="dream_job"></textarea>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                        <label for="other_description" class="col-lg-1 control-label">其它说明</label>
+                        <div class="col-lg-11">
+                        <textarea class="form-control" id="other_description" name="other_description"></textarea>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+              <div class="row">
+            <div class="col-lg-9 col-lg-offset-3">
+            <input type="button" class="btn btn-primary btn-sm" id="ArchivesDataTable_form_save" onclick="ArchivesDataTable_.form.save(this,'');" value="保存"></button>
+            <input type="button" class="btn btn-white btn-sm" id="ArchivesDataTable_form_save_continue" onclick="ArchivesDataTable_.form.save(this,'clear');" value="保存并继续"></button>
+            <input type="button" class="btn btn-white btn-sm" id="ArchivesDataTable_form_reset" onclick="ArchivesDataTable_.form.reset(this);" value="重填"></button>
+            </div>
+            <div class="col-lg-10"></div>
+            </div>
+          </div>
+          <div class="tab-pane" id="Archives_WorkExperience">...</div>
+          <div class="tab-pane" id="Archives_LearningExperience">...</div>
+          <div class="tab-pane" id="Archives_TrainingExperience">...</div>
+            <div class="tab-pane" id="Archives_FamilyRelations">...</div>
+        </div>
+</script>
 {% end %}
