@@ -24,8 +24,8 @@ class VersionModule(IWidget):
 
 @ui("CurrentAccountName")
 class CurrentAccountName(IWidget):
-    def render(self, account_id=None):
-        return AccountHelper.name(account_id)
+    def render(self):
+        return AccountHelper.name(self.current_user)
 
 
 @ui("SideBar")
@@ -34,10 +34,8 @@ class SideBar(IWidget):
     role_org_show = False
     sys_params_show = False
 
-    def render(self, account_id=None):
-        if not account_id:
-            return ""
-        points = list(AccountHelper.points(account_id))
+    def render(self):
+        points = list(AccountHelper.points(self.current_user))
         if points.count("tinyms.sidebar.archives.show"):
             self.archives_show = True
         if points.count("tinyms.sidebar.role_org.show"):
@@ -450,20 +448,22 @@ class OrgTree(IWidget):
 @ui("TreeComboBox")
 class TreeComboBox(OrgTree):
     def render(self, **prop):
-        dom_id = prop["id"]
+        self.dom_id = prop["id"]
         opt = dict()
         opt["taxonomy"] = prop["taxonomy"]
-        account_id = prop.get("account_id")
         placeholder = prop.get("placeholder")
         self.point = ObjectPool.treeview.get(opt["taxonomy"])
         if not self.point:
             self.point = EmptyClass()
             self.point.list = prop.get("point_list")
             ObjectPool.treeview[opt["taxonomy"]] = self.point
-        if AccountHelper.auth(account_id, {self.point.list}):
-            return self.render_string("widgets/treecombobox.html", id=dom_id, ph=placeholder, opt=opt)
+        if AccountHelper.auth(self.current_user, {self.point.list}):
+            return self.render_string("widgets/treecombobox.html", id=self.dom_id, ph=placeholder, opt=opt)
         return ""
     pass
+    def embedded_javascript(self):
+        return "alert('%s');" % self.dom_id
+
 
 ###################################常用部件#########################################
 #婚姻状况
