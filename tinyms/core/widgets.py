@@ -103,27 +103,27 @@ def datatable_filter(entity_name):
 
 @ui("TermTaxonomyComboBox")
 class TermTaxonomyComboBox(IWidget):
-
     def render(self, **prop):
         domId = prop["id"]
         items = self.list(prop["taxonomy"])
         allowed_blank = prop.get("allowed_blank")
         html = list()
-        html.append("<select id='%s' name='%s' class='form-control'>" % (domId,domId))
+        html.append("<select id='%s' name='%s' class='form-control'>" % (domId, domId))
         if allowed_blank:
             html.append("<option value=''> </option>")
         for item in items:
-            html.append("<option value='%i'>%s</option>" % (item[0],item[1]))
+            html.append("<option value='%i'>%s</option>" % (item[0], item[1]))
         html.append("</select>")
         return "".join(html)
 
     def list(self, taxonomy):
         cnn = SessionFactory.new()
-        items = cnn.query(TermTaxonomy.id,Term.name)\
-            .outerjoin((Term,Term.id==TermTaxonomy.term_id))\
-            .filter(TermTaxonomy.taxonomy==taxonomy)\
+        items = cnn.query(TermTaxonomy.id, Term.name) \
+            .outerjoin((Term, Term.id == TermTaxonomy.term_id)) \
+            .filter(TermTaxonomy.taxonomy == taxonomy) \
             .all()
         return items
+
 
 @ui("DataComboBox")
 class DataComboBoxModule(IWidget):
@@ -408,6 +408,30 @@ class DataTableHandler(IRequest):
         params[self.datatable_display_cols[colIndex]] = direct
         return params
 
+
+@ui("panel_start")
+class PanelStart(IWidget):
+    def render(self, id, css_cls="panel-body"):
+        return '<div id="%s_panel" class="%s">' % (id, css_cls)
+
+
+@ui("panel_end")
+class PanelEnd(IWidget):
+    def render(self):
+        return '</div>'
+
+
+@ui("form_start")
+class FormStart(IWidget):
+    def render(self, id, css_cls="form-horizontal"):
+        return '<form class="%s" role="form" id="%s_form">' % (css_cls, id)
+
+
+@ui("form_end")
+class FormEnd(IWidget):
+    def render(self):
+        return '</form>'
+
 #可以编辑树节点的控件
 @ui("OrgTree")
 class OrgTree(IWidget):
@@ -460,21 +484,5 @@ class TreeComboBox(OrgTree):
         if AccountHelper.auth(self.current_user, {self.point.list}):
             return self.render_string("widgets/treecombobox.html", id=self.dom_id, ph=placeholder, opt=opt)
         return ""
+
     pass
-    def embedded_javascript(self):
-        return "alert('%s');" % self.dom_id
-
-
-###################################常用部件#########################################
-#婚姻状况
-# @ui("MaritalStatusComboBox")
-# class MaritalStatusComboBox(IWidget):
-#     def render(self, **params):
-#         id = params.get("id")
-#         html = list()
-#         html.append("<select id='%s' name='%s' class='form-control'>" % (id,id))
-#         html.append("<option value='%s'>%s</option>" % ("未婚","未婚"))
-#         html.append("<option value='%s'>%s</option>" % ("已婚","已婚"))
-#         html.append("<option value='%s'>%s</option>" % ("离异","离异"))
-#         html.append("</select>")
-#         return "".join(html)

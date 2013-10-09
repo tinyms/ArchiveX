@@ -6,6 +6,7 @@
  * function datatable_server_params(id,aoData){} //aoData is list(dict)
  * function datatable_server_data(id, data, textStatus, jqXHR){}
  * function datatable_form_fill(id,row){}
+ * function datatable_form_init(id){}
  * function datatable_render(id,k,v,row){}
  * function datatable_render_actionbar(id,k,v,row){}
  * function datatable_data_before_add(id,form_data){}
@@ -104,15 +105,19 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
     };
     this.switchTableAndEditFormPanel = function (is_panel) {
         if (is_panel) {
-            var form_html = "<input type='hidden' id='id' name='id'/>";
-            form_html += $("#" + self.id + "_EditFormTemplate").html();
-            $("#" + self.id + "_EditForm").html(form_html);
+            //var form_html = "<input type='hidden' id='id' name='id'/>";
+            //form_html += $("#" + self.id + "_EditFormTemplate").html();
+            //here
+            //$("#" + self.id + "_form").html(form_html);
+            if(typeof(datatable_form_init)!="undefined"){
+                datatable_form_init(self.id);
+            }
             $("#" + self.id + "_wrap").hide();
-            $("#" + self.id + "_form_container").show();
+            $("#" + self.id + "_panel").show();
         } else {
-            $("#" + self.id + "_EditForm").resetForm();
+            $("#" + self.id + "_form").resetForm();
             $("#" + self.id + "_wrap").show();
-            $("#" + self.id + "_form_container").hide();
+            $("#" + self.id + "_panel").hide();
         }
     }
     this.Refresh = function () {
@@ -138,7 +143,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
             self.switchTableAndEditFormPanel(false);
         },
         "save": function (btn, state) {
-            if (!$("#" + self.id + "_EditForm").valid()) {
+            if (!$("#" + self.id + "_form").valid()) {
                 return;
             }
             if(typeof(datatable_data_before_add)!=undefined){
@@ -146,7 +151,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
                     return;
                 }
             }
-            $("#" + self.id + "_EditForm").ajaxSubmit({
+            $("#" + self.id + "_form").ajaxSubmit({
                 "dataType": "json", "url": self.request_url + "save", "type": "post",
                 "beforSubmit": function (formData, jqForm, options) {
                 },
@@ -159,11 +164,11 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
                             }
                         } else if (data.msg == "Newed") {
                             if (typeof(datatable_data_update) != "undefined") {
-                                return datatable_data_update(self.id, $("#" + self.id + "_EditForm #id").val(), null);
+                                return datatable_data_update(self.id, $("#" + self.id + "_form #id").val(), null);
                             }
                         }
                         if (state == "clear") {
-                            $("#" + self.id + "_EditForm").resetForm();
+                            $("#" + self.id + "_form").resetForm();
                         }
                         self.Refresh();
                     }else{
@@ -176,7 +181,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
             });
         },
         "reset": function (btn) {
-            $("#" + self.id + "_EditForm").resetForm();
+            $("#" + self.id + "_form").resetForm();
         }
     };
     this.RecordSetProvider = {
@@ -207,7 +212,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
                 self.switchTableAndEditFormPanel(true);
                 try {
                     for (k in current_row) {
-                        $("#" + self.id + "_EditForm #" + k).val(current_row[k]);
+                        $("#" + self.id + "_form #" + k).val(current_row[k]);
                     }
                     if (typeof(datatable_form_fill) != "undefined") {
                         datatable_form_fill(self.id, current_row);

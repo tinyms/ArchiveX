@@ -1,10 +1,16 @@
 {% extends "master.html" %}
 {% block title %}档案管理{% end %}
 {% block header %}
+<script src="{{ static_url('jslib/tinyms.treecombobox.js') }}"></script>
 <script type="text/javascript">
     function datatable_server_params(id,aoData){
         if(id=="ArchivesDataTable"){
             aoData.push({name:"OrgId",value:$("#OrgTreeComboBox").val()});
+        }
+    }
+    function datatable_form_init(id){
+        if(id=="ArchivesDataTable"){
+            $("#department_tree_container").DropDownTree({id:"org_id",taxonomy:"Product"});
         }
     }
     function tree_combobox_select_completed(id,vals){
@@ -60,8 +66,11 @@
                     <div class="col-lg-4">
                         <div class="form-group">
                         <label for="name" class="col-lg-3 control-label">所属部门</label>
-                        <div class="col-lg-8">
-                            {% module TreeComboBox(id="aaaaaaa",taxonomy="Product",account_id=current_user,point_list="tinyms.view.orgtree.list",placeholder="选择(组织/部门)") %}
+                        <div class="col-lg-8" id="department_tree_container">
+                            {% set tpl = "form/core/archives.html" %}
+                            {%
+                            module Template(tpl, arg=42)
+                            %}
                         </div>
                         </div>
                     </div>
