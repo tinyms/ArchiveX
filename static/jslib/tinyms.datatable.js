@@ -146,7 +146,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
             if (!$("#" + self.id + "_form").valid()) {
                 return;
             }
-            if(typeof(datatable_data_before_add)!=undefined){
+            if(typeof(datatable_data_before_add)!="undefined"){
                 if(!datatable_data_before_add(self.id,null)){
                     return;
                 }

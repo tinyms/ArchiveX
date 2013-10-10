@@ -424,7 +424,7 @@ class PanelEnd(IWidget):
 @ui("form_start")
 class FormStart(IWidget):
     def render(self, id, css_cls="form-horizontal"):
-        return '<form class="%s" role="form" id="%s_form">' % (css_cls, id)
+        return '<form class="%s" role="form" id="%s_form"><input type="hidden" name="id" id="id"/>' % (css_cls, id)
 
 
 @ui("form_end")
@@ -433,12 +433,11 @@ class FormEnd(IWidget):
         return '</form>'
 
 #可以编辑树节点的控件
-@ui("OrgTree")
+@ui("TermTaxonomyEditor")
 class OrgTree(IWidget):
     def render(self, **p):
         opt = dict()
         dom_id = p["id"]
-        account_id = p["account_id"]
         placeholder = p["placeholder"]
         opt["taxonomy"] = p["taxonomy"]
         self.point = EmptyClass()
@@ -446,9 +445,17 @@ class OrgTree(IWidget):
         self.point.add = p.get("point_add")
         self.point.update = p.get("point_update")
         self.point.delete = p.get("point_delete")
+        if not self.point.list:
+            self.point.list = "tinyms.view.termtaxonomy.list"
+        if not self.point.add:
+            self.point.add = "tinyms.view.termtaxonomy.add"
+        if not self.point.update:
+            self.point.update = "tinyms.view.termtaxonomy.update"
+        if not self.point.delete:
+            self.point.delete = "tinyms.view.termtaxonomy.delete"
         opt["point"] = self.point
         ObjectPool.treeview[opt["taxonomy"]] = self.point
-        if AccountHelper.auth(account_id, {self.point.list}):
+        if AccountHelper.auth(self.current_user, {self.point.list}):
             return self.render_string("widgets/orgtree.html", id=dom_id, ph=placeholder, opt=opt)
         return ""
 
