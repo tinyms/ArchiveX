@@ -4,11 +4,6 @@
 <tfoot><tr>{% raw opt['thTags'] %}</tr></tfoot>
 </table>
 </div>
-<div class="col-lg-12">
- <div id="{{opt['id']}}_form_container" class="panel-body">
-	<form class="form-horizontal" role="form" id="{{opt['id']}}_EditForm"></form>
- </div>
-</div>
 <script type="text/javascript">
 var {{opt["id"]}}_ = null;
 function {{opt["id"]}}_actionbar_render(col,v,type,row){
@@ -28,7 +23,7 @@ function {{opt["id"]}}_actionbar_render(col,v,type,row){
 	return action_btns;
 }
 $(document).ready(function () {
-    $("#{{opt['id']}}_form_container").hide();
+    $("#{{opt['id']}}_panel").hide();
 	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},'{{opt["edit_form_id"]}}',{{opt["id"]}}_actionbar_render);
 	{{opt["id"]}}_.Create();
 });
