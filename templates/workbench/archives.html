@@ -1,7 +1,8 @@
 {% extends "master.html" %}
 {% block title %}档案管理{% end %}
 {% block header %}
-<script src="{{ static_url('jslib/tinyms.treecombobox.js') }}"></script>
+<script src="{{ static_url('jslib/datepicker/js/bootstrap-datepicker.js') }}"></script>
+<link rel="stylesheet" href="{{ static_url('jslib/datepicker/css/datepicker.css') }}">
 <script type="text/javascript">
     function datatable_server_params(id,aoData){
         if(id=="ArchivesDataTable"){
@@ -9,15 +10,31 @@
         }
     }
     function datatable_form_init(id){
-        if(id=="ArchivesDataTable"){
-            $("#department_tree_container").DropDownTree({id:"org_id",taxonomy:"Product"});
-        }
     }
     function tree_combobox_select_completed(id,vals){
         if(id=="OrgTreeComboBox"){
             ArchivesDataTable_.Refresh();
         }
     }
+    function datatable_data_before_add(id){
+        $("#WorkExperienceDataTable_form").find("#archives_id").val($("#ArchivesDataTable_form").find("#id").val());
+        $("#LearningExperienceDataTable_form").find("#archives_id").val($("#ArchivesDataTable_form").find("#id").val());
+        $("#TrainingExperienceDataTable_form").find("#archives_id").val($("#ArchivesDataTable_form").find("#id").val());
+        if(id=="WorkExperienceDataTable"&&$("#WorkExperienceDataTable_form").find("#archives_id").val()==""){
+            toastr.error("需要先保存基本资料!")
+            return false;
+        }else if(id=="LearningExperienceDataTable"&&$("#LearningExperienceDataTable_form").find("#archives_id").val()==""){
+            toastr.error("需要先保存基本资料!")
+            return false;
+        }else if(id=="TrainingExperienceDataTable"&&$("#TrainingExperienceDataTable_form").find("#archives_id").val()==""){
+            toastr.error("需要先保存基本资料!")
+            return false;
+        }
+        return true;
+    }
+    $(document).ready(function(){
+        $(".dp").datepicker({format:"yyyy-mm-dd"});
+    });
 </script>
 {% end %}
 {% block workspace %}
@@ -70,7 +87,7 @@
                                         <div class="form-group">
                                         <label for="name" class="col-lg-3 control-label">入职时间</label>
                                         <div class="col-lg-8">
-                                        <input type="date" class="form-control" id="join_date" name="join_date" required >
+                                        <input type="text" class="form-control dp" id="join_date" name="join_date" required >
                                         </div>
                                         </div>
                                     </div>
@@ -78,7 +95,7 @@
                                         <div class="form-group">
                                         <label for="name" class="col-lg-3 control-label">离职时间</label>
                                         <div class="col-lg-8">
-                                        <input type="date" class="form-control" id="leave_date" name="leave_date" required >
+                                        <input type="text" class="form-control dp" id="leave_date" name="leave_date" required >
                                         </div>
                                         </div>
                                     </div>
@@ -104,7 +121,7 @@
                                         <div class="form-group">
                                         <label for="birthday" class="col-lg-3 control-label">出生日期</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="birthday" name="birthday"  >
+                                        <input type="text" class="form-control" id="birthday" name="birthday" placeholder="日期格式:1900-01-01">
                                         </div>
                                         </div>
                                     </div>

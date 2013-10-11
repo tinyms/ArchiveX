@@ -9,7 +9,7 @@
  * function datatable_form_init(id){}
  * function datatable_render(id,k,v,row){}
  * function datatable_render_actionbar(id,k,v,row){}
- * function datatable_data_before_add(id,form_data){}
+ * function datatable_data_before_add(id){}
  * function datatable_data_add(id,form_data){}
  * function datatable_data_update(id,pk,form_data){}
  * function datatable_data_delete(id,pk){}
@@ -147,7 +147,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
                 return;
             }
             if(typeof(datatable_data_before_add)!="undefined"){
-                if(!datatable_data_before_add(self.id,null)){
+                if(!datatable_data_before_add(self.id)){
                     return;
                 }
             }
