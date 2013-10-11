@@ -156,6 +156,53 @@
                             {% module form_end() %}
                             {% module panel_end() %}
                         </div>
+                        <!-- left tab -->
+                        <section class="panel">
+                            <header class="panel-heading text-right">
+                                <ul class="nav nav-tabs pull-left" id="security_points_tab">
+                                    {% for cat in data["categories"] %}
+                                    <li><a href="#points_group_{{ cat[2] }}" data-toggle="tab">{{ cat[0] }}</a></li>
+                                    {% end %}
+                                </ul>
+                                <span class="hidden-sm"><a class="btn-link" onclick="check_or_uncheck(this,'all');">全选/反选</a> | {% if auth({'tinyms.entity.role.points.update'}) %} <a
+                                        class="btn-link" onclick="security_points_save(this);"><i class="icon-save"></i>保存</a>
+                                    <small><em>( 给`<span class="text-danger" id="role_name_to_assign">角色</span>`指定权限 )</em></small> {% end %}
+                                </span>
+                            </header>
+                            {% if auth({'tinyms.entity.role.points.view'}) %}
+                            <div class="panel-body" id="security_points_edit_panel">
+                                <div class="tab-content">
+                                    {% for cat in data["categories"] %}
+                                    <div class="tab-pane fade" id="points_group_{{ cat[2] }}">
+                                        <div class="row">
+                                            {% for g in cat[1] %}
+                                            <div class="col-sm-6 col-md-3">
+                                                <div class="thumbnail" style="border: 0px;">
+                                                    <section class="panel">
+                                                        <header class="panel-heading">{{ g[0] }}
+                                                            <a class="pull-right btn-link"
+                                                               onclick="check_or_uncheck(this,'sub');">全选/反选</a>
+                                                        </header>
+                                                        <ul class="list-group">
+                                                            {% for p in g[1] %}
+                                                            <li class="list-group-item">
+                                                                <input type="checkbox" datakey="{{ p.key_ }}" value="{{ p.id }}"
+                                                                       id="security_point_{{ p.id }}"/> {{ p.description }}
+                                                            </li>
+                                                            {% end %}
+                                                        </ul>
+                                                    </section>
+                                                </div>
+                                            </div>
+                                            {% end %}
+                                        </div>
+                                    </div>
+                                    {% end %}
+                                </div>
+                            </div>
+                            {% end %}
+                        </section>
+                        <!-- / left tab -->
                     </div>
                     {% end %}
                     <div class="tab-pane" id="org_post_panel">
@@ -177,53 +224,7 @@
             </div>
         </section>
         <!-- / right tab -->
-        <!-- left tab -->
-        <section class="panel">
-            <header class="panel-heading text-right">
-                <ul class="nav nav-tabs pull-left" id="security_points_tab">
-                    {% for cat in data["categories"] %}
-                    <li><a href="#points_group_{{ cat[2] }}" data-toggle="tab">{{ cat[0] }}</a></li>
-                    {% end %}
-                </ul>
-                <span class="hidden-sm"><a class="btn-link" onclick="check_or_uncheck(this,'all');">全选/反选</a> | {% if auth({'tinyms.entity.role.points.update'}) %} <a
-                        class="btn-link" onclick="security_points_save(this);"><i class="icon-save"></i>保存</a>
-                    <small><em>( 给`<span class="text-danger" id="role_name_to_assign">角色</span>`指定权限 )</em></small> {% end %}
-                </span>
-            </header>
-            {% if auth({'tinyms.entity.role.points.view'}) %}
-            <div class="panel-body" id="security_points_edit_panel">
-                <div class="tab-content">
-                    {% for cat in data["categories"] %}
-                    <div class="tab-pane fade" id="points_group_{{ cat[2] }}">
-                        <div class="row">
-                            {% for g in cat[1] %}
-                            <div class="col-sm-6 col-md-3">
-                                <div class="thumbnail" style="border: 0px;">
-                                    <section class="panel">
-                                        <header class="panel-heading">{{ g[0] }}
-                                            <a class="pull-right btn-link"
-                                               onclick="check_or_uncheck(this,'sub');">全选/反选</a>
-                                        </header>
-                                        <ul class="list-group">
-                                            {% for p in g[1] %}
-                                            <li class="list-group-item">
-                                                <input type="checkbox" datakey="{{ p.key_ }}" value="{{ p.id }}"
-                                                       id="security_point_{{ p.id }}"/> {{ p.description }}
-                                            </li>
-                                            {% end %}
-                                        </ul>
-                                    </section>
-                                </div>
-                            </div>
-                            {% end %}
-                        </div>
-                    </div>
-                    {% end %}
-                </div>
-            </div>
-            {% end %}
-        </section>
-        <!-- / left tab -->
+
     </div>
 </div>
 {% end %}

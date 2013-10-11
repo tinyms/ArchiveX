@@ -53,7 +53,6 @@
                           <li><a href="#Archives_WorkExperience" data-toggle="tab">工作经历</a></li>
                           <li><a href="#Archives_LearningExperience" data-toggle="tab">学习经历</a></li>
                           <li><a href="#Archives_TrainingExperience" data-toggle="tab">培训经历</a></li>
-                          <li><a href="#Archives_FamilyRelations" data-toggle="tab">家庭成员关系</a></li>
                         </ul>
                         <div class="tab-content">
                           <div class="tab-pane active" id="Archives_Base">
@@ -421,10 +420,199 @@
                             </div>
                             {% module form_end() %}
                           </div>
-                          <div class="tab-pane" id="Archives_WorkExperience">...</div>
-                          <div class="tab-pane" id="Archives_LearningExperience">...</div>
-                          <div class="tab-pane" id="Archives_TrainingExperience">...</div>
-                            <div class="tab-pane" id="Archives_FamilyRelations">...</div>
+                          <div class="tab-pane" id="Archives_WorkExperience">
+                              {% module DataTable(id="WorkExperienceDataTable",
+                                entity="tinyms.core.entity.WorkExperience",
+                                cols=['start_date','end_date','work_unit','post'],
+                                titles=['开始日期','结束日期','工作单位或部门','职务'],
+                                search_fields="work_unit,post",
+                                form="",
+                                point_list = "tinyms.entity.archives.list",
+                                point_add = "tinyms.entity.archives.add",
+                                point_update = "tinyms.entity.archives.update",
+                                point_delete = "tinyms.entity.archives.delete"
+                                ) %}
+                              {% module panel_start("WorkExperienceDataTable") %}
+                              {% module form_start("WorkExperienceDataTable") %}
+
+                                <div class="form-group">
+                                <div class="col-lg-9 col-lg-offset-3">
+                                <input type="button" class="btn btn-white btn-sm " id="WorkExperienceDataTable_form_return" onclick="WorkExperienceDataTable_.form.cancel(this);" value="返回"/>
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="start_date" class="col-lg-3 control-label">开始日期</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="start_date" name="start_date" placeholder="日期格式:1900-01-01">
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="end_date" class="col-lg-3 control-label">结束日期</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="end_date" name="end_date" placeholder="日期格式:1900-01-01">
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="work_unit" class="col-lg-3 control-label">工作单位</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="work_unit" name="work_unit"  >
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="post" class="col-lg-3 control-label">职位</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="post" name="post"  >
+                                    <input type="hidden" class="form-control" id="archives_id" name="archives_id">
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <div class="col-lg-9 col-lg-offset-3">
+                                <input type="button" class="btn btn-primary btn-sm" id="WorkExperienceDataTable_form_save" onclick="WorkExperienceDataTable_.form.save(this,'');" value="保存"></button>
+                                <input type="button" class="btn btn-white btn-sm" id="WorkExperienceDataTable_form_save_continue" onclick="WorkExperienceDataTable_.form.save(this,'clear');" value="保存并继续"></button>
+                                <input type="button" class="btn btn-white btn-sm" id="WorkExperienceDataTable_form_reset" onclick="WorkExperienceDataTable_.form.reset(this);" value="重填"></button>
+                                </div>
+                                <div class="col-lg-10"></div>
+                                </div>
+
+                              {% module form_end() %}
+                              {% module panel_end() %}
+                          </div>
+                          <div class="tab-pane" id="Archives_LearningExperience">
+                              {% module DataTable(id="LearningExperienceDataTable",
+                                entity="tinyms.core.entity.LearningExperience",
+                                cols=['start_date','end_date','school_name','specialized_field','finished'],
+                                titles=['开始日期','结束日期','学校名称','专业领域','毕(结、肆)业'],
+                                search_fields="school_name,specialized_field,finished",
+                                form="",
+                                point_list = "tinyms.entity.archives.list",
+                                point_add = "tinyms.entity.archives.add",
+                                point_update = "tinyms.entity.archives.update",
+                                point_delete = "tinyms.entity.archives.delete"
+                                ) %}
+                              {% module panel_start("LearningExperienceDataTable") %}
+                              {% module form_start("LearningExperienceDataTable") %}
+
+                                <div class="form-group">
+                                <div class="col-lg-9 col-lg-offset-3">
+                                <input type="button" class="btn btn-white btn-sm " id="LearningExperienceDataTable_form_return" onclick="LearningExperienceDataTable_.form.cancel(this);" value="返回"/>
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="start_date" class="col-lg-3 control-label">开始日期</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="start_date" name="start_date" placeholder="日期格式:1900-01-01">
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="end_date" class="col-lg-3 control-label">结束日期</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="end_date" name="end_date" placeholder="日期格式:1900-01-01">
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="school_name" class="col-lg-3 control-label">学校名称</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="school_name" name="school_name"  >
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="specialized_field" class="col-lg-3 control-label">专业领域</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="specialized_field" name="specialized_field"  >
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="finished" class="col-lg-3 control-label">毕(结、肆)业</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="finished" name="finished"  >
+                                    <input type="hidden" class="form-control" id="archives_id" name="archives_id"  />
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <div class="col-lg-9 col-lg-offset-3">
+                                <input type="button" class="btn btn-primary btn-sm" id="LearningExperienceDataTable_form_save" onclick="LearningExperienceDataTable_.form.save(this,'');" value="保存"></button>
+                                <input type="button" class="btn btn-white btn-sm" id="LearningExperienceDataTable_form_save_continue" onclick="LearningExperienceDataTable_.form.save(this,'clear');" value="保存并继续"></button>
+                                <input type="button" class="btn btn-white btn-sm" id="LearningExperienceDataTable_form_reset" onclick="LearningExperienceDataTable_.form.reset(this);" value="重填"></button>
+                                </div>
+                                <div class="col-lg-10"></div>
+                                </div>
+
+                              {% module form_end() %}
+                              {% module panel_end() %}
+                          </div>
+                          <div class="tab-pane" id="Archives_TrainingExperience">
+                              {% module DataTable(id="TrainingExperienceDataTable",
+                                entity="tinyms.core.entity.TrainingExperience",
+                                cols=['start_date','end_date','organization','certificate'],
+                                titles=['开始日期','结束日期','组织','证书'],
+                                search_fields="organization,certificate",
+                                form="",
+                                point_list = "tinyms.entity.archives.list",
+                                point_add = "tinyms.entity.archives.add",
+                                point_update = "tinyms.entity.archives.update",
+                                point_delete = "tinyms.entity.archives.delete"
+                                ) %}
+                              {% module panel_start("TrainingExperienceDataTable") %}
+                              {% module form_start("TrainingExperienceDataTable") %}
+
+                                <div class="form-group">
+                                <div class="col-lg-9 col-lg-offset-3">
+                                <input type="button" class="btn btn-white btn-sm " id="TrainingExperienceDataTable_form_return" onclick="TrainingExperienceDataTable_.form.cancel(this);" value="返回"/>
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="start_date" class="col-lg-3 control-label">开始日期</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="start_date" name="start_date" placeholder="日期格式:1900-01-01">
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="end_date" class="col-lg-3 control-label">结束日期</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="end_date" name="end_date" placeholder="日期格式:1900-01-01">
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="organization" class="col-lg-3 control-label">组织</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="organization" name="organization"  >
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="certificate" class="col-lg-3 control-label">证书</label>
+                                <div class="col-lg-8">
+                                <input type="text" class="form-control" id="certificate" name="certificate"  >
+                                    <input type="hidden" class="form-control" id="archives_id" name="archives_id"/>
+                                </div>
+                                </div>
+
+                                <div class="form-group">
+                                <div class="col-lg-9 col-lg-offset-3">
+                                <input type="button" class="btn btn-primary btn-sm" id="TrainingExperienceDataTable_form_save" onclick="TrainingExperienceDataTable_.form.save(this,'');" value="保存"></button>
+                                <input type="button" class="btn btn-white btn-sm" id="TrainingExperienceDataTable_form_save_continue" onclick="TrainingExperienceDataTable_.form.save(this,'clear');" value="保存并继续"></button>
+                                <input type="button" class="btn btn-white btn-sm" id="TrainingExperienceDataTable_form_reset" onclick="TrainingExperienceDataTable_.form.reset(this);" value="重填"></button>
+                                </div>
+                                <div class="col-lg-10"></div>
+                                </div>
+
+                              {% module form_end() %}
+                              {% module panel_end() %}
+                          </div>
                         </div>
                         {% module panel_end() %}
                     </div>
