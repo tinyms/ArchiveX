@@ -87,6 +87,7 @@ class SideBar(IWidget):
     def sort_menus(self, items):
         items.sort(key=lambda x: x[0])
 
+
 @ui("TermTaxonomyComboBox")
 class TermTaxonomyComboBox(IWidget):
     def render(self, **prop):
@@ -298,6 +299,11 @@ class DataTableHandler(IRequest):
         cur_row = cnn.query(entity).get(rec_id)
         cnn.delete(cur_row)
         cnn.commit()
+        custom_filter = ObjectPool.datatable_filter.get(meta["name"])
+        if custom_filter:
+            custom_filter_obj = custom_filter()
+            if hasattr(custom_filter_obj, "delete"):
+                custom_filter_obj.delete(rec_id, cnn, self)
         message["success"] = True
         message["msg"] = "Deleted"
         self.write(json.dumps(message))
@@ -318,8 +324,8 @@ class DataTableHandler(IRequest):
             cnn.commit()
             if custom_filter:
                 custom_filter_obj = custom_filter()
-                if hasattr(custom_filter_obj,"add"):
-                    custom_filter_obj.add(obj.id,cnn,self)
+                if hasattr(custom_filter_obj, "add"):
+                    custom_filter_obj.add(obj.id, cnn, self)
             message["success"] = True
             message["msg"] = "Newed"
             self.write(json.dumps(message))
@@ -330,8 +336,8 @@ class DataTableHandler(IRequest):
             cnn.commit()
             if custom_filter:
                 custom_filter_obj = custom_filter()
-                if hasattr(custom_filter_obj,"modify"):
-                    custom_filter_obj.modify(cur_row.id,cnn,self)
+                if hasattr(custom_filter_obj, "modify"):
+                    custom_filter_obj.modify(cur_row.id, cnn, self)
             message["success"] = True
             message["msg"] = "Updated"
             self.write(json.dumps(message))
