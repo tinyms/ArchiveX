@@ -5,6 +5,8 @@ from tinyms.core.orm import Entity, Simplify, many_to_one, many_to_many
 
 #人员档案
 class Archives(Entity, Simplify):
+    #编码，工号
+    code = Column(String(20))
     #姓名
     name = Column(String(20), nullable=False)
     #别名、曾用名

@@ -46,7 +46,8 @@ class CategoryHelper():
             tt.parent_id = parent_id
             tt.path = "%s/%s" % (parent_path, tt.id)
             cnn.commit()
-            self.dph.update("tinyms.treeview.%s.%s" % (self.taxonomy,tt.id),name_)
+            if self.taxonomy=="Org":
+                self.dph.update("tinyms.treeview.%s.%s" % (self.taxonomy,tt.id),name_)
             return "Success"
         else:
             return "Failure"
@@ -65,7 +66,8 @@ class CategoryHelper():
         cnn.commit()
         tt.path = "%s/%s" % (parent_path, tt.id)
         cnn.commit()
-        self.dph.add("tinyms.treeview.%s.%s" % (self.taxonomy,tt.id),name_)
+        if self.taxonomy=="Org":
+            self.dph.add("tinyms.treeview.%s.%s" % (self.taxonomy,tt.id),name_)
         return tt.id
 
     def remove(self, id):

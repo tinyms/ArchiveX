@@ -143,8 +143,8 @@ def ui(name):
 
 #for widgets
 #受装饰的类可以实现下面任意方法
-# def total(session,req)
-# def dataset(session,req)
+# def total(session,req) -> return session
+# def dataset(session,req) -> return session
 # def add(id,session,req)
 # def modify(id,session,req)
 # def delete(id,session,req)

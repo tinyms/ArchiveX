@@ -92,19 +92,20 @@
         <section class="panel">
             <header class="panel-heading">
                 <ul class="nav nav-tabs pull-left" id="role_org_tab">
+                    <li class="active"><a href="#account_panel" data-toggle="tab"><i class="icon-lock icon-large text-default"></i>账户</a></li>
                     {% if auth({'tinyms.entity.role.list'}) %}
-                    <li class="active"><a href="#profile-1" data-toggle="tab"><i
+                    <li><a href="#role_panel" data-toggle="tab"><i
                             class="icon-user icon-large text-default"></i>角色</a>
                     </li>
                     {% end %}
-                    <li><a href="#org_post_panel" data-toggle="tab"><i class="icon-sitemap icon-large text-default"></i>组织/部门</a>
-                    </li>
+                    <li><a href="#org_post_panel" data-toggle="tab"><i class="icon-sitemap icon-large text-default"></i>组织/部门</a></li>
                 </ul>
             </header>
             <div class="panel-body">
                 <div class="tab-content">
+                    <div class="tab-pane active" id="account_panel">ddd</div>
                     {% if auth({'tinyms.entity.role.list'}) %}
-                    <div class="tab-pane active" id="profile-1">
+                    <div class="tab-pane" id="role_panel">
                         <div>
                             {% module DataTable(id="RoleDataTable",
                             entity="tinyms.core.entity.Role",
