@@ -28,7 +28,7 @@ class Archives(Entity, Simplify):
     #健康状况
     health_state = Column(String(20))
     #婚姻状况
-    marital_status = Column(Boolean())
+    marital_status = Column(Integer())
     #身份证
     id_card = Column(String(20))
     #户籍所在地
@@ -36,7 +36,7 @@ class Archives(Entity, Simplify):
     #学历
     educational_background = Column(Integer())
     #专业
-    specialty = Column(Integer())
+    specialty = Column(String(60))
     #毕业院校
     last_leave_school = Column(String(30))
     #政治面貌
@@ -75,6 +75,12 @@ class Archives(Entity, Simplify):
     dream_job = Column(String(100))
     #其它说明
     other_description = Column(String(500))
+    #部门ID
+    org_id = Column(Integer())
+    #入职时间
+    join_date = Column(Date())
+    #离职时间
+    leave_date = Column(Date())
     #accounts
 
 #学习经历

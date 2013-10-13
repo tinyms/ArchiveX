@@ -32,6 +32,13 @@
         }
         return true;
     }
+
+    function datatable_form_fill(id,row){
+        if(id=="ArchivesDataTable"){
+            tree_combobox_value("org_id",row.org_id);
+        }
+    }
+
     $(document).ready(function(){
         $(".date").datepicker({format:"yyyy-mm-dd"});
     });
@@ -44,7 +51,7 @@
         </div>
         <div class="row">
             <div class="col-lg-12">
-                {% module TreeComboBox(id="OrgTreeComboBox",taxonomy="Product",point_list="tinyms.view.orgtree.list",placeholder="选择(组织/部门)") %}
+                {% module TreeComboBox(id="OrgTreeComboBox",taxonomy="Org",point_list="tinyms.view.orgtree.list",placeholder="选择(组织/部门)") %}
             </div>
         </div>
         <div class="row" style="margin-top: 15px;">
@@ -79,23 +86,23 @@
                                         <div class="form-group">
                                         <label for="org_id_category_name" class="col-lg-3 control-label">所属部门</label>
                                         <div class="col-lg-8">
-                                            {% module TreeComboBox(id="org_id",taxonomy="Product",point_list="tinyms.view.orgtree.list",placeholder="选择(组织/部门)") %}
+                                            {% module TreeComboBox(id="org_id",taxonomy="Org",point_list="tinyms.view.orgtree.list",placeholder="选择(组织/部门)") %}
                                         </div>
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="form-group">
-                                        <label for="name" class="col-lg-3 control-label">入职时间</label>
+                                        <label for="join_date" class="col-lg-3 control-label">入职时间</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control date" id="join_date" name="join_date" required >
+                                        <input type="text" class="form-control date" id="join_date" name="join_date"  placeholder="日期格式:1900-01-01">
                                         </div>
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="form-group">
-                                        <label for="name" class="col-lg-3 control-label">离职时间</label>
+                                        <label for="leave_date" class="col-lg-3 control-label">离职时间</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control date" id="leave_date" name="leave_date" required >
+                                        <input type="text" class="form-control date" id="leave_date" name="leave_date"  placeholder="日期格式:1900-01-01">
                                         </div>
                                         </div>
                                     </div>
@@ -121,7 +128,7 @@
                                         <div class="form-group">
                                         <label for="birthday" class="col-lg-3 control-label">出生日期</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="birthday" name="birthday" placeholder="日期格式:1900-01-01">
+                                        <input type="text" class="form-control date" id="birthday" name="birthday" placeholder="日期格式:1900-01-01">
                                         </div>
                                         </div>
                                     </div>
@@ -140,7 +147,7 @@
                                         <div class="form-group">
                                         <label for="weight" class="col-lg-3 control-label">体重</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="weight" name="weight"  number>
+                                        <input type="number" class="form-control" id="weight" name="weight" placeholder="公斤">
                                         </div>
                                         </div>
                                     </div>
@@ -148,7 +155,7 @@
                                         <div class="form-group">
                                         <label for="height" class="col-lg-3 control-label">身高</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="height" name="height"  number>
+                                        <input type="number" class="form-control" id="height" name="height" placeholder="厘米">
                                         </div>
                                         </div>
                                     </div>
@@ -159,7 +166,7 @@
                                         <div class="form-group">
                                         <label for="nation" class="col-lg-3 control-label">民族</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="nation" name="nation"  >
+                                        {% module TermTaxonomyComboBox(id="nation",taxonomy="Nation") %}
                                         </div>
                                         </div>
                                     </div>
@@ -175,7 +182,7 @@
                                         <div class="form-group">
                                         <label for="vision" class="col-lg-3 control-label">视力</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="vision" name="vision"  number>
+                                        <input type="number" class="form-control" id="vision" name="vision">
                                         </div>
                                         </div>
                                     </div>
@@ -186,7 +193,9 @@
                                         <div class="form-group">
                                         <label for="post" class="col-lg-3 control-label">职位</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="post" name="post"  digits>
+                                        {%
+                                            module TermTaxonomyComboBox(id="post",taxonomy="JobTitle")
+                                        %}
                                         </div>
                                         </div>
                                     </div>
@@ -194,7 +203,9 @@
                                         <div class="form-group">
                                         <label for="health_state" class="col-lg-3 control-label">健康状况</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="health_state" name="health_state"  >
+                                        {%
+                                            module TermTaxonomyComboBox(id="health_state",taxonomy="HealthStatus")
+                                        %}
                                         </div>
                                         </div>
                                     </div>
@@ -344,7 +355,7 @@
                                         <div class="form-group">
                                         <label for="email" class="col-lg-3 control-label">邮箱</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="email" name="email"  >
+                                        <input type="email" class="form-control" id="email" name="email"  >
                                         </div>
                                         </div>
                                     </div>
@@ -355,7 +366,9 @@
                                             <div class="form-group">
                                             <label for="employment_pathways" class="col-lg-3 control-label">录用途径</label>
                                             <div class="col-lg-8">
-                                            <input type="text" class="form-control" id="employment_pathways" name="employment_pathways"  digits>
+                                            {%
+                                                module TermTaxonomyComboBox(id="employment_pathways",taxonomy="EmploymentPathways")
+                                            %}
                                             </div>
                                             </div>
                                         </div>

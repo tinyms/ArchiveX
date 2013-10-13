@@ -14,7 +14,7 @@
                     <div class="panel-body">
                         <div class="col-sm-6 col-md-3">
                             <div class="thumbnail" style="border: 0px;">
-                                {% module TermTaxonomyEditor(id="JobTitleTreeView",taxonomy="JobTitle",placeholder="头衔") %}
+                                {% module TermTaxonomyEditor(id="JobTitleTreeView",taxonomy="JobTitle",placeholder="职位") %}
                             </div>
                         </div>
                         <div class="col-sm-6 col-md-3">
@@ -29,7 +29,22 @@
                         </div>
                         <div class="col-sm-6 col-md-3">
                             <div class="thumbnail" style="border: 0px;">
+                                {% module TermTaxonomyEditor(id="NationTreeView",taxonomy="Nation",placeholder="民族") %}
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="thumbnail" style="border: 0px;">
                                 {% module TermTaxonomyEditor(id="MaritalStatusTreeView",taxonomy="MaritalStatus",placeholder="婚姻状况") %}
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="thumbnail" style="border: 0px;">
+                                {% module TermTaxonomyEditor(id="HealthStatusTreeView",taxonomy="HealthStatus",placeholder="健康状况") %}
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="thumbnail" style="border: 0px;">
+                                {% module TermTaxonomyEditor(id="EmploymentPathwaysTreeView",taxonomy="EmploymentPathways",placeholder="录用途径") %}
                             </div>
                         </div>
                     </div>
