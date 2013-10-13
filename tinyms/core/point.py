@@ -142,6 +142,12 @@ def ui(name):
     return ref_pattern
 
 #for widgets
+#受装饰的类可以实现下面任意方法
+# def total(session,req)
+# def dataset(session,req)
+# def add(id,session,req)
+# def modify(id,session,req)
+# def delete(id,session,req)
 def datatable_filter(entity_name):
     """
     custom datatable filter.自定义DataTable数据查询过滤，只要加上这个

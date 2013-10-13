@@ -309,12 +309,17 @@ class DataTableHandler(IRequest):
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
+        custom_filter = ObjectPool.datatable_filter.get(meta["name"])
         rec_id = self.get_argument("id")
         if not rec_id:
             obj = self.wrap_entity(entity())
             cnn = SessionFactory.new()
             cnn.add(obj)
             cnn.commit()
+            if custom_filter:
+                custom_filter_obj = custom_filter()
+                if hasattr(custom_filter_obj,"add"):
+                    custom_filter_obj.add(obj.id,cnn,self)
             message["success"] = True
             message["msg"] = "Newed"
             self.write(json.dumps(message))
@@ -323,6 +328,10 @@ class DataTableHandler(IRequest):
             cur_row = cnn.query(entity).get(rec_id)
             self.wrap_entity(cur_row)
             cnn.commit()
+            if custom_filter:
+                custom_filter_obj = custom_filter()
+                if hasattr(custom_filter_obj,"modify"):
+                    custom_filter_obj.modify(cur_row.id,cnn,self)
             message["success"] = True
             message["msg"] = "Updated"
             self.write(json.dumps(message))
@@ -363,16 +372,19 @@ class DataTableHandler(IRequest):
         #here place custom filter
         total_query = cnn.query(func.count(entity.id))
         ds_query = cnn.query(entity)
+
         custom_filter = ObjectPool.datatable_filter.get(meta["name"])
         if custom_filter:
             custom_filter_obj = custom_filter()
-            if hasattr(custom_filter_obj, "total_filter"):
-                total_query = custom_filter_obj.total_filter(total_query, self)
-            if hasattr(custom_filter_obj, "dataset_filter"):
-                ds_query = custom_filter_obj.dataset_filter(ds_query, self)
+            if hasattr(custom_filter_obj, "total"):
+                total_query = custom_filter_obj.total(total_query, self)
+            if hasattr(custom_filter_obj, "dataset"):
+                ds_query = custom_filter_obj.dataset(ds_query, self)
+
         if default_search_value:
             total_query = total_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
             ds_query = ds_query.filter(default_search_sqlwhere).params(**default_search_sqlwhere_params)
+
         if order_sqlwhere:
             ds_query = ds_query.filter(order_sqlwhere)
         total = total_query.scalar()
