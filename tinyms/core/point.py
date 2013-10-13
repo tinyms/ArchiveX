@@ -14,6 +14,7 @@ class ObjectPool():
     sidebar_menus = list()
     ui_mapping = dict()
     treeview = dict()
+    datatable_filter = dict()
 
 
 class IWebConfig():
@@ -136,6 +137,19 @@ def ui(name):
 
     def ref_pattern(cls):
         ObjectPool.ui_mapping[name] = cls
+        return cls
+
+    return ref_pattern
+
+#for widgets
+def datatable_filter(entity_name):
+    """
+    custom datatable filter.自定义DataTable数据查询过滤，只要加上这个
+    装饰器，并传入datatable对应的实体名，使用此装饰器的类必须实现一个filter的方法
+    """
+
+    def ref_pattern(cls):
+        ObjectPool.datatable_filter[entity_name] = cls
         return cls
 
     return ref_pattern

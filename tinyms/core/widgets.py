@@ -87,20 +87,6 @@ class SideBar(IWidget):
     def sort_menus(self, items):
         items.sort(key=lambda x: x[0])
 
-
-def datatable_filter(entity_name):
-    """
-    custom datatable filter.自定义DataTable数据查询过滤，只要加上这个
-    装饰器，并传入datatable对应的实体名，使用此装饰器的类必须实现一个filter的方法
-    """
-
-    def ref_pattern(cls):
-        DataTableModule.__filter_mapping__[entity_name] = cls
-        return cls
-
-    return ref_pattern
-
-
 @ui("TermTaxonomyComboBox")
 class TermTaxonomyComboBox(IWidget):
     def render(self, **prop):
@@ -165,7 +151,6 @@ class DataComboBoxModule(IWidget):
 
 @ui("DataTable")
 class DataTableModule(IWidget):
-    __filter_mapping__ = dict()
     __entity_mapping__ = dict()
     __default_search_fields__ = dict()
     __security_points__ = dict()
@@ -378,7 +363,7 @@ class DataTableHandler(IRequest):
         #here place custom filter
         total_query = cnn.query(func.count(entity.id))
         ds_query = cnn.query(entity)
-        custom_filter = DataTableModule.__filter_mapping__.get(meta["name"])
+        custom_filter = ObjectPool.datatable_filter.get(meta["name"])
         if custom_filter:
             custom_filter_obj = custom_filter()
             if hasattr(custom_filter_obj, "total_filter"):
@@ -434,7 +419,7 @@ class FormEnd(IWidget):
 
 #可以编辑树节点的控件
 @ui("TermTaxonomyEditor")
-class OrgTree(IWidget):
+class TermTaxonomyEditor(IWidget):
     def render(self, **p):
         opt = dict()
         dom_id = p["id"]
@@ -477,7 +462,7 @@ class OrgTree(IWidget):
 
 #分类选择器,单选、多选
 @ui("TreeComboBox")
-class TreeComboBox(OrgTree):
+class TreeComboBox(TermTaxonomyEditor):
     def render(self, **prop):
         self.dom_id = prop["id"]
         opt = dict()

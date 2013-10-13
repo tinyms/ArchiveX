@@ -7,6 +7,12 @@
     function datatable_server_params(id,aoData){
         if(id=="ArchivesDataTable"){
             aoData.push({name:"OrgId",value:$("#OrgTreeComboBox").val()});
+        }else if(id=="WorkExperienceDataTable"){
+            aoData.push({name:"archives_id",value:$("#ArchivesDataTable_form").find("#id").val()});
+        }else if(id=="LearningExperienceDataTable"){
+            aoData.push({name:"archives_id",value:$("#ArchivesDataTable_form").find("#id").val()});
+        }else if(id=="TrainingExperienceDataTable"){
+            aoData.push({name:"archives_id",value:$("#ArchivesDataTable_form").find("#id").val()});
         }
     }
     function datatable_form_init(id){
@@ -36,6 +42,9 @@
     function datatable_form_fill(id,row){
         if(id=="ArchivesDataTable"){
             tree_combobox_value("org_id",row.org_id);
+            WorkExperienceDataTable_.Refresh();
+            LearningExperience_.Refresh();
+            TrainingExperienceDataTable_.Refresh();
         }
     }
 
