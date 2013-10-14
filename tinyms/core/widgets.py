@@ -411,6 +411,138 @@ class DataTableHandler(IRequest):
         params[self.datatable_display_cols[colIndex]] = direct
         return params
 
+@ui("DataView")
+class DataViewModule(DataTableModule):
+
+    def render(self, **prop):
+        self.dom_id = prop.get("id")#client dom id
+        self.cols = prop.get("cols")#entity field list
+        self.titles = prop.get("titles")#title list
+        self.dataview_name = prop.get("view_name")#仅仅只是一个Key，不做他用
+        self.search_fields = prop.get("search_fields")#default search field name,and text type,
+        self.point = EmptyClass()
+        self.point.list = prop.get("point_list")
+        self.point.add = prop.get("point_add")
+        self.point.update = prop.get("point_update")
+        self.point.delete = prop.get("point_delete")
+
+        if not self.dataview_name:
+            return "Require data view name."
+        self.datatable_key = Utils.md5(self.dataview_name)
+        DataViewModule.__security_points__[self.datatable_key] = self.point
+        if self.search_fields:
+            DataViewModule.__default_search_fields__[self.datatable_key] = self.search_fields.split(",")
+        else:
+            DataViewModule.__default_search_fields__[self.datatable_key] = []
+        sub = dict()
+        sub["name"] = self.entity_full_name
+        sub["cols"] = self.cols
+        DataViewModule.__entity_mapping__[self.datatable_key] = sub
+
+        tag = ""
+        for title in self.titles:
+            tag += "<th>" + title + "</th>"
+        tag += "<th>#</th>"
+
+        opt = dict()
+        opt["point"] = self.point
+        opt["id"] = self.dom_id
+        opt["thTags"] = tag
+        opt["entity_name_md5"] = self.datatable_key
+        html_col = list()
+
+        index = 0
+        for col in self.cols:
+            html_col.append(
+                {"mData": col, "sTitle": self.titles[index], "sClass": "datatable_column_" + col,
+                 "sDefaultContent": ""})
+            index += 1
+
+        opt["col_defs"] = json.dumps(html_col)
+        return self.render_string("widgets/dataview_html.html", opt=opt)
+
+@route(r"/dataview/(.*)/(.*)")
+class DataViewHandler(DataTableHandler):
+
+    def delete(self, id):
+        self.set_header("Content-Type", "text/json;charset=utf-8")
+        meta = DataViewHandler.__entity_mapping__.get(id)
+        if not meta:
+            self.set_status(403, "Error!")
+        message = dict()
+        rec_id = self.get_argument("id")
+        cnn = SessionFactory.new()
+        custom_filter = ObjectPool.dataview_filter.get(meta["name"])
+        if custom_filter:
+            custom_filter_obj = custom_filter()
+            if hasattr(custom_filter_obj, "delete"):
+                custom_filter_obj.delete(rec_id, cnn, self)
+        message["success"] = True
+        message["msg"] = "Deleted"
+        self.write(json.dumps(message))
+
+    def update(self, id):
+        message = dict()
+        self.set_header("Content-Type", "text/json;charset=utf-8")
+        meta = DataViewHandler.__entity_mapping__.get(id)
+        if not meta:
+            self.set_status(403, "Error!")
+        custom_filter = ObjectPool.dataview_filter.get(meta["name"])
+        rec_id = self.get_argument("id")
+        if not rec_id:
+            cnn = SessionFactory.new()
+            if custom_filter:
+                custom_filter_obj = custom_filter()
+                if hasattr(custom_filter_obj, "add"):
+                    custom_filter_obj.add(cnn, self)
+            message["success"] = True
+            message["msg"] = "Newed"
+            self.write(json.dumps(message))
+        else:
+            cnn = SessionFactory.new()
+            cnn.commit()
+            if custom_filter:
+                custom_filter_obj = custom_filter()
+                if hasattr(custom_filter_obj, "modify"):
+                    custom_filter_obj.modify(rec_id, cnn, self)
+            message["success"] = True
+            message["msg"] = "Updated"
+            self.write(json.dumps(message))
+
+
+    def list(self, id):
+        meta = DataViewHandler.__entity_mapping__.get(id)
+        if not meta:
+            self.set_status(403, "Error!")
+        self.datatable_display_cols = meta["cols"]
+        self.set_header("Content-Type", "text/json;charset=utf-8")
+        display_start = Utils.parse_int(self.get_argument("iDisplayStart"))
+        display_length = Utils.parse_int(self.get_argument("iDisplayLength"))
+        #cols_num = self.get_argument("iColumns")
+
+        #DataGrid数据查询段落
+        cnn = SessionFactory.new()
+        #here place custom filter
+        total_query = None
+        ds_query = None
+
+        custom_filter = ObjectPool.dataview_filter.get(meta["name"])
+        if custom_filter:
+            custom_filter_obj = custom_filter()
+            if hasattr(custom_filter_obj, "total"):
+                total_query = custom_filter_obj.total(cnn, self)
+            if hasattr(custom_filter_obj, "dataset"):
+                ds_query = custom_filter_obj.dataset(cnn, self)
+
+        total = total_query.scalar()
+        ds = ds_query.offset(display_start).limit(display_length)
+
+        results = dict()
+        results["sEcho"] = self.get_argument("sEcho")
+        results["iTotalRecords"] = total
+        results["iTotalDisplayRecords"] = total
+        results["aaData"] = [item.dict() for item in ds]
+        self.write(json.dumps(results, cls=JsonEncoder))
 
 @ui("panel_start")
 class PanelStart(IWidget):

@@ -1,16 +1,27 @@
 {% extends "master.html" %}
-{% block title %}角色组织{% end %}
+{% block title %}用户、角色、组织{% end %}
 {% block header %}
 <script type="text/javascript" src="/ajax/RoleSecurityPointsAssign.js"></script>
 <script type="text/javascript">
-        {% if auth({'tinyms.entity.role.points.view'}) %}
+
         function datatable_render_actionbar(id, col, val, row) {
             if (id == "RoleDataTable") {
-                return ' <a class="btn-link" title="指定权限" onclick="assign_security_points(this,' + val + ');"><i class="icon-key text-danger"></i></a>';
+                {% if auth({'tinyms.entity.role.points.view'}) %}
+                return ' <a class="btn-link" title="查看权限点" onclick="assign_security_points(this,' + val + ');"><i class="icon-key text-danger"></i></a>';
+                {% else %}
+                    return ""
+                {% end %}
+            }else if(id=="AccountDataTable"){
+                {% if auth({'tinyms.entity.account.role.edit'}) %}
+                return ' <a class="btn-link" title="查看用户角色" onclick="show_user_roles(this,' + val + ');"><i class="icon-key text-danger"></i></a>';
+                {% else %}
+                    return ""
+                {% end %}
             }
             return "";
         }
 
+        {% if auth({'tinyms.entity.role.points.view'}) %}
         function assign_security_points(elem, role_id) {
             var row = RoleDataTable_.GetRow(role_id);
             $("#role_name_to_assign").text(row.name);
@@ -26,8 +37,10 @@
                 });
             });
         }
-
         {% end %}
+        function show_user_roles(elem,account_id){
+
+        }
         function check_or_uncheck(link, mode) {
             if ($(link).data("state") == undefined) {
                 $(link).data("state", true);
@@ -128,7 +141,7 @@
                             </div>
                             <div class="col-lg-3">
                                 <div class="panel">
-                                    <header class="panel-heading">可用角色</header>
+                                    <header class="panel-heading">可用角色</header><input id="current_select_user_id" type="hidden"/>
                                         <div class="list-group">
                                             {% for role in data['roles_for_account'] %}
                                             <div class="list-group-item">

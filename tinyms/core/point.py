@@ -15,6 +15,7 @@ class ObjectPool():
     ui_mapping = dict()
     treeview = dict()
     datatable_filter = dict()
+    dataview_filter = dict()
 
 
 class IWebConfig():
@@ -156,6 +157,23 @@ def datatable_filter(entity_name):
 
     def ref_pattern(cls):
         ObjectPool.datatable_filter[entity_name] = cls
+        return cls
+
+    return ref_pattern
+
+# def total(session,req) -> return session
+# def dataset(session,req) -> return session
+# def add(session,req)
+# def modify(id,session,req)
+# def delete(id,session,req)
+def dataview_filter(view_name):
+    """
+    custom datatable filter.自定义DataTable数据查询过滤，只要加上这个
+    装饰器，并传入datatable对应的实体名，使用此装饰器的类必须实现一个filter的方法
+    """
+
+    def ref_pattern(cls):
+        ObjectPool.dataview_filter[view_name] = cls
         return cls
 
     return ref_pattern
