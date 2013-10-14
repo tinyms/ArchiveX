@@ -53,7 +53,14 @@ class RoleOrg(IAuthRequest):
             all.append((c, sub, Utils.md5(c)))
 
         context["categories"] = all
+        context["roles_for_account"] = self.role_for_account()
         return self.render("workbench/role_org.html", data=context)
+
+    def role_for_account(self):
+        cnn = SessionFactory.new()
+        items = cnn.query(Role.id,Role.name).all()
+        print(items)
+        return items
 
     def role_categories(self):
         cnn = SessionFactory.new()

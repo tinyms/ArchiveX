@@ -92,18 +92,18 @@ class Loader():
         reg_point("tinyms.view.termtaxonomy.add","角色组织","分类","添加分类")
         reg_point("tinyms.view.termtaxonomy.update","角色组织","分类","修改分类")
         reg_point("tinyms.view.termtaxonomy.delete","角色组织","分类","删除分类")
-        #Role
+        #角色管理
         reg_point("tinyms.entity.role.list","角色组织","角色","查看角色列表")
         reg_point("tinyms.entity.role.add","角色组织","角色","添加角色")
         reg_point("tinyms.entity.role.update","角色组织","角色","修改角色")
         reg_point("tinyms.entity.role.delete","角色组织","角色","删除角色")
         reg_point("tinyms.entity.role.points.view","角色组织","权限","查看角色权限点")
         reg_point("tinyms.entity.role.points.update","角色组织","权限","修改角色权限")
-        #jobtitle
-        reg_point("tinyms.entity.jobtitle.list","角色组织","头衔","查看头衔列表")
-        reg_point("tinyms.entity.jobtitle.add","角色组织","头衔","添加头衔")
-        reg_point("tinyms.entity.jobtitle.update","角色组织","头衔","修改头衔")
-        reg_point("tinyms.entity.jobtitle.delete","角色组织","头衔","删除头衔")
+        #账户管理
+        reg_point("tinyms.entity.account.list","角色组织","账户","查看账户列表")
+        reg_point("tinyms.entity.account.add","角色组织","账户","添加账户")
+        reg_point("tinyms.entity.account.update","角色组织","账户","修改账户")
+        reg_point("tinyms.entity.account.delete","角色组织","账户","删除账户")
         #档案管理
         reg_point("tinyms.entity.archives.list","档案管理","人员","查看人员列表")
         reg_point("tinyms.entity.archives.add","档案管理","人员","添加人员")

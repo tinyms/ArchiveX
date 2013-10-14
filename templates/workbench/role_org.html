@@ -92,7 +92,9 @@
         <section class="panel">
             <header class="panel-heading">
                 <ul class="nav nav-tabs pull-left" id="role_org_tab">
+                    {% if auth({'tinyms.entity.account.list'}) %}
                     <li class="active"><a href="#account_panel" data-toggle="tab"><i class="icon-lock icon-large text-default"></i>账户</a></li>
+                    {% end %}
                     {% if auth({'tinyms.entity.role.list'}) %}
                     <li><a href="#role_panel" data-toggle="tab"><i
                             class="icon-user icon-large text-default"></i>角色</a>
@@ -103,7 +105,42 @@
             </header>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div class="tab-pane active" id="account_panel">ddd</div>
+                    {% if auth({'tinyms.entity.account.list'}) %}
+                    <div class="tab-pane active" id="account_panel">
+                        <div class="alert alert-info">创建帐号有两种方式: 1,注册验证; 2,管理员手动创建并绑定到一条人员信息</div>
+                        <div class="row">
+                            <div class="col-lg-9">
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        {% module DataTable(id="AccountDataTable",
+                                        entity="tinyms.core.entity.Account",
+                                        cols=['login_name','enabled','archives_id','last_logon_time','create_time'],
+                                        titles=['ID','激活','人员','最后登录','创建时间'],
+                                        search_fields="login_name",
+                                        form="",
+                                        point_list = "tinyms.entity.account.list",
+                                        point_add = "tinyms.entity.account.add",
+                                        point_update = "tinyms.entity.account.update",
+                                        point_delete = "tinyms.entity.account.delete"
+                                        ) %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="panel">
+                                    <header class="panel-heading">可用角色</header>
+                                        <div class="list-group">
+                                            {% for role in data['roles_for_account'] %}
+                                            <div class="list-group-item">
+                                                <input type="checkbox" value="{{role[0]}}"/> {{role[1]}}
+                                            </div>
+                                            {% end %}
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% end %}
                     {% if auth({'tinyms.entity.role.list'}) %}
                     <div class="tab-pane" id="role_panel">
                         <div>
