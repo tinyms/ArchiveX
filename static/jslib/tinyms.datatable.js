@@ -33,7 +33,6 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
                 var func = function (col, v, type, row) {
                     return datatable_render(self.id, col, v, row);
                 };
-                func.prototype.column = item["mData"];
                 item["mRender"] = func;
             }
         }

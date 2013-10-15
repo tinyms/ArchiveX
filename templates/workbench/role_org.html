@@ -125,12 +125,11 @@
                             <div class="col-lg-9">
                                 <div class="panel">
                                     <div class="panel-body">
-                                        {% module DataTable(id="AccountDataTable",
-                                        entity="tinyms.core.entity.Account",
+                                        {% module DataView(id="AccountDataTable",
+                                        view_name="tinyms.core.view.Account",
                                         cols=['login_name','enabled','archives_id','last_logon_time','create_time'],
                                         titles=['ID','激活','人员','最后登录','创建时间'],
-                                        search_fields="login_name",
-                                        form="",
+                                        use_sys_form=True,
                                         point_list = "tinyms.entity.account.list",
                                         point_add = "tinyms.entity.account.add",
                                         point_update = "tinyms.entity.account.update",

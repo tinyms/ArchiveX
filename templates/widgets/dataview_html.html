@@ -24,12 +24,12 @@ function {{opt["id"]}}_actionbar_render(col,v,type,row){
 }
 $(document).ready(function () {
     $("#{{opt['id']}}_panel").hide();
-	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},'{{opt["edit_form_id"]}}',{{opt["id"]}}_actionbar_render);
-    {{opt["id"]}}_.request_url = "/datatable/" + {{opt["id"]}}_.entityName + "/";
+	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},'None',{{opt["id"]}}_actionbar_render);
+    {{opt["id"]}}_.request_url = "/dataview/" + {{opt["id"]}}_.entityName + "/";
 	{{opt["id"]}}_.Create();
 });
 </script>
-{% if opt["use_sys_editform"] %}
+{% if opt["use_sys_form"] %}
 <script id='{{ opt["id"] }}_EditFormTemplate' type="text/x-jsrender">
 	<div class="form-group">
 	<div class="col-lg-9 col-lg-offset-3">
@@ -38,9 +38,9 @@ $(document).ready(function () {
 	</div>
 	{% for item in opt["cols"] %}
 	<div class="form-group">
-		<label for="{{ item['name'] }}" class="col-lg-3 control-label">{{ item['name'] }}</label>
+		<label for="{{ item }}" class="col-lg-3 control-label">{{ item }}</label>
 		<div class="col-lg-8">
-		  <input type="text" class="form-control" id="{{ item['name'] }}" name="{{ item['name'] }}" {{ item['required'] }} {{ item['type'] }}>
+		  <input type="text" class="form-control" id="{{ item }}" name="{{ item }}">
 		</div>
 	</div>
 	{% end %}
