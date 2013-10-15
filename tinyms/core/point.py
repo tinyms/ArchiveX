@@ -14,8 +14,8 @@ class ObjectPool():
     sidebar_menus = list()
     ui_mapping = dict()
     treeview = dict()
-    datatable_filter = dict()
-    dataview_filter = dict()
+    datatable_provider = dict()
+    dataview_provider = dict()
 
 
 class IWebConfig():
@@ -149,31 +149,31 @@ def ui(name):
 # def add(id,session,req)
 # def modify(id,session,req)
 # def delete(id,session,req)
-def datatable_filter(entity_name):
+def datatable_provider(entity_name):
     """
     custom datatable filter.自定义DataTable数据查询过滤，只要加上这个
     装饰器，并传入datatable对应的实体名，使用此装饰器的类必须实现一个filter的方法
     """
 
     def ref_pattern(cls):
-        ObjectPool.datatable_filter[entity_name] = cls
+        ObjectPool.datatable_provider[entity_name] = cls
         return cls
 
     return ref_pattern
 
-# def total(session,req) -> return session
-# def dataset(session,req) -> return session
-# def add(session,req)
-# def modify(id,session,req)
-# def delete(id,session,req)
-def dataview_filter(view_name):
+# def count(session,http_req,default_search_val) -> return int
+# def list(session,http_req,default_search_val,start,limit) -> return [dict,dict..], start,limit: query.offset(display_start).limit(display_length)
+# def add(session,http_req) -> return err msg
+# def modify(id,session,http_req) -> return err msg
+# def delete(id,session,http_req) -> return err msg
+def dataview_provider(view_name):
     """
     custom datatable filter.自定义DataTable数据查询过滤，只要加上这个
     装饰器，并传入datatable对应的实体名，使用此装饰器的类必须实现一个filter的方法
     """
 
     def ref_pattern(cls):
-        ObjectPool.dataview_filter[view_name] = cls
+        ObjectPool.dataview_provider[view_name] = cls
         return cls
 
     return ref_pattern

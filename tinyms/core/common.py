@@ -359,6 +359,24 @@ class Utils():
             return True
         return False
 
+    @staticmethod
+    def format_datetime(date_obj):
+        if not date_obj:
+            return ""
+        return date_obj.strftime('%Y-%m-%d %H:%M:%S')
+
+    @staticmethod
+    def format_datetime_short(date_obj):
+        if not date_obj:
+            return ""
+        return date_obj.strftime('%Y-%m-%d %H:%M')
+
+    @staticmethod
+    def format_date(date_obj):
+        if not date_obj:
+            return ""
+        return date_obj.strftime('%Y-%m-%d')
+
 class Plugin():
     ObjectPool = dict()
 

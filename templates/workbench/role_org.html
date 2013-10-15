@@ -126,9 +126,9 @@
                                 <div class="panel">
                                     <div class="panel-body">
                                         {% module DataView(id="AccountDataTable",
-                                        view_name="tinyms.core.view.Account",
-                                        cols=['login_name','enabled','archives_id','last_logon_time','create_time'],
-                                        titles=['ID','激活','人员','最后登录','创建时间'],
+                                        view_name="tinyms.core.view.AccountManager",
+                                        cols=['login_name','name','email','enabled','last_logon_time','create_time'],
+                                        titles=['ID','姓名','邮箱','激活','最后登录','创建时间'],
                                         use_sys_form=True,
                                         point_list = "tinyms.entity.account.list",
                                         point_add = "tinyms.entity.account.add",

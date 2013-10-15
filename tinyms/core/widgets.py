@@ -150,8 +150,24 @@ class DataComboBoxModule(IWidget):
         return "".join(html)
 
 
+class DataTableBaseModule(IWidget):
+    def javascript_files(self):
+        items = list();
+        items.append("/static/jslib/datatable/js/jquery.dataTables.1.9.4.modified.js")
+        #items.append("/static/jslib/datatable/extras/tabletools/js/ZeroClipboard.js")
+        #items.append("/static/jslib/datatable/extras/tabletools/js/TableTools.min.js")
+        items.append("/static/jslib/tinyms.datatable.js")
+        return items
+
+    def css_files(self):
+        items = list();
+        #items.append("/static/jslib/datatable/css/jquery.dataTables.css")
+        #items.append("/static/jslib/datatable/extras/tabletools/css/TableTools.css")
+        return items
+
+
 @ui("DataTable")
-class DataTableModule(IWidget):
+class DataTableModule(DataTableBaseModule):
     __entity_mapping__ = dict()
     __default_search_fields__ = dict()
     __security_points__ = dict()
@@ -240,20 +256,6 @@ class DataTableModule(IWidget):
             data["use_sys_editform"] = False
         return data
 
-    def javascript_files(self):
-        items = list();
-        items.append("/static/jslib/datatable/js/jquery.dataTables.1.9.4.modified.js")
-        #items.append("/static/jslib/datatable/extras/tabletools/js/ZeroClipboard.js")
-        #items.append("/static/jslib/datatable/extras/tabletools/js/TableTools.min.js")
-        items.append("/static/jslib/tinyms.datatable.js")
-        return items
-
-    def css_files(self):
-        items = list();
-        #items.append("/static/jslib/datatable/css/jquery.dataTables.css")
-        #items.append("/static/jslib/datatable/extras/tabletools/css/TableTools.css")
-        return items
-
 
 @route(r"/datatable/(.*)/(.*)")
 class DataTableHandler(IRequest):
@@ -299,7 +301,7 @@ class DataTableHandler(IRequest):
         cur_row = cnn.query(entity).get(rec_id)
         cnn.delete(cur_row)
         cnn.commit()
-        custom_filter = ObjectPool.datatable_filter.get(meta["name"])
+        custom_filter = ObjectPool.datatable_provider.get(meta["name"])
         if custom_filter:
             custom_filter_obj = custom_filter()
             if hasattr(custom_filter_obj, "delete"):
@@ -315,7 +317,7 @@ class DataTableHandler(IRequest):
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
-        custom_filter = ObjectPool.datatable_filter.get(meta["name"])
+        custom_filter = ObjectPool.datatable_provider.get(meta["name"])
         rec_id = self.get_argument("id")
         if not rec_id:
             obj = self.wrap_entity(entity())
@@ -355,7 +357,7 @@ class DataTableHandler(IRequest):
         #cols_num = self.get_argument("iColumns")
 
         #全局搜索处理段落
-        default_search_value = Utils.trim(self.get_argument("sSearch"))
+        default_search_value = self.get_argument("sSearch")
         default_search_fields = DataTableModule.__default_search_fields__.get(id)
         default_search_sqlwhere = ""
         default_search_sqlwhere_params = dict()
@@ -376,10 +378,10 @@ class DataTableHandler(IRequest):
         #DataGrid数据查询段落
         cnn = SessionFactory.new()
         #here place custom filter
-        total_query = cnn.query(func.count(entity.id))
+        total_query = cnn.query(func.count(1)).select_from(entity)
         ds_query = cnn.query(entity)
 
-        custom_filter = ObjectPool.datatable_filter.get(meta["name"])
+        custom_filter = ObjectPool.datatable_provider.get(meta["name"])
         if custom_filter:
             custom_filter_obj = custom_filter()
             if hasattr(custom_filter_obj, "total"):
@@ -411,10 +413,11 @@ class DataTableHandler(IRequest):
         params[self.datatable_display_cols[colIndex]] = direct
         return params
 
+
 @ui("DataView")
-class DataViewModule(DataTableModule):
-    __entity_mapping_view = dict()
-    __security_points_view = dict()
+class DataViewModule(DataTableBaseModule):
+    __view_mapping__ = dict()
+    __security_points__ = dict()
 
     def render(self, **prop):
         self.dom_id = prop.get("id")#client dom id
@@ -431,8 +434,8 @@ class DataViewModule(DataTableModule):
             return "Require data view name."
 
         self.dataview_key = Utils.md5(self.dataview_name)
-        DataViewModule.__entity_mapping_view[self.dataview_key] = self.dataview_name
-        DataViewModule.__security_points_view[self.dataview_key] = self.point
+        DataViewModule.__view_mapping__[self.dataview_key] = self.dataview_name
+        DataViewModule.__security_points__[self.dataview_key] = self.point
 
         tag = ""
         for title in self.titles:
@@ -458,10 +461,11 @@ class DataViewModule(DataTableModule):
         opt["col_defs"] = json.dumps(html_col)
         return self.render_string("widgets/dataview_html.html", opt=opt)
 
+
 @route(r"/dataview/(.*)/(.*)")
 class DataViewHandler(IRequest):
     def post(self, id, act):
-        point = DataViewModule.__security_points_view.get(id)
+        point = DataViewModule.__security_points__.get(id)
         message = dict()
         if act == "list":
             if not self.auth({point.list}):
@@ -492,86 +496,97 @@ class DataViewHandler(IRequest):
 
     def delete(self, id):
         self.set_header("Content-Type", "text/json;charset=utf-8")
-        meta = DataViewHandler.__entity_mapping_view.get(id)
-        if not meta:
+        name = DataViewModule.__view_mapping__.get(id)
+        if not name:
             self.set_status(403, "Error!")
         message = dict()
+        message["success"] = False
+        message["msg"] = "Miss DataProvider!"
         rec_id = self.get_argument("id")
         cnn = SessionFactory.new()
-        custom_filter = ObjectPool.dataview_filter.get(meta["name"])
+        custom_filter = ObjectPool.dataview_provider.get(name)
         if custom_filter:
             custom_filter_obj = custom_filter()
             if hasattr(custom_filter_obj, "delete"):
-                custom_filter_obj.delete(rec_id, cnn, self)
-        message["success"] = True
-        message["msg"] = "Deleted"
+                msg = custom_filter_obj.delete(rec_id, cnn, self)
+                if msg:
+                    message["success"] = False
+                    message["msg"] = msg
+                else:
+                    message["success"] = True
+                    message["msg"] = "Deleted"
         self.write(json.dumps(message))
 
     def update(self, id):
         message = dict()
+        message["success"] = False
+        message["msg"] = "Miss DataProvider!"
         self.set_header("Content-Type", "text/json;charset=utf-8")
-        meta = DataViewHandler.__entity_mapping_view.get(id)
-        if not meta:
+        name = DataViewModule.__view_mapping__.get(id)
+        if not name:
             self.set_status(403, "Error!")
-        custom_filter = ObjectPool.dataview_filter.get(meta["name"])
+        custom_data_provider = ObjectPool.dataview_provider.get(name)
         rec_id = self.get_argument("id")
         if not rec_id:
-            cnn = SessionFactory.new()
-            if custom_filter:
-                custom_filter_obj = custom_filter()
-                if hasattr(custom_filter_obj, "add"):
-                    custom_filter_obj.add(cnn, self)
-            message["success"] = True
-            message["msg"] = "Newed"
-            self.write(json.dumps(message))
+            if custom_data_provider:
+                obj = custom_data_provider()
+                if hasattr(obj, "add"):
+                    cnn = SessionFactory.new()
+                    msg = obj.add(cnn, self)
+                    if msg:
+                        message["success"] = False
+                        message["msg"] = msg
+                    else:
+                        message["success"] = True
+                        message["msg"] = "Newed"
         else:
-            cnn = SessionFactory.new()
-            cnn.commit()
-            if custom_filter:
-                custom_filter_obj = custom_filter()
-                if hasattr(custom_filter_obj, "modify"):
-                    custom_filter_obj.modify(rec_id, cnn, self)
-            message["success"] = True
-            message["msg"] = "Updated"
-            self.write(json.dumps(message))
+            if custom_data_provider:
+                obj = custom_data_provider()
+                if hasattr(obj, "modify"):
+                    cnn = SessionFactory.new()
+                    msg = obj.modify(rec_id, cnn, self)
+                    if msg:
+                        message["success"] = False
+                        message["msg"] = msg
+                    else:
+                        message["success"] = True
+                        message["msg"] = "Updated"
+
+        self.write(json.dumps(message))
 
 
     def list(self, id):
-        name = DataViewHandler.__entity_mapping_view.get(id)
+        name = DataViewModule.__view_mapping__.get(id)
         if not name:
             self.set_status(403, "Error!")
+
         self.set_header("Content-Type", "text/json;charset=utf-8")
         display_start = Utils.parse_int(self.get_argument("iDisplayStart"))
         display_length = Utils.parse_int(self.get_argument("iDisplayLength"))
-        #cols_num = self.get_argument("iColumns")
 
         #DataGrid数据查询段落
         cnn = SessionFactory.new()
-        #here place custom filter
-        total_query = None
-        ds_query = None
 
-        custom_filter = ObjectPool.dataview_filter.get(name)
-        if custom_filter:
-            custom_filter_obj = custom_filter()
-            if hasattr(custom_filter_obj, "total"):
-                total_query = custom_filter_obj.total(cnn, self)
-            if hasattr(custom_filter_obj, "dataset"):
-                ds_query = custom_filter_obj.dataset(cnn, self)
+        total = 0
+        ds = list()
+
+        custom_data_provider = ObjectPool.dataview_provider.get(name)
+        if custom_data_provider:
+            default_search_value = self.get_argument("sSearch")
+            obj = custom_data_provider()
+            if hasattr(obj, "count"):
+                total = obj.count(cnn, default_search_value, self)
+            if hasattr(obj, "list"):
+                ds = obj.list(cnn, default_search_value, self, display_start, display_length)
 
         results = dict()
         results["sEcho"] = self.get_argument("sEcho")
-        if not total_query or not ds_query:
-            results["iTotalRecords"] = 0
-            results["iTotalDisplayRecords"] = 0
-            results["aaData"] = []
-        else:
-            total = total_query.scalar()
-            ds = ds_query.offset(display_start).limit(display_length)
-            results["iTotalRecords"] = total
-            results["iTotalDisplayRecords"] = total
-            results["aaData"] = [item.dict() for item in ds]
+        results["iTotalRecords"] = total
+        results["iTotalDisplayRecords"] = total
+        results["aaData"] = ds
+
         self.write(json.dumps(results, cls=JsonEncoder))
+
 
 @ui("panel_start")
 class PanelStart(IWidget):
