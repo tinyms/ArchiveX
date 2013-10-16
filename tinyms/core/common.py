@@ -207,6 +207,11 @@ class Utils():
         return h.hexdigest()
 
     @staticmethod
+    def current_datetime():
+        from datetime import datetime as tmp
+        return tmp.now()
+
+    @staticmethod
     def mkdirs(path):
         isExists = os.path.exists(path)
         if not isExists:

@@ -503,12 +503,11 @@ class DataViewHandler(IRequest):
         message["success"] = False
         message["msg"] = "Miss DataProvider!"
         rec_id = self.get_argument("id")
-        cnn = SessionFactory.new()
         custom_filter = ObjectPool.dataview_provider.get(name)
         if custom_filter:
             custom_filter_obj = custom_filter()
             if hasattr(custom_filter_obj, "delete"):
-                msg = custom_filter_obj.delete(rec_id, cnn, self)
+                msg = custom_filter_obj.delete(rec_id, self)
                 if msg:
                     message["success"] = False
                     message["msg"] = msg
@@ -531,8 +530,7 @@ class DataViewHandler(IRequest):
             if custom_data_provider:
                 obj = custom_data_provider()
                 if hasattr(obj, "add"):
-                    cnn = SessionFactory.new()
-                    msg = obj.add(cnn, self)
+                    msg = obj.add(self)
                     if msg:
                         message["success"] = False
                         message["msg"] = msg
@@ -543,8 +541,7 @@ class DataViewHandler(IRequest):
             if custom_data_provider:
                 obj = custom_data_provider()
                 if hasattr(obj, "modify"):
-                    cnn = SessionFactory.new()
-                    msg = obj.modify(rec_id, cnn, self)
+                    msg = obj.modify(rec_id, self)
                     if msg:
                         message["success"] = False
                         message["msg"] = msg
@@ -564,9 +561,6 @@ class DataViewHandler(IRequest):
         display_start = Utils.parse_int(self.get_argument("iDisplayStart"))
         display_length = Utils.parse_int(self.get_argument("iDisplayLength"))
 
-        #DataGrid数据查询段落
-        cnn = SessionFactory.new()
-
         total = 0
         ds = list()
 
@@ -575,9 +569,9 @@ class DataViewHandler(IRequest):
             default_search_value = self.get_argument("sSearch")
             obj = custom_data_provider()
             if hasattr(obj, "count"):
-                total = obj.count(cnn, default_search_value, self)
+                total = obj.count(default_search_value, self)
             if hasattr(obj, "list"):
-                ds = obj.list(cnn, default_search_value, self, display_start, display_length)
+                ds = obj.list(default_search_value, display_start, display_length, self)
 
         results = dict()
         results["sEcho"] = self.get_argument("sEcho")

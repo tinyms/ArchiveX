@@ -7,6 +7,7 @@ from tinyms.core.web import IAuthRequest
 from tinyms.core.point import route,ajax,auth,dataview_provider
 from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import SecurityPoint,Role,Account,Archives
+from tinyms.dao.account import AccountHelper
 
 @ajax("RoleSecurityPointsAssign")
 class RoleSecurityPointsEdit():
@@ -88,14 +89,16 @@ class RoleOrg(IAuthRequest):
 @dataview_provider("tinyms.core.view.AccountManager")
 class AccountDataProvider():
 
-    def count(self,session,default_search_val,http_req):
-        q = session.query(Account,Archives.name,Archives.email).outerjoin(Archives,Account.archives_id==Archives.id)
+    def count(self,default_search_val,http_req):
+        db_cnn = SessionFactory.new()
+        q = db_cnn.query(Account,Archives.name,Archives.email).outerjoin(Archives,Account.archives_id==Archives.id)
         if default_search_val:
             q = q.filter(or_(Account.login_name.like('%'+default_search_val+'%'),Archives.name.like('%'+default_search_val+'%'),Archives.email.like('%'+default_search_val+'%')))
         return q.count()
 
-    def list(self,session,default_search_val,http_req,start,limit):
-        q = session.query(Account,Archives.name,Archives.email).outerjoin(Archives,Account.archives_id==Archives.id)
+    def list(self,default_search_val,start,limit,http_req):
+        db_cnn = SessionFactory.new()
+        q = db_cnn.query(Account,Archives.name,Archives.email).outerjoin(Archives,Account.archives_id==Archives.id)
         if default_search_val:
             q = q.filter(or_(Account.login_name.like('%'+default_search_val+'%'),Archives.name.like('%'+default_search_val+'%'),Archives.email.like('%'+default_search_val+'%')))
         ds = q.offset(start).limit(limit).all()
@@ -112,5 +115,31 @@ class AccountDataProvider():
             item["name"] = row[1]
             item["email"] = row[2]
             items.append(item)
-        print(items)
         return items
+
+    def add(self,http_req):
+        login_name = http_req.get_argument("login_name")
+        if not login_name:
+            return "UserLoginIdNotAllowedBlank"
+        password = http_req.get_argument("password")
+        repassword = http_req.get_argument("repassword")
+        if not password or password != repassword:
+            return "PasswordIsNotSame"
+        bind_target_user = http_req.get_argument("bind_target_user")
+        enabled = Utils.parse_int(http_req.get_argument("enabled"))
+        account_id = AccountHelper.create(login_name,password,bind_target_user,enabled)
+        return account_id
+
+    def modify(self,id,http_req):
+        login_name = http_req.get_argument("login_name")
+        if not login_name:
+            return "UserLoginIdNotAllowedBlank"
+        password = http_req.get_argument("password")
+        print(password)
+        if password:
+            repassword = http_req.get_argument("repassword")
+            if password != repassword:
+                return "PasswordIsNotSame"
+        bind_target_user = http_req.get_argument("bind_target_user")
+        enabled = Utils.parse_int(http_req.get_argument("enabled"))
+        return AccountHelper.update(id,login_name,password,bind_target_user,enabled)

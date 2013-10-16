@@ -30,10 +30,10 @@ class Login(IRequest):
 
         if Utils.is_email(Utils.trim(login_id)):
             current_account = cnn.query(Account).join(Archives).filter(Account.archivex_id==Archives.id)\
-                .filter(Account.login_name==login_id).filter(Account.login_pwd==Utils.md5(login_pwd)).limit(1).scalar()
+                .filter(Account.login_name==login_id).filter(Account.login_pwd==Utils.md5(login_pwd)).filter(Account.enabled==1).limit(1).scalar()
         else:
             current_account = cnn.query(Account)\
-                .filter(Account.login_name==login_id).filter(Account.login_pwd==Utils.md5(login_pwd)).limit(1).scalar()
+                .filter(Account.login_name==login_id).filter(Account.login_pwd==Utils.md5(login_pwd)).filter(Account.enabled==1).limit(1).scalar()
         if current_account:
             name = cnn.query(Archives.name).filter(Archives.id==current_account.archives_id).limit(1).scalar()
             self.set_secure_cookie(IRequest.__key_account_id__,"%i" % current_account.id)

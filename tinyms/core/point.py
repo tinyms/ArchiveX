@@ -161,11 +161,11 @@ def datatable_provider(entity_name):
 
     return ref_pattern
 
-# def count(session,http_req,default_search_val) -> return int
-# def list(session,http_req,default_search_val,start,limit) -> return [dict,dict..], start,limit: query.offset(display_start).limit(display_length)
-# def add(session,http_req) -> return err msg
-# def modify(id,session,http_req) -> return err msg
-# def delete(id,session,http_req) -> return err msg
+# def count(default_search_val,http_req) -> return int
+# def list(default_search_val,start,limit, http_req) -> return [dict,dict..], start,limit: query.offset(display_start).limit(display_length)
+# def add(http_req) -> return err msg
+# def modify(id,http_req) -> return err msg
+# def delete(id,http_req) -> return err msg
 def dataview_provider(view_name):
     """
     custom datatable filter.自定义DataTable数据查询过滤，只要加上这个
