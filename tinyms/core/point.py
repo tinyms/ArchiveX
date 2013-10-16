@@ -143,16 +143,15 @@ def ui(name):
     return ref_pattern
 
 #for widgets
-#受装饰的类可以实现下面任意方法
-# def total(session,req) -> return session
-# def dataset(session,req) -> return session
-# def add(id,session,req)
-# def modify(id,session,req)
-# def delete(id,session,req)
+
 def datatable_provider(entity_name):
     """
-    custom datatable filter.自定义DataTable数据查询过滤，只要加上这个
-    装饰器，并传入datatable对应的实体名，使用此装饰器的类必须实现一个filter的方法
+    受装饰的类可以实现下面任意方法
+    def total(session,req) -> return session
+    def dataset(session,req) -> return session
+    def add(id,session,req)
+    def modify(id,session,req)
+    def delete(id,session,req)
     """
 
     def ref_pattern(cls):
@@ -161,15 +160,14 @@ def datatable_provider(entity_name):
 
     return ref_pattern
 
-# def count(default_search_val,http_req) -> return int
-# def list(default_search_val,start,limit, http_req) -> return [dict,dict..], start,limit: query.offset(display_start).limit(display_length)
-# def add(http_req) -> return err msg
-# def modify(id,http_req) -> return err msg
-# def delete(id,http_req) -> return err msg
+
 def dataview_provider(view_name):
     """
-    custom datatable filter.自定义DataTable数据查询过滤，只要加上这个
-    装饰器，并传入datatable对应的实体名，使用此装饰器的类必须实现一个filter的方法
+    def count(default_search_val,http_req) -> return int
+    def list(default_search_val,start,limit, http_req) -> return [dict,dict..], start,limit: query.offset(display_start).limit(display_length)
+    def add(http_req) -> return err msg
+    def modify(id,http_req) -> return err msg
+    def delete(id,http_req) -> return err msg
     """
 
     def ref_pattern(cls):

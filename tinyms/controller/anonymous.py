@@ -29,17 +29,31 @@ class Login(IRequest):
         cnn = SessionFactory.new()
 
         if Utils.is_email(Utils.trim(login_id)):
-            current_account = cnn.query(Account).join(Archives).filter(Account.archivex_id==Archives.id)\
-                .filter(Account.login_name==login_id).filter(Account.login_pwd==Utils.md5(login_pwd)).filter(Account.enabled==1).limit(1).scalar()
+            rows = cnn.query(Account.id,Archives.name).outerjoin(Archives,Account.archives_id==Archives.id)\
+                .filter(Archives.email==login_id).filter(Account.login_pwd==Utils.md5(login_pwd)).filter(Account.enabled==1).limit(1).all()
+            if len(rows)>0:
+                id = rows[0][0]
+                name = rows[0][1]
+                self.set_secure_cookie(IRequest.__key_account_id__,"%i" % id)
+                self.set_secure_cookie(IRequest.__key_account_name__,name)
+                self.update_last_login_datetime(id)
         else:
-            current_account = cnn.query(Account)\
-                .filter(Account.login_name==login_id).filter(Account.login_pwd==Utils.md5(login_pwd)).filter(Account.enabled==1).limit(1).scalar()
-        if current_account:
-            name = cnn.query(Archives.name).filter(Archives.id==current_account.archives_id).limit(1).scalar()
-            self.set_secure_cookie(IRequest.__key_account_id__,"%i" % current_account.id)
-            self.set_secure_cookie(IRequest.__key_account_name__,name)
+            rows = cnn.query(Account.id,Archives.name).outerjoin(Archives,Account.archives_id==Archives.id)\
+                .filter(Account.login_name==login_id).filter(Account.login_pwd==Utils.md5(login_pwd)).filter(Account.enabled==1).limit(1).all()
+            if len(rows)>0:
+                id = rows[0][0]
+                name = rows[0][1]
+                self.set_secure_cookie(IRequest.__key_account_id__,"%i" % id)
+                self.set_secure_cookie(IRequest.__key_account_name__,name)
+                self.update_last_login_datetime(id)
 
         self.redirect("/workbench/dashboard")
+
+    def update_last_login_datetime(self,id):
+        cnn = SessionFactory.new()
+        a = cnn.query(Account).get(id)
+        a.last_logon_time = Utils.current_datetime()
+        cnn.commit()
 
 @route("/logout")
 class Logout(IRequest):
