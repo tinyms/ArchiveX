@@ -104,6 +104,7 @@ class AccountDataProvider():
             item = dict()
             obj = row[0].dict()
             item["id"] = obj["id"]
+            item["archives_id"] = obj["archives_id"]
             item["login_name"] = obj["login_name"]
             item["enabled"] = obj["enabled"]
             item["last_logon_time"] = Utils.format_datetime_short(obj["last_logon_time"])

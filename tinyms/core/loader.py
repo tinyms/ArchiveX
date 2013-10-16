@@ -39,7 +39,7 @@ class Loader():
             a.login_name = "root"
             a.login_pwd = Utils.md5("root")
             a.create_time = datetime.now()
-            a.enabled = True
+            a.enabled = 1
             a.archives_id = usr.id
             cnn.add(a)
             a.roles.append(role_)

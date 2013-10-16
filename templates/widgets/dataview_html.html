@@ -31,11 +31,6 @@ $(document).ready(function () {
 </script>
 {% if opt["use_sys_form"] %}
 <script id='{{ opt["id"] }}_EditFormTemplate' type="text/x-jsrender">
-	<div class="form-group">
-	<div class="col-lg-9 col-lg-offset-3">
-	<input type="button" class="btn btn-white btn-sm " id="{{opt['id']}}_form_return"  onclick="{{opt['id']}}_.form.cancel(this);" value="返回"/>
-	</div>
-	</div>
 	{% for item in opt["cols"] %}
 	<div class="form-group">
 		<label for="{{ item }}" class="col-lg-3 control-label">{{ item }}</label>
@@ -44,14 +39,6 @@ $(document).ready(function () {
 		</div>
 	</div>
 	{% end %}
-	<div class="form-group">
-	<div class="col-lg-9 col-lg-offset-3">
-		<input type="button" class="btn btn-primary btn-sm" id="{{opt['id']}}_form_save" onclick="{{opt['id']}}_.form.save(this,'');" value="保存"></button>
-		<input type="button" class="btn btn-white btn-sm" id="{{opt['id']}}_form_save_continue" onclick="{{opt['id']}}_.form.save(this,'clear');" value="保存并继续"></button>
-		<input type="button" class="btn btn-white btn-sm" id="{{opt['id']}}_form_reset" onclick="{{opt['id']}}_.form.reset(this);" value="重填"></button>
-	</div>
-	<div class="col-lg-10"></div>
-	</div>
 </script>
 {% end %}
 {% end %}

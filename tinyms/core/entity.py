@@ -128,7 +128,7 @@ class TrainingExperience(Entity,Simplify):
 class Account(Entity, Simplify):
     login_name = Column(String(20), unique=True, nullable=False)
     login_pwd = Column(String(60), nullable=False)
-    enabled = Column(Boolean(), nullable=False)
+    enabled = Column(Integer(), nullable=False)
     last_logon_time = Column(DateTime())
     create_time = Column(DateTime(), nullable=False)
     #archives

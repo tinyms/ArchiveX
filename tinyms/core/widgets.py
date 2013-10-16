@@ -611,6 +611,28 @@ class FormEnd(IWidget):
     def render(self):
         return '</form>'
 
+@ui("datagrid_form_start")
+class DataGridFormStart(IWidget):
+    def render(self, id, css_cls="form-horizontal"):
+        html = list()
+        html.append('<form class="%s" role="form" id="%s_form"><input type="hidden" name="id" id="id"/>' % (css_cls, id))
+        html.append('<div class="form-group"><div class="col-lg-9 col-lg-offset-3">')
+        html.append('<input type="button" class="btn btn-white btn-sm " id="%s_form_return"  onclick="%s_.form.cancel(this);" value="返回"/>' % (id,id))
+        html.append('</div></div>')
+        return "".join(html)
+
+@ui("datagrid_form_end")
+class DataGridFormStart(IWidget):
+    def render(self, id):
+        html = list()
+        html.append('<div class="form-group"><div class="col-lg-9 col-lg-offset-3">')
+        html.append('<input type="button" class="btn btn-primary btn-sm" id="%s_form_save" onclick="%s_.form.save(this,%s);" value="保存"></button>' % (id,id,"''"))
+        html.append(' <input type="button" class="btn btn-white btn-sm" id="%s_form_save_continue" onclick="%s_.form.save(this,%s);" value="保存并继续"></button>' % (id,id,"'clear'"))
+        html.append(' <input type="button" class="btn btn-white btn-sm" id="%s_form_reset" onclick="%s_.form.reset(this);" value="重填"></button>' % (id,id))
+        html.append('</div></div>')
+        html.append('</form>')
+        return "".join(html)
+
 #可以编辑树节点的控件
 @ui("TermTaxonomyEditor")
 class TermTaxonomyEditor(IWidget):
