@@ -688,3 +688,11 @@ class TreeComboBox(TermTaxonomyEditor):
         return ""
 
     pass
+
+@ui("AutoComplete")
+class AutoComplete(IWidget):
+    def render(self, **p):
+        self.dom_id = p.get("id") #dom id
+        self.api_key = p.get("api") #datasource json url
+        self.placeholder = p.get("placeholder") #tip
+        return self.render_string("widgets/autocomplete.html",id=self.dom_id,placeholder=self.placeholder)

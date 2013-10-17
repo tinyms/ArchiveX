@@ -1,0 +1,26 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+       $("#{{ id }}_search_text").keyup(function(){
+        console.log(1111);
+       });
+    });
+
+</script>
+<ul class="nav navbar-nav hidden-xs">
+    <li>
+        <div id="{{ id }}-autocomplete-panel">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <input type="text" class="form-control" id="{{ id }}_search_text" placeholder="{{placeholder}}">
+              <input type="hidden" id="{{ id }}" name="{{ id }}"/>
+          </a>
+          <section class="dropdown-menu m-l-small m-t-mini">
+            <section class="panel panel-large arrow arrow-top">
+              <header class="panel-heading bg-white"></header>
+              here....
+              <footer class="panel-footer text-small">
+              </footer>
+            </section>
+          </section>
+        </div>
+      </li>
+</ul>
