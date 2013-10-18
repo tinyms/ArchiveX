@@ -14,6 +14,7 @@ class ObjectPool():
     sidebar_menus = list()
     ui_mapping = dict()
     treeview = dict()
+    autocomplete_keys=dict()
     datatable_provider = dict()
     dataview_provider = dict()
 
@@ -141,6 +142,17 @@ def ui(name):
         return cls
 
     return ref_pattern
+
+def autocomplete(id):
+    """
+    自动完成数据源
+    """
+
+    def ref_ac(cls):
+        ObjectPool.autocomplete_keys[id] = cls
+        return cls
+
+    return ref_ac
 
 #for widgets
 

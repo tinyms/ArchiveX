@@ -693,6 +693,28 @@ class TreeComboBox(TermTaxonomyEditor):
 class AutoComplete(IWidget):
     def render(self, **p):
         self.dom_id = p.get("id") #dom id
-        self.api_key = p.get("api") #datasource json url
+        self.provider = p.get("provider") #datasource json url
+        self.key = Utils.md5(self.provider)
+        ObjectPool.autocomplete_keys[self.key] = self.provider
         self.placeholder = p.get("placeholder") #tip
-        return self.render_string("widgets/autocomplete.html",id=self.dom_id,placeholder=self.placeholder)
+        self.at = p.get("at")
+        if not self.at:
+            self.at = ""
+        self.item_tpl = "<li data-value='${value}' data-key='${key}'>${value}</li>"
+        item_tpl = p.get("item_tpl")
+        if item_tpl:
+            self.item_tpl = item_tpl
+        return self.render_string("widgets/autocomplete.html",id=self.dom_id,key=self.key,item_tpl=self.item_tpl,at=self.at,placeholder=self.placeholder)
+
+    def javascript_files(self):
+        files = list()
+        files.append("/static/jslib/autocomplete/js/jquery.atwho.min.js")
+        return files
+
+    def css_files(self):
+        files = list()
+        files.append("/static/jslib/autocomplete/css/jquery.atwho.css")
+        return files
+
+    def embedded_javascript(self):
+        return self.render_string("widgets/autocomplete.js")

@@ -1,7 +1,7 @@
 __author__ = 'tinyms'
 
 import json
-from tornado.web import RequestHandler
+from tornado.web import RequestHandler,import_object
 from tinyms.core.common import JsonEncoder
 from tinyms.core.point import EmptyClass, ObjectPool, route
 from tinyms.core.cache import CacheManager
@@ -223,3 +223,16 @@ class AjaxHandler(IRequest):
                         self.write(json.dumps(result, cls=JsonEncoder))
                     else:
                         self.write(result)
+
+@route("/autocomplete/(.*)")
+class AutoCompleteHandler(IRequest):
+    def post(self, id):
+        cls = ObjectPool.autocomplete_keys.get(id)
+        self.set_header("Content-Type", "text/json;charset=utf-8")
+        if cls:
+            obj = import_object(cls)
+            if obj and hasattr(obj,"data"):
+                search_word = self.get_argument("search_word")
+                data = obj.data(self,search_word)
+                self.write(json.dumps(data, cls=JsonEncoder))
+        self.write(json.dumps(list(), cls=JsonEncoder))
