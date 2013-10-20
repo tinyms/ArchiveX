@@ -695,7 +695,6 @@ class AutoComplete(IWidget):
         self.dom_id = p.get("id") #dom id
         self.provider = p.get("provider") #datasource json url
         self.key = Utils.md5(self.provider)
-        ObjectPool.autocomplete_keys[self.key] = self.provider
         self.placeholder = p.get("placeholder") #tip
         self.at = p.get("at")
         if not self.at:

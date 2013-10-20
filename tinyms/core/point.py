@@ -2,6 +2,8 @@ __author__ = 'tinyms'
 
 from functools import wraps
 from tinyms.core.entity import SecurityPoint
+from tinyms.core.common import Utils
+
 #for plugin to extends
 class EmptyClass(): pass
 
@@ -149,7 +151,7 @@ def autocomplete(id):
     """
 
     def ref_ac(cls):
-        ObjectPool.autocomplete_keys[id] = cls
+        ObjectPool.autocomplete_keys[Utils.md5(id)] = cls
         return cls
 
     return ref_ac

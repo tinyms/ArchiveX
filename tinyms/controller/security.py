@@ -4,7 +4,7 @@ import json
 from sqlalchemy import or_
 from tinyms.core.common import Utils
 from tinyms.core.web import IAuthRequest
-from tinyms.core.point import route,ajax,auth,dataview_provider
+from tinyms.core.point import route,ajax,auth,dataview_provider,autocomplete
 from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import SecurityPoint,Role,Account,Archives
 from tinyms.dao.account import AccountHelper
@@ -83,6 +83,24 @@ class RoleOrg(IAuthRequest):
         cnn = SessionFactory.new()
         items = cnn.query(SecurityPoint).filter(SecurityPoint.category == c).filter(SecurityPoint.group_ == g).order_by(
             SecurityPoint.id.asc()).all()
+        return items
+
+#查找账户自动完成
+@autocomplete("tinyms.core.ac.FindArchivesAutoComplete")
+class FindArchivesAutoComplete():
+    def data(self,req,search_word):
+        cnn = SessionFactory.new()
+        q = cnn.query(Archives.id,Archives.name,Archives.email)
+        q = q.filter(or_(Archives.name.like('%'+search_word+'%'),Archives.email.like('%'+search_word+'%'),Archives.alias.like('%'+search_word+'%'),Archives.code.like('%'+search_word+'%')))
+        all = q.limit(10).all()
+        items = list()
+        for row in all:
+            item = dict()
+            item["id"] = row[0]
+            item["name"] = row[1]
+            item["email"] = row[2]
+            items.append(item)
+        print(items)
         return items
 
 #账户管理数据提供

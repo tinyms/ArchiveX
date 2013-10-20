@@ -3,12 +3,12 @@ function autocomplete(id, provider, tpl, at) {
         at: at,
         data: [],
         tpl: tpl,
+        limit:10,
         show_the_at: false,
         start_with_space: false,
         callbacks: {
             remote_filter: function (word, cb) {
                 $.post("/autocomplete/" + provider, {search_word: word}, function (data) {
-                    console.log(data);
                     cb(data);
                 }, "json");
             },

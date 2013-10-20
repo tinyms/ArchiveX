@@ -230,9 +230,10 @@ class AutoCompleteHandler(IRequest):
         cls = ObjectPool.autocomplete_keys.get(id)
         self.set_header("Content-Type", "text/json;charset=utf-8")
         if cls:
-            obj = import_object(cls)
+            obj = cls()
             if obj and hasattr(obj,"data"):
                 search_word = self.get_argument("search_word")
                 data = obj.data(self,search_word)
                 self.write(json.dumps(data, cls=JsonEncoder))
-        self.write(json.dumps(list(), cls=JsonEncoder))
+        else:
+            self.write(json.dumps(list(), cls=JsonEncoder))
