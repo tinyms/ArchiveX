@@ -2,6 +2,7 @@
 {% block title %}用户、角色、组织{% end %}
 {% block header %}
 <script type="text/javascript" src="/ajax/RoleSecurityPointsAssign.js"></script>
+<script type="text/javascript" src="/ajax/AccountRoleEdit.js"></script>
 <script type="text/javascript">
 
         function datatable_render_actionbar(id, col, val, row) {
@@ -33,6 +34,13 @@
             return v;
         }
 
+        function datatable_form_fill(id,row){
+            if(id=="AccountDataTable"){
+                $("#archives_id_text").val(row.name);
+                $("#current_select_user_id").val(row.id);
+            }
+        }
+
         {% if auth({'tinyms.entity.role.points.view'}) %}
         function assign_security_points(elem, role_id) {
             var row = RoleDataTable_.GetRow(role_id);
@@ -50,9 +58,26 @@
             });
         }
         {% end %}
-        function show_user_roles(elem,account_id){
 
+        function show_user_roles(elem,account_id){
+            {% if auth({"tinyms.entity.account.role.view"}) %}
+            tinyms.controller.security.AccountRoleEdit.list({id:account_id},function(b,data){
+                if(b){
+                    $("#account_role_edit_panel :checkbox").each(function(i,elm){
+                        $(elm).prop("checked",false);
+                    });
+                    $("#account_role_edit_panel :checkbox").each(function(i,elm){
+                        var v = parseInt($(this).val())
+                        if($.inArray(v,data)!=-1){
+                            $(elm).prop("checked",true);
+                        }
+                    });
+                }
+                console.log(data);
+            });
+            {% end %}
         }
+
         function check_or_uncheck(link, mode) {
             if ($(link).data("state") == undefined) {
                 $(link).data("state", true);
@@ -171,9 +196,9 @@
                                             </div>
 
                                             <div class="form-group">
-                                            <label for="bind_target_user" class="col-lg-3 control-label">绑定用户</label>
+                                            <label for="archives_id" class="col-lg-3 control-label">绑定用户</label>
                                             <div class="col-lg-8">
-                                            {% module AutoComplete(id="bind_target_user"
+                                            {% module AutoComplete(id="archives_id"
                                                 ,item_tpl="<li data-value='${name}' data-key='${id}'>${name}<i>(${email})</i></li>"
                                                 ,provider="tinyms.core.ac.FindArchivesAutoComplete"
                                                 ,placeholder="根据姓名、邮箱、别名、人员编码搜索"
@@ -196,7 +221,7 @@
                                 </div>
                             </div>
                             <div class="col-lg-3">
-                                <div class="panel">
+                                <div class="panel" id="account_role_edit_panel">
                                     <header class="panel-heading">可用角色</header><input id="current_select_user_id" type="hidden"/>
                                         <div class="list-group">
                                             {% for role in data['roles_for_account'] %}

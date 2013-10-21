@@ -40,6 +40,26 @@ class RoleSecurityPointsEdit():
         return ["Success"]
     pass
 
+@ajax("AccountRoleEdit")
+class AccountRoleEdit():
+
+    __export__ = ["list","save"]
+
+    @auth({"tinyms.entity.account.role.view"},[])
+    def list(self):
+        account_id = Utils.parse_int(self.param("id"))
+        cnn = SessionFactory.new()
+        ds = cnn.query(Role.id).join(Account,Role.accounts).filter(Account.id==account_id).limit(1).all()
+        roles = list()
+        for row in ds:
+            roles.append(row[0])
+        return roles
+
+    @auth({"tinyms.entity.account.role.edit"},["UnAuth"])
+    def save(self):
+        return ["success"]
+
+
 @route("/workbench/security")
 class RoleOrg(IAuthRequest):
     def get(self, *args, **kwargs):
@@ -143,7 +163,7 @@ class AccountDataProvider():
         repassword = http_req.get_argument("repassword")
         if not password or password != repassword:
             return "PasswordIsNotSame"
-        bind_target_user = http_req.get_argument("bind_target_user")
+        bind_target_user = http_req.get_argument("archives_id")
         enabled = Utils.parse_int(http_req.get_argument("enabled"))
         account_id = AccountHelper.create(login_name,password,bind_target_user,enabled)
         return account_id
@@ -158,6 +178,6 @@ class AccountDataProvider():
             repassword = http_req.get_argument("repassword")
             if password != repassword:
                 return "PasswordIsNotSame"
-        bind_target_user = http_req.get_argument("bind_target_user")
+        bind_target_user = http_req.get_argument("archives_id")
         enabled = Utils.parse_int(http_req.get_argument("enabled"))
         return AccountHelper.update(id,login_name,password,bind_target_user,enabled)

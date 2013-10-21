@@ -104,6 +104,7 @@ class Loader():
         reg_point("tinyms.entity.account.add","角色组织","账户","添加账户")
         reg_point("tinyms.entity.account.update","角色组织","账户","修改账户")
         reg_point("tinyms.entity.account.delete","角色组织","账户","删除账户")
+        reg_point("tinyms.entity.account.role.view","角色组织","账户","查看账户角色")
         reg_point("tinyms.entity.account.role.edit","角色组织","账户","为账户设置角色")
         #档案管理
         reg_point("tinyms.entity.archives.list","档案管理","人员","查看人员列表")

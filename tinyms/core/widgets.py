@@ -19,7 +19,7 @@ class IWidget(UIModule):
 @ui("Version")
 class VersionModule(IWidget):
     def render(self, *args, **kwargs):
-        return "&copy; ArchiveX 2013, v1.0"
+        return "&copy; ArchiveX 2013, v1.0b"
 
 
 @ui("CurrentAccountName")
