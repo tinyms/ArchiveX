@@ -38,6 +38,8 @@
             if(id=="AccountDataTable"){
                 $("#archives_id_text").val(row.name);
                 $("#current_select_user_id").val(row.id);
+                $("#current_select_user_login_id").text(row.login_name);
+                show_user_roles(null,row.id);
             }
         }
 
@@ -60,6 +62,7 @@
         {% end %}
 
         function show_user_roles(elem,account_id){
+            $("#current_select_user_id").val(account_id);
             {% if auth({"tinyms.entity.account.role.view"}) %}
             tinyms.controller.security.AccountRoleEdit.list({id:account_id},function(b,data){
                 if(b){
@@ -73,8 +76,29 @@
                         }
                     });
                 }
-                console.log(data);
             });
+            {% end %}
+        }
+
+        function account_role_save(elem){
+            var account_id = $("#current_select_user_id").val();
+            console.log(account_id);
+            if(account_id==null|| $.trim(account_id)==""){
+                toastr.error("请先选择一个帐号!")
+                return;
+            }
+            var state = 0;
+            if(!$(elem).prop("checked")){
+                state = 1;
+            }
+            {% if auth({"tinyms.entity.account.role.edit"}) %}
+                tinyms.controller.security.AccountRoleEdit.save({id:account_id,role_id:$(elem).val(),state:state},function(b,msg){
+                    if (msg == "success") {
+                        toastr.success("保存成功!")
+                    } else {
+                        toastr.error("保存失败!")
+                    }
+                });
             {% end %}
         }
 
@@ -117,7 +141,7 @@
                 var params = {"id": $("#security_points_tab").data("RoleId"), "points": JSON.stringify(items)};
                 tinyms.controller.security.RoleSecurityPointsEdit.save(params, function (b, data) {
                     var msg = data[0];
-                    if (msg == "Success") {
+                    if (msg == "success") {
                         toastr.success("保存成功!")
                     } else {
                         toastr.error("保存失败!")
@@ -222,11 +246,12 @@
                             </div>
                             <div class="col-lg-3">
                                 <div class="panel" id="account_role_edit_panel">
-                                    <header class="panel-heading">可用角色</header><input id="current_select_user_id" type="hidden"/>
+                                    <header class="panel-heading"><i id="current_select_user_login_id">可用</i> 角色</header>
+                                    <input id="current_select_user_id" type="hidden"/>
                                         <div class="list-group">
                                             {% for role in data['roles_for_account'] %}
                                             <div class="list-group-item">
-                                                <input type="checkbox" value="{{role[0]}}"/> {{role[1]}}
+                                                <input type="checkbox" value="{{role[0]}}" onclick="account_role_save(this);"/> {{role[1]}}
                                             </div>
                                             {% end %}
                                         </div>

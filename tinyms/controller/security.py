@@ -37,7 +37,7 @@ class RoleSecurityPointsEdit():
             for sp in spoints:
                 role.securitypoints.append(sp)
             cnn.commit()
-        return ["Success"]
+        return ["success"]
     pass
 
 @ajax("AccountRoleEdit")
@@ -49,7 +49,7 @@ class AccountRoleEdit():
     def list(self):
         account_id = Utils.parse_int(self.param("id"))
         cnn = SessionFactory.new()
-        ds = cnn.query(Role.id).join(Account,Role.accounts).filter(Account.id==account_id).limit(1).all()
+        ds = cnn.query(Role.id).join(Account,Role.accounts).filter(Account.id==account_id).all()
         roles = list()
         for row in ds:
             roles.append(row[0])
@@ -57,7 +57,21 @@ class AccountRoleEdit():
 
     @auth({"tinyms.entity.account.role.edit"},["UnAuth"])
     def save(self):
-        return ["success"]
+        account_id = Utils.parse_int(self.param("id"))
+        role_id = Utils.parse_int(self.param("role_id"))
+        state = Utils.parse_int(self.param("state"))
+        cnn = SessionFactory.new()
+        account = cnn.query(Account).get(account_id)
+        if account:
+            role = cnn.query(Role).get(role_id)
+            if role:
+                if state == 0:
+                    account.roles.append(role)
+                else:
+                    account.roles.remove(role)
+                cnn.commit()
+                return ["success"]
+        return ["failure"]
 
 
 @route("/workbench/security")
@@ -129,14 +143,14 @@ class AccountDataProvider():
 
     def count(self,default_search_val,http_req):
         db_cnn = SessionFactory.new()
-        q = db_cnn.query(Account,Archives.name,Archives.email).outerjoin(Archives,Account.archives_id==Archives.id)
+        q = db_cnn.query(Account,Archives.name,Archives.email).outerjoin(Archives,Account.archives_id==Archives.id).filter(Account.login_name!="root")
         if default_search_val:
             q = q.filter(or_(Account.login_name.like('%'+default_search_val+'%'),Archives.name.like('%'+default_search_val+'%'),Archives.email.like('%'+default_search_val+'%')))
         return q.count()
 
     def list(self,default_search_val,start,limit,http_req):
         db_cnn = SessionFactory.new()
-        q = db_cnn.query(Account,Archives.name,Archives.email).outerjoin(Archives,Account.archives_id==Archives.id)
+        q = db_cnn.query(Account,Archives.name,Archives.email).outerjoin(Archives,Account.archives_id==Archives.id).filter(Account.login_name!="root")
         if default_search_val:
             q = q.filter(or_(Account.login_name.like('%'+default_search_val+'%'),Archives.name.like('%'+default_search_val+'%'),Archives.email.like('%'+default_search_val+'%')))
         ds = q.offset(start).limit(limit).all()
@@ -180,4 +194,13 @@ class AccountDataProvider():
                 return "PasswordIsNotSame"
         bind_target_user = http_req.get_argument("archives_id")
         enabled = Utils.parse_int(http_req.get_argument("enabled"))
-        return AccountHelper.update(id,login_name,password,bind_target_user,enabled)
+        msg = AccountHelper.update(id,login_name,password,bind_target_user,enabled)
+        if msg == "Updated":
+            return ""
+        return msg
+
+    def delete(self,id,http_req):
+        msg = AccountHelper.delete(id)
+        if msg=="Success":
+            return ""
+        return msg

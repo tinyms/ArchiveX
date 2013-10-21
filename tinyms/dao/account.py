@@ -6,6 +6,7 @@ from tinyms.core.entity import Account, Role, SecurityPoint, Archives
 
 
 class AccountHelper():
+
     @staticmethod
     def create(login_id, pwd, archives_id=None, enabled=0):
         cnn = SessionFactory.new()
@@ -30,6 +31,16 @@ class AccountHelper():
         a.archives_id = archives_id
         cnn.commit()
         return "Updated"
+
+    @staticmethod
+    def delete(id):
+        cnn = SessionFactory.new()
+        a = cnn.query(Account).get(id)
+        if a.login_name == "root":
+            return "RootIsSupperAccount"
+        cnn.delete(a)
+        cnn.commit()
+        return "Success"
 
     @staticmethod
     def points(account_id=None):
