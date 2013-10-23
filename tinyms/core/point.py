@@ -19,6 +19,7 @@ class ObjectPool():
     autocomplete_keys=dict()
     datatable_provider = dict()
     dataview_provider = dict()
+    setting = dict()
 
 
 class IWebConfig():
@@ -186,6 +187,30 @@ def dataview_provider(view_name):
 
     def ref_pattern(cls):
         ObjectPool.dataview_provider[view_name] = cls
+        return cls
+
+    return ref_pattern
+
+def setting(id,tpl_path,title,postion=0,parent_id=None):
+
+    """
+    def save(kv,http_req) -> 处理设置保存
+    :param id
+    :param tpl_path: 模版路径
+    :param title: Tab 名称
+    :param postion: 位置排序
+    :param parent_id: 父ID
+    :return:
+    """
+
+    def ref_pattern(cls):
+        obj = EmptyClass()
+        obj.id = id
+        obj.tpl_path = tpl_path
+        obj.title = title
+        obj.postion = postion
+        obj.parent = parent_id
+        ObjectPool.setting[id] = obj
         return cls
 
     return ref_pattern

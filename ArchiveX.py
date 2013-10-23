@@ -34,8 +34,6 @@ if web_configs:
             port = web_config.get_server_port()
         if hasattr(web_config, "settings"):
             web_config.settings(ws_settings)
-        if hasattr(web_config, "security_urls"):
-            web_config.security_urls(ObjectPool.security_filter_uri)
         if hasattr(web_config, "get_database_driver"):#Only one in application
             SessionFactory.__engine__ = web_config.get_database_driver()
             SessionFactory.create_tables()

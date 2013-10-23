@@ -5,3 +5,4 @@ from tinyms.controller.dashboard import *
 from tinyms.controller.security import *
 from tinyms.controller.org import *
 from tinyms.controller.archives import *
+from tinyms.controller.setting import *
