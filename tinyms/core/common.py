@@ -162,6 +162,7 @@ class Postgres():
             names.append(col.name)
         return names
 
+
 class JsonEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, decimal.Decimal):
@@ -169,6 +170,7 @@ class JsonEncoder(json.JSONEncoder):
         elif isinstance(o, datetime.date) or isinstance(o, datetime.datetime):
             return o.isoformat()
         super(JsonEncoder, self).default(o)
+
 
 class Utils():
     @staticmethod

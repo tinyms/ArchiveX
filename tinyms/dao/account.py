@@ -21,9 +21,9 @@ class AccountHelper():
         return obj.id
 
     @staticmethod
-    def update(id, login_id, pwd, archives_id=None, enabled=False):
+    def update(id_, login_id, pwd, archives_id=None, enabled=False):
         cnn = SessionFactory.new()
-        a = cnn.query(Account).get(id)
+        a = cnn.query(Account).get(id_)
         a.login_name = login_id
         if pwd:
             a.login_pwd = Utils.md5(pwd)
@@ -33,9 +33,9 @@ class AccountHelper():
         return "Updated"
 
     @staticmethod
-    def delete(id):
+    def delete(id_):
         cnn = SessionFactory.new()
-        a = cnn.query(Account).get(id)
+        a = cnn.query(Account).get(id_)
         if a.login_name == "root":
             return "RootIsSupperAccount"
         cnn.delete(a)
@@ -48,11 +48,10 @@ class AccountHelper():
         if not account_id:
             return tmp
         cnn = SessionFactory.new()
-        all = cnn.query(SecurityPoint.key_) \
-            .join((Role, Account.roles)).join((SecurityPoint, Role.securitypoints)).filter(
-            Account.id == account_id).all()
+        all_ = cnn.query(SecurityPoint.key_) \
+            .join((Role, Account.roles)).join((SecurityPoint, Role.securitypoints)).filter(Account.id == account_id).all()
 
-        for p in all:
+        for p in all_:
             tmp.add(p[0])
         return tmp
 

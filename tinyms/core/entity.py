@@ -1,7 +1,8 @@
 __author__ = 'tinyms'
 
-from sqlalchemy import Column, Integer, String, DateTime, Text, Date, Boolean, Numeric
+from sqlalchemy import Column, Integer, String, DateTime, Text, Date, Numeric
 from tinyms.core.orm import Entity, Simplify, many_to_one, many_to_many
+
 
 #人员档案
 class Archives(Entity, Simplify):
@@ -87,7 +88,7 @@ class Archives(Entity, Simplify):
 
 #学习经历
 @many_to_one("Archives")
-class LearningExperience(Entity,Simplify):
+class LearningExperience(Entity, Simplify):
     #开始日期
     start_date = Column(Date())
     #结束日期
@@ -101,7 +102,7 @@ class LearningExperience(Entity,Simplify):
 
 #工作经历
 @many_to_one("Archives")
-class WorkExperience(Entity,Simplify):
+class WorkExperience(Entity, Simplify):
     #开始日期
     start_date = Column(Date())
     #结束日期
@@ -113,7 +114,7 @@ class WorkExperience(Entity,Simplify):
 
 #培训经历
 @many_to_one("Archives")
-class TrainingExperience(Entity,Simplify):
+class TrainingExperience(Entity, Simplify):
     #开始日期
     start_date = Column(Date())
     #结束日期
@@ -151,9 +152,6 @@ class SecurityPoint(Entity, Simplify):
     category = Column(String(60), nullable=False)
     #roles
 
-#职位、头衔
-class JobTitle(Entity, Simplify):
-    name = Column(String(60), unique=True, nullable=False)
 
 #分类字典
 class Term(Entity, Simplify):
@@ -171,3 +169,9 @@ class TermTaxonomy(Entity, Simplify):
     description = Column(Text)
     #parent
     #term
+
+
+class Setting(Entity, Simplify):
+    #owner一个是固定的root,其它为平台使用用户的登录ID
+    owner_ = Column(String(60), nullable=False, unique=True)
+    val_ = Column(Text) #JSON format,值对方式,有两种Key,系统与用户,约定分别使用s_,u_开头

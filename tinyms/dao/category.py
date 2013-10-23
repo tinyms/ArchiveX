@@ -6,20 +6,22 @@ from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import Term, TermTaxonomy
 from tinyms.dao.point import DynamicPointHelper
 
+
 class CategoryHelper():
-    def __init__(self, taxonomy="Org",tt_desc="组织/部门"):
+    def __init__(self, taxonomy="Org", tt_desc="组织/部门"):
         self.taxonomy = taxonomy
-        self.dph = DynamicPointHelper("分类视图",tt_desc)
+        self.dph = DynamicPointHelper("分类视图", tt_desc)
 
     def list(self):
         cnn = SessionFactory.new()
-        items = cnn.query(TermTaxonomy).filter(TermTaxonomy.term.has(Term.name!="ROOT")).filter(TermTaxonomy.taxonomy==self.taxonomy).all()
+        items = cnn.query(TermTaxonomy).filter(TermTaxonomy.term.has(Term.name != "ROOT")).filter(
+            TermTaxonomy.taxonomy == self.taxonomy).all()
         nodes = list()
         for item in items:
             node = dict()
-            node["id"]=item.id
-            node["pId"]=item.parent_id
-            node["name"]=item.term.name
+            node["id"] = item.id
+            node["pId"] = item.parent_id
+            node["name"] = item.term.name
             nodes.append(node)
         return nodes
 
@@ -46,8 +48,8 @@ class CategoryHelper():
             tt.parent_id = parent_id
             tt.path = "%s/%s" % (parent_path, tt.id)
             cnn.commit()
-            if self.taxonomy=="Org":
-                self.dph.update("tinyms.treeview.%s.%s" % (self.taxonomy,tt.id),name_)
+            if self.taxonomy == "Org":
+                self.dph.update("tinyms.treeview.%s.%s" % (self.taxonomy, tt.id), name_)
             return "Success"
         else:
             return "Failure"
@@ -66,16 +68,17 @@ class CategoryHelper():
         cnn.commit()
         tt.path = "%s/%s" % (parent_path, tt.id)
         cnn.commit()
-        if self.taxonomy=="Org":
-            self.dph.add("tinyms.treeview.%s.%s" % (self.taxonomy,tt.id),name_)
+        if self.taxonomy == "Org":
+            self.dph.add("tinyms.treeview.%s.%s" % (self.taxonomy, tt.id), name_)
         return tt.id
 
     def remove(self, id):
         cnn = SessionFactory.new()
-        node = cnn.query(TermTaxonomy).filter(TermTaxonomy.id == id).filter(TermTaxonomy.term.has(Term.name!="ROOT")).limit(1).scalar()
+        node = cnn.query(TermTaxonomy).filter(TermTaxonomy.id == id).filter(
+            TermTaxonomy.term.has(Term.name != "ROOT")).limit(1).scalar()
         cnn.delete(node)
         cnn.commit()
-        self.dph.delete("tinyms.treeview.%s.%s" % (self.taxonomy,id))
+        self.dph.delete("tinyms.treeview.%s.%s" % (self.taxonomy, id))
         return "Success"
 
     def exists(self, name_):
@@ -89,7 +92,7 @@ class CategoryHelper():
 
     def exists_other(self, id, name_):
         cnn = SessionFactory.new()
-        num = cnn.query(func.count(TermTaxonomy.id)).filter(TermTaxonomy.id!=id)\
+        num = cnn.query(func.count(TermTaxonomy.id)).filter(TermTaxonomy.id != id) \
             .filter(TermTaxonomy.term.has(name=Utils.trim(name_))) \
             .filter(TermTaxonomy.taxonomy == self.taxonomy) \
             .limit(1).scalar()

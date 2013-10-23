@@ -16,7 +16,7 @@ class ObjectPool():
     sidebar_menus = list()
     ui_mapping = dict()
     treeview = dict()
-    autocomplete_keys=dict()
+    autocomplete_keys = dict()
     datatable_provider = dict()
     dataview_provider = dict()
     setting = dict()
@@ -146,18 +146,20 @@ def ui(name):
 
     return ref_pattern
 
-def autocomplete(id):
+
+def autocomplete(id_):
     """
     自动完成数据源
     """
 
     def ref_ac(cls):
-        ObjectPool.autocomplete_keys[Utils.md5(id)] = cls
+        ObjectPool.autocomplete_keys[Utils.md5(id_)] = cls
         return cls
 
     return ref_ac
 
 #for widgets
+
 
 def datatable_provider(entity_name):
     """
@@ -191,11 +193,11 @@ def dataview_provider(view_name):
 
     return ref_pattern
 
-def setting(id,tpl_path,title,postion=0,parent_id=None):
 
+def setting(id_, tpl_path, title, postion=0, parent_id=None):
     """
     def save(kv,http_req) -> 处理设置保存
-    :param id
+    :param id_
     :param tpl_path: 模版路径
     :param title: Tab 名称
     :param postion: 位置排序
@@ -203,14 +205,15 @@ def setting(id,tpl_path,title,postion=0,parent_id=None):
     :return:
     """
 
-    def ref_pattern(cls):
+    def ref_setting(cls):
         obj = EmptyClass()
-        obj.id = id
+        obj.id = id_
         obj.tpl_path = tpl_path
         obj.title = title
         obj.postion = postion
         obj.parent = parent_id
+        obj.cls = cls
         ObjectPool.setting[id] = obj
         return cls
 
-    return ref_pattern
+    return ref_setting

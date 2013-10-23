@@ -4,6 +4,7 @@ from sqlalchemy import func
 from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import SecurityPoint
 
+
 #动态权限增删改，像树节点
 class DynamicPointHelper():
     def __init__(self, c, g):
@@ -12,7 +13,7 @@ class DynamicPointHelper():
 
     def add(self, key, desc):
         sf = SessionFactory.new()
-        num = sf.query(func.count(SecurityPoint.id)).filter(SecurityPoint.key_==key).limit(1).scalar()
+        num = sf.query(func.count(SecurityPoint.id)).filter(SecurityPoint.key_ == key).limit(1).scalar()
         if num > 0:
             return False
         sp = SecurityPoint()
@@ -26,7 +27,7 @@ class DynamicPointHelper():
 
     def update(self, key, desc):
         sf = SessionFactory.new()
-        row = sf.query(SecurityPoint).filter(SecurityPoint.key_==key).limit(1).scalar()
+        row = sf.query(SecurityPoint).filter(SecurityPoint.key_ == key).limit(1).scalar()
         if row:
             row.description = desc
             sf.commit()
@@ -35,7 +36,7 @@ class DynamicPointHelper():
 
     def delete(self, key):
         sf = SessionFactory.new()
-        row = sf.query(SecurityPoint).filter(SecurityPoint.key_==key).limit(1).scalar()
+        row = sf.query(SecurityPoint).filter(SecurityPoint.key_ == key).limit(1).scalar()
         sf.delete(row)
         sf.commit()
         return True
