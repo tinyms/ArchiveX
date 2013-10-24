@@ -197,8 +197,8 @@ def dataview_provider(view_name):
 def setting(id_, tpl_path, title, security_point, postion=0, parent_id=None):
     """
     def save(kv,http_req) -> 用户处理设置保存
-    def form_submit_javascript() -> 保存设置时表单数据提交前所要做的处理
-    def form_fill_javascript() -> 设置加载时，自定义数据填充
+    def form_submit_javascript(http_req) -> 保存设置时表单数据提交前所要做的处理
+    def form_fill_javascript(http_req) -> 设置加载时，自定义数据填充
     :param id_
     :param tpl_path: 模版路径
     :param title: Tab 名称

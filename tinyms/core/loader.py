@@ -5,8 +5,9 @@ from sqlalchemy import func
 from tinyms.core.common import Utils
 from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import Role, Archives, Account, SecurityPoint
-from tinyms.core.point import ObjectPool,reg_point
+from tinyms.core.point import ObjectPool, reg_point
 from tinyms.dao.category import CategoryHelper
+
 
 class Loader():
     @staticmethod
@@ -78,38 +79,41 @@ class Loader():
     @staticmethod
     def create_base_securitypoints():
         #Menu
-        reg_point("tinyms.sidebar.archives.show","菜单","侧边栏","人员档案")
-        reg_point("tinyms.sidebar.role_org.show","菜单","侧边栏","角色组织")
-        reg_point("tinyms.sidebar.sys_categories.show","菜单","侧边栏","系统分类")
-        reg_point("tinyms.sidebar.sys_params.show","菜单","侧边栏","系统参数")
+        reg_point("tinyms.sidebar.archives.show", "菜单", "侧边栏", "人员档案")
+        reg_point("tinyms.sidebar.role_org.show", "菜单", "侧边栏", "角色组织")
+        reg_point("tinyms.sidebar.sys_categories.show", "菜单", "侧边栏", "系统分类")
+        reg_point("tinyms.sidebar.sys_params.show", "菜单", "侧边栏", "系统参数")
         #OrgTreeView
-        reg_point("tinyms.view.orgtree.list","角色组织","组织","查看组织列表")
-        reg_point("tinyms.view.orgtree.add","角色组织","组织","添加组织")
-        reg_point("tinyms.view.orgtree.update","角色组织","组织","修改组织")
-        reg_point("tinyms.view.orgtree.delete","角色组织","组织","删除组织")
+        reg_point("tinyms.view.orgtree.list", "角色组织", "组织", "查看组织列表")
+        reg_point("tinyms.view.orgtree.add", "角色组织", "组织", "添加组织")
+        reg_point("tinyms.view.orgtree.update", "角色组织", "组织", "修改组织")
+        reg_point("tinyms.view.orgtree.delete", "角色组织", "组织", "删除组织")
         #分类管理
-        reg_point("tinyms.view.termtaxonomy.list","角色组织","分类","查看分类列表")
-        reg_point("tinyms.view.termtaxonomy.add","角色组织","分类","添加分类")
-        reg_point("tinyms.view.termtaxonomy.update","角色组织","分类","修改分类")
-        reg_point("tinyms.view.termtaxonomy.delete","角色组织","分类","删除分类")
+        reg_point("tinyms.view.termtaxonomy.list", "角色组织", "分类", "查看分类列表")
+        reg_point("tinyms.view.termtaxonomy.add", "角色组织", "分类", "添加分类")
+        reg_point("tinyms.view.termtaxonomy.update", "角色组织", "分类", "修改分类")
+        reg_point("tinyms.view.termtaxonomy.delete", "角色组织", "分类", "删除分类")
         #角色管理
-        reg_point("tinyms.entity.role.list","角色组织","角色","查看角色列表")
-        reg_point("tinyms.entity.role.add","角色组织","角色","添加角色")
-        reg_point("tinyms.entity.role.update","角色组织","角色","修改角色")
-        reg_point("tinyms.entity.role.delete","角色组织","角色","删除角色")
-        reg_point("tinyms.entity.role.points.view","角色组织","权限","查看角色权限点")
-        reg_point("tinyms.entity.role.points.update","角色组织","权限","修改角色权限")
+        reg_point("tinyms.entity.role.list", "角色组织", "角色", "查看角色列表")
+        reg_point("tinyms.entity.role.add", "角色组织", "角色", "添加角色")
+        reg_point("tinyms.entity.role.update", "角色组织", "角色", "修改角色")
+        reg_point("tinyms.entity.role.delete", "角色组织", "角色", "删除角色")
+        reg_point("tinyms.entity.role.points.view", "角色组织", "权限", "查看角色权限点")
+        reg_point("tinyms.entity.role.points.update", "角色组织", "权限", "修改角色权限")
         #账户管理
-        reg_point("tinyms.entity.account.list","角色组织","账户","查看账户列表")
-        reg_point("tinyms.entity.account.add","角色组织","账户","添加账户")
-        reg_point("tinyms.entity.account.update","角色组织","账户","修改账户")
-        reg_point("tinyms.entity.account.delete","角色组织","账户","删除账户")
-        reg_point("tinyms.entity.account.role.view","角色组织","账户","查看账户角色")
-        reg_point("tinyms.entity.account.role.edit","角色组织","账户","为账户设置角色")
+        reg_point("tinyms.entity.account.list", "角色组织", "账户", "查看账户列表")
+        reg_point("tinyms.entity.account.add", "角色组织", "账户", "添加账户")
+        reg_point("tinyms.entity.account.update", "角色组织", "账户", "修改账户")
+        reg_point("tinyms.entity.account.delete", "角色组织", "账户", "删除账户")
+        reg_point("tinyms.entity.account.role.view", "角色组织", "账户", "查看账户角色")
+        reg_point("tinyms.entity.account.role.edit", "角色组织", "账户", "为账户设置角色")
         #档案管理
-        reg_point("tinyms.entity.archives.list","档案管理","人员","查看人员列表")
-        reg_point("tinyms.entity.archives.add","档案管理","人员","添加人员")
-        reg_point("tinyms.entity.archives.update","档案管理","人员","修改人员")
-        reg_point("tinyms.entity.archives.delete","档案管理","人员","删除人员")
+        reg_point("tinyms.entity.archives.list", "档案管理", "人员", "查看人员列表")
+        reg_point("tinyms.entity.archives.add", "档案管理", "人员", "添加人员")
+        reg_point("tinyms.entity.archives.update", "档案管理", "人员", "修改人员")
+        reg_point("tinyms.entity.archives.delete", "档案管理", "人员", "删除人员")
+        #档案管理
+        reg_point("tinyms.entity.setting.system", "系统设置", "设置", "全局设置")
+        reg_point("tinyms.entity.setting.user", "系统设置", "设置", "用户自定义设置")
 
 

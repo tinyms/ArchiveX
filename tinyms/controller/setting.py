@@ -43,7 +43,13 @@ class SettingApi():
         return level_all
 
 
-@setting("tinyms.core.sys.setting", "workbench/sys_setting_page", "全局")
+@setting("tinyms.core.setting.sys", "workbench/sys_setting_page.html", "全局", "tinyms.entity.setting.user")
 class SystemSetting():
     def save(self, kv, http_req):
+        pass
+
+    def form_submit_javascript(self, http_req):
+        pass
+
+    def form_fill_javascript(self, http_req):
         pass

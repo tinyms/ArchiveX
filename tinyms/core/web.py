@@ -217,13 +217,14 @@ class AjaxHandler(IRequest):
                 if hasattr(obj, method_name):
                     setattr(obj, "request", self)
                     setattr(obj, "__params__", self.wrap_params_to_dict())
-                    setattr(obj, "param", lambda key: obj.__params__.get(key))
+                    setattr(obj, "param", lambda key_: obj.__params__.get(key_))
                     func = getattr(obj, method_name)
                     result = func()
                     if data_type == "json":
                         self.write(json.dumps(result, cls=JsonEncoder))
                     else:
                         self.write(result)
+
 
 @route("/autocomplete/(.*)")
 class AutoCompleteHandler(IRequest):
