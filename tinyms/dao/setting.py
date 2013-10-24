@@ -7,13 +7,14 @@ from tinyms.core.entity import Setting
 from tinyms.core.common import JsonEncoder
 
 
+#用户级别设置辅助类
 class UserSettingHelper():
     def __init__(self, usr_id):
         self.usr = usr_id
         cnn = SessionFactory.new()
         json_text = cnn.query(Setting.val_).filter(Setting.owner_ == self.usr).limit(1).scalar()
         if json:
-            self.setting = json.loads(json_text, encoding="utf8", cls=JsonEncoder)
+            self.setting = json.loads(json_text, cls=JsonEncoder)
         else:
             self.setting = dict()
 
@@ -23,29 +24,49 @@ class UserSettingHelper():
             return val
         return default_
 
-    def set(self, key, val):
+    def set(self, dic_obj):
+        v = json.dumps(dic_obj, cls=JsonEncoder)
         cnn = SessionFactory.new()
-        item = cnn.query(Setting).filter(Setting.key_ == key).limit(1).scalar()
+        item = cnn.query(Setting).filter(Setting.owner_ == self.usr).limit(1).scalar()
         if item:
-            item.val_ = val
+            item.val_ = v
             cnn.commit()
         else:
             obj = Setting()
-            obj.key_ = key
-            obj.val_ = val
+            obj.owner_ = self.usr
+            obj.val_ = v
             cnn.add(obj)
             cnn.commit()
 
 
+#平台级别设置辅助类
 class AppSettingHelper():
-    __global__ = dict()
+    __global__ = None
 
     @staticmethod
-    def get(default_=None):
-        return UserSettingHelper.get("root", default_)
+    def load():
+        if not AppSettingHelper.__global__:
+            u = UserSettingHelper("root")
+        pass
 
     @staticmethod
-    def set(val):
-        return UserSettingHelper.set("root", val)
+    def get(key, default_=None):
+        val = AppSettingHelper.__global__.get(key)
+        if val:
+            return val
+        return default_
 
-    pass
+    @staticmethod
+    def set(dic_obj):
+        v = json.dumps(dic_obj, cls=JsonEncoder)
+        cnn = SessionFactory.new()
+        item = cnn.query(Setting).filter(Setting.owner_ == "root").limit(1).scalar()
+        if item:
+            item.val_ = v
+            cnn.commit()
+        else:
+            obj = Setting()
+            obj.owner_ = "root"
+            obj.val_ = v
+            cnn.add(obj)
+            cnn.commit()

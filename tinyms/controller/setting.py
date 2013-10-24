@@ -2,7 +2,6 @@ __author__ = 'tinyms'
 
 from tinyms.core.web import IAuthRequest
 from tinyms.core.point import ObjectPool, route, setting
-from tinyms.dao.setting import SettingHelper
 
 
 @route("/workbench/setting")
@@ -12,8 +11,6 @@ class SettingPage(IAuthRequest):
 
     def post(self, *args, **kwargs):
         kv = self.wrap_params_to_dict()
-        for k in kv:
-            SettingHelper.set(k, kv[k])
         items = ObjectPool.setting
         for item in items:
             obj = item.cls()
