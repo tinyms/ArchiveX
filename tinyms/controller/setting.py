@@ -37,9 +37,9 @@ class SettingApi():
     def load(self):
         usr = self.request.current_user
         level_u = UserSettingHelper(usr)
-        level_u = level_u.load()
+        level_u_ = level_u.load()
         level_s = AppSettingHelper.load()
-        level_all = dict(level_u, **level_s)
+        level_all = dict(level_u_, **level_s)
         return level_all
 
 

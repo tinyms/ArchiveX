@@ -37,8 +37,8 @@ class UserSettingHelper():
     def load(self):
         cnn = SessionFactory.new()
         json_text = cnn.query(Setting.val_).filter(Setting.owner_ == self.usr).limit(1).scalar()
-        if json:
-            self.setting = json.loads(json_text, cls=JsonEncoder)
+        if json_text:
+            self.setting = json.loads(json_text)
         return self.setting
 
 
@@ -49,7 +49,8 @@ class AppSettingHelper():
     @staticmethod
     def load():
         if not AppSettingHelper.__global__:
-            AppSettingHelper.__global__ = UserSettingHelper("root")
+            u = UserSettingHelper("root")
+            AppSettingHelper.__global__ = u.load()
         return AppSettingHelper.__global__
 
     @staticmethod

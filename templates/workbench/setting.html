@@ -2,19 +2,47 @@
 {% block title %}设置{% end %}
 {% block header %}
 <script type="text/javascript">
-    $(document).ready(function(){
+    function save_setting(self){
+        $("#setting_form").ajaxSubmit({
+            "dataType": "json", "url": "/workbench/setting", "type": "post",
+            "success": function (data, statusText, xhr, $form) {
 
+            }
+        });
+    }
+    $(document).ready(function(){
+        $.post("/api/tinyms.core.setting/load",{},function(data){
+            for (var k in data) {
+                $("#" + k).val(data[k]);
+            }
+        },"json");
     });
 </script>
 {% end %}
 {% block workspace %}
-<ul class="nav nav-tabs" style="margin-top:12px;">
-    <li class="active"><a href="#Archives_Base" data-toggle="tab">基本资料</a></li>
-    <li><a href="#Archives_WorkExperience" data-toggle="tab">工作经历</a></li>
-    <li><a href="#Archives_LearningExperience" data-toggle="tab">学习经历</a></li>
-    <li><a href="#GlobalSetting" data-toggle="tab">培训经历</a></li>
-</ul>
-<div class="tab-content">
-    <div class="tab-pane active" id="Archives_Base"></div>
-</div>
+<section class="main padder">
+    <div class="clearfix">
+        <h4><i class="icon-gears"></i>设置</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form id="setting_form">
+                <section class="panel">
+                    <header class="panel-heading text-right">
+                        <ul class="nav nav-tabs pull-left">
+                            <li class="active"><a href="#Archives_Base" data-toggle="tab">基本资料</a></li>
+                        </ul>
+                        <span class="hidden-sm"><a class="btn-link" onclick="save_setting(this);"><i class="icon-save"></i>保存</a></span>
+                    </header>
+                    <div class="panel-body">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="Archives_Base">dddd</div>
+                        </div>
+                    </div>
+                </section>
+            </form>
+        </div>
+    </div>
+</section>
+
 {% end %}
