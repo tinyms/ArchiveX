@@ -10,13 +10,9 @@ from tinyms.core.common import JsonEncoder
 #用户级别设置辅助类
 class UserSettingHelper():
     def __init__(self, usr_id):
-        self.usr = usr_id
-        cnn = SessionFactory.new()
-        json_text = cnn.query(Setting.val_).filter(Setting.owner_ == self.usr).limit(1).scalar()
-        if json:
-            self.setting = json.loads(json_text, cls=JsonEncoder)
-        else:
-            self.setting = dict()
+        self.usr = "%s" % usr_id
+        self.setting = dict()
+        self.load()
 
     def get(self, key, default_=None):
         val = self.setting.get(key)
@@ -38,6 +34,13 @@ class UserSettingHelper():
             cnn.add(obj)
             cnn.commit()
 
+    def load(self):
+        cnn = SessionFactory.new()
+        json_text = cnn.query(Setting.val_).filter(Setting.owner_ == self.usr).limit(1).scalar()
+        if json:
+            self.setting = json.loads(json_text, cls=JsonEncoder)
+        return self.setting
+
 
 #平台级别设置辅助类
 class AppSettingHelper():
@@ -46,8 +49,8 @@ class AppSettingHelper():
     @staticmethod
     def load():
         if not AppSettingHelper.__global__:
-            u = UserSettingHelper("root")
-        pass
+            AppSettingHelper.__global__ = UserSettingHelper("root")
+        return AppSettingHelper.__global__
 
     @staticmethod
     def get(key, default_=None):

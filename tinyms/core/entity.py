@@ -173,5 +173,5 @@ class TermTaxonomy(Entity, Simplify):
 
 class Setting(Entity, Simplify):
     #owner一个是固定的root,其它为平台使用用户的登录ID
-    owner_ = Column(String(60), nullable=False, unique=True)
+    owner_ = Column(String(20), nullable=False, unique=True)
     val_ = Column(Text) #JSON format,值对方式,有两种Key,系统与用户,约定分别使用s_,u_开头
