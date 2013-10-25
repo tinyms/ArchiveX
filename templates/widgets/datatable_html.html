@@ -7,7 +7,8 @@
 <script type="text/javascript">
 var {{opt["id"]}}_ = null;
 function {{opt["id"]}}_actionbar_render(col,v,type,row){
-	var action_btns = '<a class="btn-link" title="查看" onclick="{{opt["id"]}}_.RecordSetProvider.Modify(this,' + v + ');"><i class="icon-list-alt"></i></a>';
+    var action_btns = '<div style="width: 130px;">';
+	action_btns += '<a class="btn-link" title="查看" onclick="{{opt["id"]}}_.RecordSetProvider.Modify(this,' + v + ');"><i class="icon-list-alt"></i></a>';
 	if (typeof(datatable_render_actionbar) != "undefined") {
 		action_btns += datatable_render_actionbar('{{opt["id"]}}', "id", v, row);
 	}
@@ -20,7 +21,7 @@ function {{opt["id"]}}_actionbar_render(col,v,type,row){
 	{% if auth({opt["point"].delete}) %}
 	action_btns += ' <a class="btn-link" title="删除" onclick="{{opt["id"]}}_.RecordSetProvider.Delete(this,' + v + ');"><i class="icon-remove"></i></a>';
 	{% end %}
-	return action_btns;
+	return action_btns+"</div>";
 }
 $(document).ready(function () {
     $("#{{opt['id']}}_panel").hide();
