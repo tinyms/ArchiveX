@@ -194,13 +194,13 @@ def dataview_provider(view_name):
     return ref_pattern
 
 
-def setting(id_, tpl_path, title, security_point, postion=0, parent_id=None):
+def setting(id_, tpl, title, security_point, postion=0, parent_id=None):
     """
     def save(kv,http_req) -> 用户处理设置保存
     def form_submit_javascript(http_req) -> 保存设置时表单数据提交前所要做的处理
     def form_fill_javascript(http_req) -> 设置加载时，自定义数据填充
     :param id_
-    :param tpl_path: 模版路径
+    :param tpl: 模版路径
     :param title: Tab 名称
     :param security_point: 安全点,决定当前用户是否有权编辑
     :param postion: 位置排序
@@ -211,7 +211,7 @@ def setting(id_, tpl_path, title, security_point, postion=0, parent_id=None):
     def ref_setting(cls):
         obj = EmptyClass()
         obj.id = id_
-        obj.tpl_path = tpl_path
+        obj.tpl = tpl
         obj.title = title
         obj.point = security_point
         obj.postion = postion
