@@ -88,30 +88,6 @@ class SideBar(IWidget):
         items.sort(key=lambda x: x[0])
 
 
-@ui("TermTaxonomyComboBox")
-class TermTaxonomyComboBox(IWidget):
-    def render(self, **prop):
-        domId = prop["id"]
-        items = self.list(prop["taxonomy"])
-        allowed_blank = prop.get("allowed_blank")
-        html = list()
-        html.append("<select id='%s' name='%s' class='form-control'>" % (domId, domId))
-        if allowed_blank:
-            html.append("<option value=''> </option>")
-        for item in items:
-            html.append("<option value='%i'>%s</option>" % (item[0], item[1]))
-        html.append("</select>")
-        return "".join(html)
-
-    def list(self, taxonomy):
-        cnn = SessionFactory.new()
-        items = cnn.query(TermTaxonomy.id, Term.name) \
-            .outerjoin((Term, Term.id == TermTaxonomy.term_id)) \
-            .filter(TermTaxonomy.taxonomy == taxonomy) \
-            .all()
-        return items
-
-
 @ui("DataComboBox")
 class DataComboBoxModule(IWidget):
     def render(self, **prop):
@@ -605,24 +581,35 @@ class FormEnd(IWidget):
     def render(self):
         return '</form>'
 
+
 @ui("datagrid_form_start")
 class DataGridFormStart(IWidget):
     def render(self, id, css_cls="form-horizontal"):
         html = list()
-        html.append('<form class="%s" role="form" id="%s_form"><input type="hidden" name="id" id="id"/>' % (css_cls, id))
+        html.append(
+            '<form class="%s" role="form" id="%s_form"><input type="hidden" name="id" id="id"/>' % (css_cls, id))
         html.append('<div class="form-group"><div class="col-lg-9 col-lg-offset-3">')
-        html.append('<input type="button" class="btn btn-white btn-sm " id="%s_form_return"  onclick="%s_.form.cancel(this);" value="返回"/>' % (id,id))
+        html.append(
+            '<input type="button" class="btn btn-white btn-sm " id="%s_form_return"  onclick="%s_.form.cancel(this);" value="返回"/>' % (
+            id, id))
         html.append('</div></div>')
         return "".join(html)
+
 
 @ui("datagrid_form_end")
 class DataGridFormStart(IWidget):
     def render(self, id):
         html = list()
         html.append('<div class="form-group"><div class="col-lg-9 col-lg-offset-3">')
-        html.append('<input type="button" class="btn btn-primary btn-sm" id="%s_form_save" onclick="%s_.form.save(this,%s);" value="保存"></button>' % (id,id,"''"))
-        html.append(' <input type="button" class="btn btn-white btn-sm" id="%s_form_save_continue" onclick="%s_.form.save(this,%s);" value="保存并继续"></button>' % (id,id,"'clear'"))
-        html.append(' <input type="button" class="btn btn-white btn-sm" id="%s_form_reset" onclick="%s_.form.reset(this);" value="重填"></button>' % (id,id))
+        html.append(
+            '<input type="button" class="btn btn-primary btn-sm" id="%s_form_save" onclick="%s_.form.save(this,%s);" value="保存"></button>' % (
+            id, id, "''"))
+        html.append(
+            ' <input type="button" class="btn btn-white btn-sm" id="%s_form_save_continue" onclick="%s_.form.save(this,%s);" value="保存并继续"></button>' % (
+            id, id, "'clear'"))
+        html.append(
+            ' <input type="button" class="btn btn-white btn-sm" id="%s_form_reset" onclick="%s_.form.reset(this);" value="重填"></button>' % (
+            id, id))
         html.append('</div></div>')
         html.append('</form>')
         return "".join(html)
@@ -670,11 +657,51 @@ class TermTaxonomyEditor(IWidget):
     def embedded_css(self):
         return ".ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}"
 
+
+@ui("TermTaxonomyComboBox")
+class TermTaxonomyComboBox(IWidget):
+    def render(self, **prop):
+        dom_id = prop["id"]
+        items = self.list(prop["taxonomy"])
+        allowed_blank = prop.get("allowed_blank")
+        html = list()
+        html.append("<select id='%s' name='%s' class='form-control'>" % (dom_id, dom_id))
+        if allowed_blank:
+            html.append("<option value=''> </option>")
+        for item in items:
+            html.append("<option value='%i'>%s</option>" % (item[0], item[1]))
+        html.append("</select>")
+        return "".join(html)
+
+    def list(self, taxonomy):
+        cnn = SessionFactory.new()
+        items = cnn.query(TermTaxonomy.id, Term.name) \
+            .outerjoin((Term, Term.id == TermTaxonomy.term_id)) \
+            .filter(TermTaxonomy.taxonomy == taxonomy) \
+            .all()
+        return items
+
+
+@ui("TermTaxonomyJavascript")
+class TermTaxonomyJavascript(TermTaxonomyComboBox):
+    def render(self, **prop):
+        #Javascript 变量名称
+        name = prop.get("name")
+        taxonomy = prop.get("taxonomy")
+        data = self.list(taxonomy)
+        js = "var %s = " % name
+        map_ = dict()
+        for item in data:
+            map_[item[0]] = item[1]
+        js += json.dumps(map_)
+        return js
+
+
 #分类选择器,单选、多选
 @ui("TreeComboBox")
 class TreeComboBox(TermTaxonomyEditor):
     def render(self, **prop):
-        self.dom_id = prop["id"]
+        dom_id = prop["id"]
         opt = dict()
         opt["taxonomy"] = prop["taxonomy"]
         placeholder = prop.get("placeholder")
@@ -684,10 +711,9 @@ class TreeComboBox(TermTaxonomyEditor):
             self.point.list = prop.get("point_list")
             ObjectPool.treeview[opt["taxonomy"]] = self.point
         if AccountHelper.auth(self.current_user, {self.point.list}):
-            return self.render_string("widgets/treecombobox.html", id=self.dom_id, ph=placeholder, opt=opt)
+            return self.render_string("widgets/treecombobox.html", id=dom_id, ph=placeholder, opt=opt)
         return ""
 
-    pass
 
 @ui("AutoComplete")
 class AutoComplete(IWidget):
@@ -703,7 +729,8 @@ class AutoComplete(IWidget):
         item_tpl = p.get("item_tpl")
         if item_tpl:
             self.item_tpl = item_tpl
-        return self.render_string("widgets/autocomplete.html",id=self.dom_id,key=self.key,item_tpl=self.item_tpl,at=self.at,placeholder=self.placeholder)
+        return self.render_string("widgets/autocomplete.html", id=self.dom_id, key=self.key, item_tpl=self.item_tpl,
+                                  at=self.at, placeholder=self.placeholder)
 
     def javascript_files(self):
         files = list()
