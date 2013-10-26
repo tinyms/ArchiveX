@@ -4,6 +4,12 @@
 <script src="{{ static_url('jslib/datepicker/js/bootstrap-datepicker.js') }}"></script>
 <link rel="stylesheet" href="{{ static_url('jslib/datepicker/css/datepicker.css') }}">
 <script type="text/javascript">
+    {% module TermTaxonomyJavascript(name="OrgMap",taxonomy="Org") %}
+    {% module TermTaxonomyJavascript(name="PostMap",taxonomy="Post") %}
+    {% module TermTaxonomyJavascript(name="SexMap",taxonomy="Sex") %}
+    {% module TermTaxonomyJavascript(name="MaritalStatusMap",taxonomy="MaritalStatus") %}
+    {% module TermTaxonomyJavascript(name="EducationalBackgroundMap",taxonomy="EducationalBackground") %}
+
     function datatable_server_params(id,aoData){
         if(id=="ArchivesDataTable"){
             aoData.push({name:"OrgId",value:$("#OrgTreeComboBox").val()});
@@ -14,6 +20,20 @@
         }else if(id=="TrainingExperienceDataTable"){
             aoData.push({name:"archives_id",value:$("#ArchivesDataTable_form").find("#id").val()});
         }
+    }
+    function datatable_render(id,k,v,row){
+        if(id=="ArchivesDataTable"){
+            if(k=="sex"){
+                return SexMap[v];
+            }else if(k=="post"){
+                return PostMap[v];
+            }else if(k=="marital_status"){
+                return MaritalStatusMap[v];
+            }else if(k=="educational_background"){
+                return EducationalBackgroundMap[v];
+            }
+        }
+        return v;
     }
     function datatable_form_init(id){
     }
@@ -50,7 +70,7 @@
 
     $(document).ready(function(){
         $(".date").datepicker({format:"yyyy-mm-dd"});
-        {% module TermTaxonomyJavascript(name="OrgMap",taxonomy="Org") %}
+
     });
 </script>
 {% end %}
@@ -130,7 +150,7 @@
                                         <div class="form-group">
                                         <label for="sex" class="col-lg-3 control-label">性别</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="sex" name="sex"  >
+                                        {% module TermTaxonomyComboBox(id="sex",taxonomy="Sex") %}
                                         </div>
                                         </div>
                                     </div>
@@ -204,7 +224,7 @@
                                         <label for="post" class="col-lg-3 control-label">职位</label>
                                         <div class="col-lg-8">
                                         {%
-                                            module TermTaxonomyComboBox(id="post",taxonomy="JobTitle")
+                                            module TermTaxonomyComboBox(id="post",taxonomy="Post")
                                         %}
                                         </div>
                                         </div>
