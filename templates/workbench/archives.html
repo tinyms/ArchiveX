@@ -61,6 +61,7 @@
 
     function datatable_form_fill(id,row){
         if(id=="ArchivesDataTable"){
+            $("#code_tmp").val(row.code);
             tree_combobox_value("org_id",row.org_id);
             WorkExperienceDataTable_.Refresh();
             LearningExperienceDataTable_.Refresh();
@@ -112,6 +113,16 @@
                           <div class="tab-pane active" id="Archives_Base">
                                 {% module form_start("ArchivesDataTable") %}
                                 <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                        <label for="household_register" class="col-lg-1 control-label">编码</label>
+                                        <div class="col-lg-11">
+                                        <input type="text" class="form-control" id="code_tmp" name="code_tmp" style="width: 120px;" readonly="true">
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-lg-4">
                                         <div class="form-group">
                                         <label for="org_id_category_name" class="col-lg-3 control-label">所属部门</label>
@@ -142,7 +153,7 @@
                                         <div class="form-group">
                                         <label for="name" class="col-lg-3 control-label">姓名</label>
                                         <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="name" name="name" required >
+                                            <input type="text" class="form-control" id="name" name="name" style="width: 120px;" required >
                                         </div>
                                         </div>
                                     </div>

@@ -164,11 +164,11 @@ def autocomplete(id_):
 def datatable_provider(entity_name):
     """
     受装饰的类可以实现下面任意方法
-    def total(query,req) -> return session
-    def dataset(query,req) -> return session
-    def add(id,query,req)
-    def modify(id,query,req)
-    def delete(id,query,req)
+    def total(query,req) -> return query
+    def dataset(query,req) -> return query
+    def add(id,sf,req)
+    def modify(id,sf,req)
+    def delete(id,sf,req)
     """
 
     def ref_pattern(cls):

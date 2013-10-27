@@ -7,12 +7,13 @@ from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import Role, Archives, Account, SecurityPoint
 from tinyms.core.point import ObjectPool, reg_point
 from tinyms.dao.category import CategoryHelper
+from tinyms.dao.setting import AppSettingHelper
 
 
 class Loader():
     @staticmethod
     def init():
-
+        AppSettingHelper.load()
         #Create Root Category
         helper = CategoryHelper("ROOT")
         if not helper.exists("ROOT"):
@@ -33,6 +34,7 @@ class Loader():
             usr = Archives()
             usr.name = "超级管理员"
             usr.email = "admin@local.com"
+            usr.code = "P00001"
             cnn.add(usr)
             cnn.commit()
 
