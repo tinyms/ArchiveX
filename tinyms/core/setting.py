@@ -54,6 +54,12 @@ class AppSettingHelper():
         return AppSettingHelper.__global__
 
     @staticmethod
+    def reload():
+        u = UserSettingHelper("root")
+        AppSettingHelper.__global__ = u.load()
+        return AppSettingHelper.__global__
+
+    @staticmethod
     def get(key, default_=None):
         val = AppSettingHelper.__global__.get(key)
         if val:

@@ -7,7 +7,7 @@ from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import Role, Archives, Account, SecurityPoint
 from tinyms.core.point import ObjectPool, reg_point
 from tinyms.dao.category import CategoryHelper
-from tinyms.dao.setting import AppSettingHelper
+from tinyms.core.setting import AppSettingHelper
 
 
 class Loader():

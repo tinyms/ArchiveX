@@ -2,13 +2,14 @@ __author__ = 'tinyms'
 
 from tinyms.core.web import IAuthRequest
 from tinyms.core.point import ObjectPool, route, setting, api
-from tinyms.dao.setting import UserSettingHelper, AppSettingHelper
+from tinyms.core.setting import UserSettingHelper, AppSettingHelper
 
 
 @route("/workbench/setting")
 class SettingPage(IAuthRequest):
     def get(self, *args, **kwargs):
         return self.render("workbench/setting.html", items=ObjectPool.setting)
+
 
 @api("tinyms.core.setting")
 class SettingApi():
@@ -40,6 +41,7 @@ class SettingApi():
             if hasattr(obj, "save"):
                 obj.save(kv, self)
 
+        AppSettingHelper.reload()
         return "success"
 
 
