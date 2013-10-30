@@ -113,7 +113,8 @@ class RegApi():
 
         p = Archives()
         p.email = email
-        p.name = ""
+        p.name = Utils.email_account_name(email)
+        p.join_date = Utils.current_datetime()
         sf.add(p)
         sf.flush()
         p.code = fmt % p.id

@@ -16,6 +16,7 @@ from imp import find_module, load_module, acquire_lock, release_lock
 import psycopg2
 import psycopg2.extras
 
+
 class Postgres():
     DATABASE_NAME = "postgres"
     USER_NAME = "postgres"
@@ -211,12 +212,13 @@ class Utils():
     @staticmethod
     def current_datetime():
         from datetime import datetime as tmp
+
         return tmp.now()
 
     @staticmethod
     def mkdirs(path):
-        isExists = os.path.exists(path)
-        if not isExists:
+        isexists = os.path.exists(path)
+        if not isexists:
             os.makedirs(path)
             return True
         else:
@@ -253,7 +255,7 @@ class Utils():
         time_text = Utils.parse_time_text(text)
         if not time_text:
             return None
-        return time.strptime(time_text,"%H:%M")
+        return time.strptime(time_text, "%H:%M")
 
     @staticmethod
     def parse_date_text(text):
@@ -271,7 +273,8 @@ class Utils():
         if not date_text:
             return None
         from datetime import datetime
-        return datetime.strptime(date_text,"%Y-%m-%d").date()
+
+        return datetime.strptime(date_text, "%Y-%m-%d").date()
 
     @staticmethod
     def parse_datetime_text(text):
@@ -290,7 +293,8 @@ class Utils():
         if not datetime_text:
             return None
         from datetime import datetime
-        return datetime.strptime(datetime_text,"%Y-%m-%d %H:%M")
+
+        return datetime.strptime(datetime_text, "%Y-%m-%d %H:%M")
 
     @staticmethod
     def parse_float(text):
@@ -343,28 +347,38 @@ class Utils():
         return [[r[col] for r in arr] for col in range(len(arr[0]))]
 
     @staticmethod
-    def combine_text_files(folder,target_file_name):
-        text = Utils.text_read(os.path.join(folder,"combine.list"))
+    def combine_text_files(folder, target_file_name):
+        text = Utils.text_read(os.path.join(folder, "combine.list"))
         cfg = json.loads(text)
         for key in cfg.keys():
             files = cfg[key]
-            if len(files)>0:
-                combine_file = os.path.join(folder,target_file_name+"."+key)
+            if len(files) > 0:
+                combine_file = os.path.join(folder, target_file_name + "." + key)
                 if os.path.exists(combine_file):
                     os.remove(combine_file)
                 all = list()
                 for file in files:
-                    path = os.path.join(folder,file)
+                    path = os.path.join(folder, file)
                     all.append(Utils.text_read(path))
-                Utils.text_write(combine_file,all)
+                Utils.text_write(combine_file, all)
         pass
 
     @staticmethod
     def is_email(s):
         p = r"[^@]+@[^@]+\.[^@]+"
-        if re.match(p,s):
+        if re.match(p, s):
             return True
         return False
+
+    @staticmethod
+    def email_account_name(s):
+        #匹配@前面的字符串
+        p = r".*(?=@)"
+        r = re.compile(p)
+        matchs = r.findall(s)
+        if len(matchs) > 0:
+            return matchs[0]
+        return ""
 
     @staticmethod
     def format_datetime(date_obj):
@@ -384,13 +398,14 @@ class Utils():
             return ""
         return date_obj.strftime('%Y-%m-%d')
 
+
 class Plugin():
     ObjectPool = dict()
 
     @staticmethod
     def one(type_):
         plugins = Plugin.get(type_)
-        if len(plugins)>0:
+        if len(plugins) > 0:
             return plugins[0]
         return None
 
@@ -407,7 +422,7 @@ class Plugin():
         else:
             arr = Plugin.ObjectPool.get(type_)
             for t in arr:
-                name = "%s.%s" % (t.__class__.__module__,t.__class__.__qualname__)
+                name = "%s.%s" % (t.__class__.__module__, t.__class__.__qualname__)
                 if name.lower() == class_full_name.lower():
                     return t
 
