@@ -130,7 +130,7 @@ def one_to_one(foreign_entity_name):
 
     def ref_table(cls):
         foreign_entity_name_lower = foreign_entity_name.lower()
-        foreign_table_name = "%s_%s" % (SessionFactory.__table_name_prefix__, foreign_entity_name_lower)
+        foreign_table_name = "%s%s" % (SessionFactory.__table_name_prefix__, foreign_entity_name_lower)
         setattr(cls, '{0}_id'.format(foreign_entity_name_lower),
                 Column(Integer, ForeignKey('{0}.id'.format(foreign_table_name), ondelete="CASCADE")))
         setattr(cls, foreign_entity_name_lower,
@@ -151,7 +151,7 @@ def many_to_one(foreign_entity_name):
 
     def ref_table(cls):
         foreign_entity_name_lower = foreign_entity_name.lower()
-        foreign_table_name = "%s_%s" % (SessionFactory.__table_name_prefix__, foreign_entity_name_lower)
+        foreign_table_name = "%s%s" % (SessionFactory.__table_name_prefix__, foreign_entity_name_lower)
 
         if foreign_entity_name == cls.__name__:
             foreign_entity_name_lower = "parent"
@@ -182,13 +182,13 @@ def many_to_many(foreign_entity_name):
         target_name = foreign_entity_name.lower()
         self_name = cls.__name__.lower()
         association_table = Table(
-            '{0}_{1}_{2}_relationships'.format(SessionFactory.__table_name_prefix__, self_name, target_name),
+            '{0}{1}_{2}_relationships'.format(SessionFactory.__table_name_prefix__, self_name, target_name),
             Entity.metadata,
             Column('{0}_id'.format(target_name), Integer,
-                   ForeignKey('{0}_{1}.id'.format(SessionFactory.__table_name_prefix__, target_name),
+                   ForeignKey('{0}{1}.id'.format(SessionFactory.__table_name_prefix__, target_name),
                               ondelete="CASCADE")),
             Column('{0}_id'.format(self_name), Integer,
-                   ForeignKey('{0}_{1}.id'.format(SessionFactory.__table_name_prefix__, self_name), ondelete="CASCADE"))
+                   ForeignKey('{0}{1}.id'.format(SessionFactory.__table_name_prefix__, self_name), ondelete="CASCADE"))
         )
 
         setattr(cls, target_name + 's',
