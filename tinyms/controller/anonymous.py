@@ -6,7 +6,7 @@ from tinyms.core.point import route, api
 from tinyms.core.web import IRequest
 from tinyms.core.common import Utils
 from tinyms.core.orm import SessionFactory
-from tinyms.core.entity import Account, Archives
+from tinyms.core.entity import Account, Archives, Role
 from tinyms.core.setting import AppSettingHelper
 
 
@@ -127,6 +127,14 @@ class RegApi():
         u.enabled = 1
         u.archives_id = p.id
         sf.add(u)
+        sf.flush()
+
+        default_role_id = Utils.parse_int(AppSettingHelper.get("s_usr_register_default_role_name", 0))
+        if default_role_id > 0:
+            default_role = sf.query(Role).get(default_role_id)
+            if default_role:
+                u.roles.append(default_role)
+
         sf.commit()
 
         self.request.set_secure_cookie(IRequest.__key_account_id__, "%i" % u.id)

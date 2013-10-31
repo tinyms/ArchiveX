@@ -1,3 +1,5 @@
+from tinyms.core.setting import AppSettingHelper
+
 __author__ = 'tinyms'
 
 from tinyms.core.orm import SessionFactory
@@ -17,6 +19,14 @@ class AccountHelper():
         obj.enabled = enabled
         obj.archives_id = archives_id
         cnn.add(obj)
+        cnn.flush()
+
+        default_role_id = Utils.parse_int(AppSettingHelper.get("s_usr_register_default_role_name", "0"))
+        if default_role_id > 0:
+            default_role = cnn.query(Role).get(default_role_id)
+            if default_role:
+                obj.roles.append(default_role)
+
         cnn.commit()
         return obj.id
 

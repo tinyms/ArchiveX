@@ -8,7 +8,7 @@ from tinyms.core.common import Utils, JsonEncoder
 from tinyms.core.point import ui, route, ObjectPool, EmptyClass
 from tinyms.core.orm import SessionFactory
 from tinyms.core.web import IRequest
-from tinyms.core.entity import Term, TermTaxonomy
+from tinyms.core.entity import Term, TermTaxonomy, Role
 from tinyms.dao.account import AccountHelper
 
 
@@ -19,7 +19,7 @@ class IWidget(UIModule):
 @ui("Version")
 class VersionModule(IWidget):
     def render(self, *args, **kwargs):
-        return "&copy; ArchiveX 2013, v1.0b"
+        return "&copy; ArchX 2013, v1.0b"
 
 
 @ui("CurrentAccountName")
@@ -96,10 +96,10 @@ class DataComboBoxModule(IWidget):
         self.sort_sql = prop.get("sort_sql")
         self.entity_full_name = prop.get("entity")
         self.query_class = prop.get("query_class") # obj prop `data` func return [(k,v),(k,v)...]
-        self.allow_blank_select = prop.get("allow_blank_select")
+        self.allow_blank = prop.get("allow_blank")
         html = list()
         html.append("<select id='%s' name='%s' class='form-control'>" % (self.dom_id, self.dom_id))
-        if self.allow_blank_select:
+        if self.allow_blank:
             html.append("<option value=''> </option>")
         if not self.query_class:
             if not self.entity_full_name:
@@ -122,6 +122,24 @@ class DataComboBoxModule(IWidget):
                 items = getattr(obj, "data")()
                 for item in items:
                     html.append("<option value='%s'>%s</option>" % (item[0], item[1]))
+        html.append("</select>")
+        return "".join(html)
+
+
+@ui("RoleComboBox")
+class RoleListComboBox(IWidget):
+    def render(self, **prop):
+        dom_id = prop.get("id")
+        allow_blank = prop.get("allow_blank")
+        html = list()
+        html.append("<select id='%s' name='%s'>" % (dom_id, dom_id))
+        if allow_blank:
+            html.append("<option value=''> </option>")
+        sf = SessionFactory.new()
+        ds = sf.query(Role).filter(Role.name != "SuperAdmin").all()
+        for row in ds:
+            label = "%s(%s)" % (row.name, row.description)
+            html.append("<option value='%s'>%s</option>" % (row.id, label))
         html.append("</select>")
         return "".join(html)
 
@@ -591,7 +609,7 @@ class DataGridFormStart(IWidget):
         html.append('<div class="form-group"><div class="col-lg-9 col-lg-offset-3">')
         html.append(
             '<input type="button" class="btn btn-white btn-sm " id="%s_form_return"  onclick="%s_.form.cancel(this);" value="返回"/>' % (
-            id, id))
+                id, id))
         html.append('</div></div>')
         return "".join(html)
 
@@ -603,13 +621,13 @@ class DataGridFormStart(IWidget):
         html.append('<div class="form-group"><div class="col-lg-9 col-lg-offset-3">')
         html.append(
             '<input type="button" class="btn btn-primary btn-sm" id="%s_form_save" onclick="%s_.form.save(this,%s);" value="保存"></button>' % (
-            id, id, "''"))
+                id, id, "''"))
         html.append(
             ' <input type="button" class="btn btn-white btn-sm" id="%s_form_save_continue" onclick="%s_.form.save(this,%s);" value="保存并继续"></button>' % (
-            id, id, "'clear'"))
+                id, id, "'clear'"))
         html.append(
             ' <input type="button" class="btn btn-white btn-sm" id="%s_form_reset" onclick="%s_.form.reset(this);" value="重填"></button>' % (
-            id, id))
+                id, id))
         html.append('</div></div>')
         html.append('</form>')
         return "".join(html)

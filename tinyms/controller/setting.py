@@ -1,7 +1,10 @@
 __author__ = 'tinyms'
 
 from tinyms.core.web import IAuthRequest
-from tinyms.core.point import ObjectPool, route, setting, api
+from tinyms.core.entity import Role
+from tinyms.core.orm import SessionFactory
+from tinyms.core.widgets import IWidget
+from tinyms.core.point import ObjectPool, route, setting, api, ui
 from tinyms.core.setting import UserSettingHelper, AppSettingHelper
 
 
@@ -45,7 +48,7 @@ class SettingApi():
         return "success"
 
 
-@setting("tinyms_core_setting_sys", "workbench/sys_setting_page.html", "全局", "tinyms.entity.setting.user")
+@setting("tinyms_core_setting_sys", "workbench/sys_setting_page.html", "全局", "tinyms.entity.setting.system")
 class SystemSetting():
     def save(self, kv, http_req):
         pass
