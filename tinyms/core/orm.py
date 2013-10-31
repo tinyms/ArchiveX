@@ -6,11 +6,13 @@ from sqlalchemy.orm import relationship, backref, class_mapper
 from sqlalchemy import Column, Integer, ForeignKey, Table
 from sqlalchemy.orm import sessionmaker
 from tinyms.core.common import Utils
+
 Entity = declarative_base()
+
 
 class SessionFactory():
     __engine__ = None
-    __table_name_prefix__ = "archivex"
+    __table_name_prefix__ = "archx_"
 
     @staticmethod
     def table_name_prefix(name):
@@ -27,6 +29,7 @@ class SessionFactory():
         if SessionFactory.__engine__:
             Entity.metadata.create_all(SessionFactory.__engine__)
 
+
 class Simplify():
     """
     简化实体创建及可以JSON化实体数据
@@ -35,9 +38,9 @@ class Simplify():
 
     @declared_attr
     def __tablename__(self):
-        return "%s_%s" % (SessionFactory.__table_name_prefix__,self.__name__.lower())
+        return "%s%s" % (SessionFactory.__table_name_prefix__, self.__name__.lower())
 
-    def dict(self,dict_=None):
+    def dict(self, dict_=None):
         """
         1, object to map
         2, map to object
@@ -49,39 +52,39 @@ class Simplify():
             return dict((c, getattr(self, c)) for c in columns)
         else:
             metas = self.cols_meta()
-            for k,v in dict_.items():
-                print(k,v)
-                if not hasattr(self,k):
+            for k, v in dict_.items():
+                print(k, v)
+                if not hasattr(self, k):
                     continue
                 for m in metas:
                     if m["name"] == k:
                         if m["type"] == "int":
                             if type(v) == str:
-                                setattr(self,k,Utils.parse_int(v))
+                                setattr(self, k, Utils.parse_int(v))
                             else:
-                                setattr(self,k,v)
+                                setattr(self, k, v)
                         elif m["type"] == "numeric":
                             if type(v) == str:
-                                setattr(self,k,Utils.parse_float(v))
+                                setattr(self, k, Utils.parse_float(v))
                             else:
-                                setattr(self,k,v)
+                                setattr(self, k, v)
                         elif m["type"] == "datetime":
                             if type(v) == str:
-                                setattr(self,k,Utils.parse_datetime(v))
+                                setattr(self, k, Utils.parse_datetime(v))
                             else:
-                                setattr(self,k,v)
+                                setattr(self, k, v)
                         elif m["type"] == "date":
                             if type(v) == str:
-                                setattr(self,k,Utils.parse_date(v))
+                                setattr(self, k, Utils.parse_date(v))
                             else:
-                                setattr(self,k,v)
+                                setattr(self, k, v)
                         elif m["type"] == "time":
                             if type(v) == str:
-                                setattr(self,k,Utils.parse_time(v))
+                                setattr(self, k, Utils.parse_time(v))
                             else:
-                                setattr(self,k,v)
+                                setattr(self, k, v)
                         else:
-                            setattr(self,k,v)
+                            setattr(self, k, v)
                 pass
             pass
 
@@ -98,13 +101,13 @@ class Simplify():
             meta["autoincrement"] = col.autoincrement
             meta["default"] = col.default
             type_name = col.type.__visit_name__
-            if ["string","text","unicode","unicode_text"].count(type_name)==1:
+            if ["string", "text", "unicode", "unicode_text"].count(type_name) == 1:
                 type_name = "string"
-            elif ["integer","small_integer","big_integer","boolean"].count(type_name)==1:
+            elif ["integer", "small_integer", "big_integer", "boolean"].count(type_name) == 1:
                 type_name = "int"
-            elif ["numeric","float"].count(type_name)==1:
+            elif ["numeric", "float"].count(type_name) == 1:
                 type_name = "numeric"
-            # elif ["datetime","date","time"].count(type_name)==1:
+                # elif ["datetime","date","time"].count(type_name)==1:
             #     type_name = "date"
             meta["type"] = type_name
             metas.append(meta)
@@ -124,9 +127,10 @@ def one_to_one(foreign_entity_name):
     :param foreign_entity_name: 目标实体名
     :return:
     """
+
     def ref_table(cls):
         foreign_entity_name_lower = foreign_entity_name.lower()
-        foreign_table_name = "%s_%s" % (SessionFactory.__table_name_prefix__,foreign_entity_name_lower)
+        foreign_table_name = "%s_%s" % (SessionFactory.__table_name_prefix__, foreign_entity_name_lower)
         setattr(cls, '{0}_id'.format(foreign_entity_name_lower),
                 Column(Integer, ForeignKey('{0}.id'.format(foreign_table_name), ondelete="CASCADE")))
         setattr(cls, foreign_entity_name_lower,
@@ -144,9 +148,10 @@ def many_to_one(foreign_entity_name):
     :param foreign_entity_name: 目标实体名
     :return:
     """
+
     def ref_table(cls):
         foreign_entity_name_lower = foreign_entity_name.lower()
-        foreign_table_name = "%s_%s" % (SessionFactory.__table_name_prefix__,foreign_entity_name_lower)
+        foreign_table_name = "%s_%s" % (SessionFactory.__table_name_prefix__, foreign_entity_name_lower)
 
         if foreign_entity_name == cls.__name__:
             foreign_entity_name_lower = "parent"
@@ -155,7 +160,7 @@ def many_to_one(foreign_entity_name):
                 Column(Integer, ForeignKey('{0}.id'.format(foreign_table_name), ondelete="CASCADE")))
         if foreign_entity_name == cls.__name__:
             setattr(cls, foreign_entity_name_lower,
-                    relationship(foreign_entity_name, backref=backref("children",remote_side=cls.id)))
+                    relationship(foreign_entity_name, backref=backref("children", remote_side=cls.id)))
         else:
             setattr(cls, foreign_entity_name_lower,
                     relationship(foreign_entity_name, backref=backref(cls.__name__.lower() + 's')))
@@ -172,14 +177,18 @@ def many_to_many(foreign_entity_name):
     :param foreign_entity_name: 目标实体名
     :return:
     """
+
     def ref_table(cls):
         target_name = foreign_entity_name.lower()
         self_name = cls.__name__.lower()
-        association_table = Table('{0}_{1}_{2}_relationships'.format(SessionFactory.__table_name_prefix__,self_name, target_name), Entity.metadata,
-                                  Column('{0}_id'.format(target_name), Integer,
-                                         ForeignKey('{0}_{1}.id'.format(SessionFactory.__table_name_prefix__,target_name),ondelete="CASCADE")),
-                                  Column('{0}_id'.format(self_name), Integer,
-                                         ForeignKey('{0}_{1}.id'.format(SessionFactory.__table_name_prefix__,self_name),ondelete="CASCADE"))
+        association_table = Table(
+            '{0}_{1}_{2}_relationships'.format(SessionFactory.__table_name_prefix__, self_name, target_name),
+            Entity.metadata,
+            Column('{0}_id'.format(target_name), Integer,
+                   ForeignKey('{0}_{1}.id'.format(SessionFactory.__table_name_prefix__, target_name),
+                              ondelete="CASCADE")),
+            Column('{0}_id'.format(self_name), Integer,
+                   ForeignKey('{0}_{1}.id'.format(SessionFactory.__table_name_prefix__, self_name), ondelete="CASCADE"))
         )
 
         setattr(cls, target_name + 's',
