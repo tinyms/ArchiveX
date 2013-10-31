@@ -418,6 +418,7 @@ class DataViewModule(DataTableBaseModule):
         self.cols = prop.get("cols")#entity field list
         self.titles = prop.get("titles")#title list
         self.dataview_name = prop.get("view_name")#仅仅只是一个Key，不做他用
+        self.editable = prop.get("editable")
         self.point = EmptyClass()
         self.point.list = prop.get("point_list")
         self.point.add = prop.get("point_add")
@@ -443,6 +444,10 @@ class DataViewModule(DataTableBaseModule):
         opt["id"] = self.dom_id
         opt["thTags"] = tag
         opt["entity_name_md5"] = self.dataview_key
+        if not self.editable:
+            opt["editable"] = True
+        else:
+            opt["editable"] = self.editable
         html_col = list()
 
         index = 0

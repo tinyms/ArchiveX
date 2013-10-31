@@ -12,6 +12,7 @@ function {{opt["id"]}}_actionbar_render(col,v,type,row){
 	if (typeof(datatable_render_actionbar) != "undefined") {
 		action_btns += datatable_render_actionbar('{{opt["id"]}}', "id", v, row);
 	}
+    {% if opt["editable"] %}
 	{% if auth({opt["point"].add}) %}
 	action_btns += ' <a class="btn-link" title="添加" onclick="{{opt["id"]}}_.RecordSetProvider.New(this);"><i class="icon-plus"></i></a>';
 	{% end %}
@@ -21,12 +22,18 @@ function {{opt["id"]}}_actionbar_render(col,v,type,row){
 	{% if auth({opt["point"].delete}) %}
 	action_btns += ' <a class="btn-link" title="删除" onclick="{{opt["id"]}}_.RecordSetProvider.Delete(this,' + v + ');"><i class="icon-remove"></i></a>';
 	{% end %}
+    {% end %}
 	return action_btns+"</div>";
 }
 $(document).ready(function () {
     $("#{{opt['id']}}_panel").hide();
 	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},'None',{{opt["id"]}}_actionbar_render);
     {{opt["id"]}}_.request_url = "/dataview/" + {{opt["id"]}}_.entityName + "/";
+    {% if opt["editable"] %}
+    {{opt["id"]}}_.editable = true;
+    {% else %}
+    {{opt["id"]}}_.editable = false;
+    {% end %}
 	{{opt["id"]}}_.Create();
 });
 </script>

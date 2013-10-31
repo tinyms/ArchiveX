@@ -25,6 +25,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
     this.cols = cols_;
     this.config = {};
     this.request_url = "/datatable/" + self.entityName + "/";
+    this.editable = true;
     this.Create = function () {
         var len = this.cols.length;
         for (var k = 0; k < len; k++) {
@@ -93,7 +94,9 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
         };
         $('#' + self.id).data("EditFormId", self.editFormId);
         self.__dataTable = $('#' + self.id).dataTable(self.config);
-        $('#' + self.id + '_length label').append(" <button class='btn btn-sm btn-white' id='" + self.id + "_NewRowBtn'><i class='icon-plus'></i>新增</button>");
+        if(self.editable){
+            $('#' + self.id + '_length label').append(" <button class='btn btn-sm btn-white' id='" + self.id + "_NewRowBtn'><i class='icon-plus'></i>新增</button>");
+        }
         $("#" + self.id + "_NewRowBtn").click(function () {
             self.switchTableAndEditFormPanel(true);
         });
