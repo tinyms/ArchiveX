@@ -197,7 +197,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
         },
         "color_current_row": function (btn) {
             $("#" + this.id() + " tr").removeAttr("style");
-            $(btn).parent().parent().attr("style", "background-color:#99CC99;");
+            $(btn).parent().parent().parent().attr("style", "background-color:#99CC99;");
         },
         "New": function (btn) {
             self.switchTableAndEditFormPanel(true);

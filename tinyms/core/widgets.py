@@ -289,21 +289,30 @@ class DataTableHandler(IRequest):
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
+        custom_filter = ObjectPool.datatable_provider.get(meta["name"])
+        custom_filter_obj = None
+        if custom_filter:
+            custom_filter_obj = custom_filter()
+        valid_msg = ""
         message = dict()
         message["flag"] = "delete"
         rec_id = self.get_argument("id")
-        cnn = SessionFactory.new()
-        cur_row = cnn.query(entity).get(rec_id)
-        cnn.delete(cur_row)
-        cnn.commit()
-        custom_filter = ObjectPool.datatable_provider.get(meta["name"])
-        if custom_filter:
-            custom_filter_obj = custom_filter()
+        sf = SessionFactory.new()
+        cur_row = sf.query(entity).get(rec_id)
+        if hasattr(custom_filter_obj, "before_delete"):
+            valid_msg = custom_filter_obj.before_delete(cur_row, sf, self)
+        if not valid_msg:
+            sf.delete(cur_row)
+            sf.commit()
             if hasattr(custom_filter_obj, "after_delete"):
-                custom_filter_obj.after_delete(rec_id, cnn, self)
-        message["success"] = True
-        message["msg"] = "Deleted"
-        self.write(json.dumps(message))
+                custom_filter_obj.after_delete(cur_row, sf, self)
+            message["success"] = True
+            message["msg"] = "Deleted"
+            self.write(json.dumps(message))
+        else:
+            message["success"] = False
+            message["msg"] = valid_msg
+            self.write(json.dumps(message))
 
     def update(self, id_):
         message = dict()
@@ -317,11 +326,11 @@ class DataTableHandler(IRequest):
         if custom_filter:
             custom_filter_obj = custom_filter()
         rec_id = self.get_argument("id")
+        valid_msg = ""
         if not rec_id:
             message["flag"] = "add"
             sf = SessionFactory.new()
             obj = self.wrap_entity(entity())
-            valid_msg = ""
             if hasattr(custom_filter_obj, "before_add"):
                 valid_msg = custom_filter_obj.before_add(obj, sf, self)
             #检查没有数据上的问题才执行保存动作
@@ -341,7 +350,6 @@ class DataTableHandler(IRequest):
             message["flag"] = "update"
             sf = SessionFactory.new()
             cur_row = sf.query(entity).get(rec_id)
-            valid_msg = ""
             self.wrap_entity(cur_row)
             if hasattr(custom_filter_obj, "before_modify"):
                 valid_msg = custom_filter_obj.before_modify(cur_row, sf, self)

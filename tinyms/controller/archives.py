@@ -23,12 +23,19 @@ class TermTaxonomyController(IAuthRequest):
 
 @datatable_provider("tinyms.core.entity.Archives")
 class ArchivesDataProvider():
-
     def total(self, query, req):
-        return query.filter(Archives.name != "超级管理员")
+        org_id = Utils.parse_int(req.get_argument("org_id"))
+        q = query.filter(Archives.name != "超级管理员")
+        if org_id:
+            q = q.filter(Archives.org_id == org_id)
+        return q
 
     def dataset(self, query, req):
-        return query.filter(Archives.name != "超级管理员")
+        org_id = Utils.parse_int(req.get_argument("org_id"))
+        q = query.filter(Archives.name != "超级管理员")
+        if org_id:
+            q = q.filter(Archives.org_id == org_id)
+        return q
 
     def after_add(self, entity_obj, sf, req):
         length = len(str(sf.query(func.count(Archives.id)).scalar()))

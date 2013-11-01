@@ -12,7 +12,7 @@
 
     function datatable_server_params(id,aoData){
         if(id=="ArchivesDataTable"){
-            aoData.push({name:"OrgId",value:$("#OrgTreeComboBox").val()});
+            aoData.push({name:"org_id",value:$("#OrgTreeComboBox").val()});
         }else if(id=="WorkExperienceDataTable"){
             aoData.push({name:"archives_id",value:$("#ArchivesDataTable_form").find("#id").val()});
         }else if(id=="LearningExperienceDataTable"){
