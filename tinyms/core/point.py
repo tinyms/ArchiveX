@@ -217,7 +217,7 @@ def setting(id_, tpl, title, security_point, postion=0, parent_id=None):
         obj.postion = postion
         obj.parent = parent_id
         obj.cls = cls
-        ObjectPool.setting[id] = obj
+        ObjectPool.setting[id_] = obj
         return cls
 
     return ref_setting

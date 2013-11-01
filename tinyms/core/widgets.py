@@ -531,11 +531,12 @@ class DataViewHandler(IRequest):
                 if hasattr(obj, "add"):
                     msg = obj.add(self)
                     if msg:
-                        message["success"] = False
-                        message["msg"] = msg
+                        if Utils.parse_int(msg) > 0:
+                            message["success"] = True
+                            message["msg"] = msg
                     else:
-                        message["success"] = True
-                        message["msg"] = "Newed"
+                        message["success"] = False
+                        message["msg"] = "Failure"
         else:
             if custom_data_provider:
                 obj = custom_data_provider()

@@ -191,7 +191,7 @@ class AccountDataProvider():
         enabled = Utils.parse_int(http_req.get_argument("enabled"))
         account_id = AccountHelper.create(login_name, password, bind_target_user, enabled)
         if account_id > 0:
-            return ""
+            return str(account_id)
         return "failure"
 
     def modify(self, id, http_req):

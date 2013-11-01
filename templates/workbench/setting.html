@@ -17,7 +17,6 @@
     $(document).ready(function(){
         $('#setting_tab a:first').tab('show');
         $.post("/api/tinyms.core.setting/load",{},function(data){
-            console.log(data);
             for (var k in data) {
                 $("#" + k).val(data[k]);
             }
