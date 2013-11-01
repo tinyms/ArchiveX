@@ -23,16 +23,37 @@ class TermTaxonomyController(IAuthRequest):
 
 @datatable_provider("tinyms.core.entity.Archives")
 class ArchivesDataProvider():
-    def add(self, id_, sf, req):
+
+    def total(self, query, req):
+        return query.filter(Archives.name != "超级管理员")
+
+    def dataset(self, query, req):
+        return query.filter(Archives.name != "超级管理员")
+
+    def after_add(self, entity_obj, sf, req):
         length = len(str(sf.query(func.count(Archives.id)).scalar()))
-        obj = sf.query(Archives).get(id_)
+        obj = sf.query(Archives).get(entity_obj.id)
         max_length = AppSettingHelper.get("s_usr_code_fmt_length", "5")
         prefix = AppSettingHelper.get("s_usr_code_prefix", "P")
         if length > Utils.parse_int(max_length):
             max_length = "%s" % (length + 1)
         fmt = prefix + "%0" + max_length + "d"
-        obj.code = fmt % id_
+        obj.code = fmt % entity_obj.id
         sf.commit()
+
+    def before_add(self, entity_obj, sf, req):
+        if entity_obj.email:
+            num = sf.query(func.count(Archives.id)).filter(Archives.email == entity_obj.email).scalar()
+            if num > 0:
+                return "EmailExists"
+        return ""
+
+    def before_modify(self, entity_obj, sf, req):
+        if entity_obj.email:
+            num = sf.query(func.count(Archives.id)).filter(Archives.email == entity_obj.email).scalar()
+            if num > 0:
+                return "EmailExists"
+        return ""
 
 
 @datatable_provider("tinyms.core.entity.WorkExperience")

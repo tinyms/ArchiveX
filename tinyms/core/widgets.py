@@ -283,13 +283,14 @@ class DataTableHandler(IRequest):
             else:
                 self.delete(id)
 
-    def delete(self, id):
+    def delete(self, id_):
         self.set_header("Content-Type", "text/json;charset=utf-8")
-        meta = DataTableModule.__entity_mapping__.get(id)
+        meta = DataTableModule.__entity_mapping__.get(id_)
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
         message = dict()
+        message["flag"] = "delete"
         rec_id = self.get_argument("id")
         cnn = SessionFactory.new()
         cur_row = cnn.query(entity).get(rec_id)
@@ -298,49 +299,66 @@ class DataTableHandler(IRequest):
         custom_filter = ObjectPool.datatable_provider.get(meta["name"])
         if custom_filter:
             custom_filter_obj = custom_filter()
-            if hasattr(custom_filter_obj, "delete"):
-                custom_filter_obj.delete(rec_id, cnn, self)
+            if hasattr(custom_filter_obj, "after_delete"):
+                custom_filter_obj.after_delete(rec_id, cnn, self)
         message["success"] = True
         message["msg"] = "Deleted"
         self.write(json.dumps(message))
 
-    def update(self, id):
+    def update(self, id_):
         message = dict()
         self.set_header("Content-Type", "text/json;charset=utf-8")
-        meta = DataTableModule.__entity_mapping__.get(id)
+        meta = DataTableModule.__entity_mapping__.get(id_)
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
         custom_filter = ObjectPool.datatable_provider.get(meta["name"])
+        custom_filter_obj = None
+        if custom_filter:
+            custom_filter_obj = custom_filter()
         rec_id = self.get_argument("id")
         if not rec_id:
+            message["flag"] = "add"
+            sf = SessionFactory.new()
             obj = self.wrap_entity(entity())
-            cnn = SessionFactory.new()
-            cnn.add(obj)
-            cnn.commit()
-            if custom_filter:
-                custom_filter_obj = custom_filter()
-                if hasattr(custom_filter_obj, "add"):
-                    custom_filter_obj.add(obj.id, cnn, self)
-            message["success"] = True
-            message["msg"] = "Newed"
-            self.write(json.dumps(message))
+            valid_msg = ""
+            if hasattr(custom_filter_obj, "before_add"):
+                valid_msg = custom_filter_obj.before_add(obj, sf, self)
+            #检查没有数据上的问题才执行保存动作
+            if not valid_msg:
+                sf.add(obj)
+                sf.commit()
+                if hasattr(custom_filter_obj, "after_add"):
+                    custom_filter_obj.after_add(obj, sf, self)
+                message["success"] = True
+                message["msg"] = obj.id
+                self.write(json.dumps(message))
+            else:
+                message["success"] = False
+                message["msg"] = valid_msg
+                self.write(json.dumps(message))
         else:
-            cnn = SessionFactory.new()
-            cur_row = cnn.query(entity).get(rec_id)
+            message["flag"] = "update"
+            sf = SessionFactory.new()
+            cur_row = sf.query(entity).get(rec_id)
+            valid_msg = ""
             self.wrap_entity(cur_row)
-            cnn.commit()
-            if custom_filter:
-                custom_filter_obj = custom_filter()
-                if hasattr(custom_filter_obj, "modify"):
-                    custom_filter_obj.modify(cur_row.id, cnn, self)
-            message["success"] = True
-            message["msg"] = "Updated"
-            self.write(json.dumps(message))
+            if hasattr(custom_filter_obj, "before_modify"):
+                valid_msg = custom_filter_obj.before_modify(cur_row, sf, self)
+            if not valid_msg:
+                sf.commit()
+                if hasattr(custom_filter_obj, "after_modify"):
+                    custom_filter_obj.after_modify(cur_row, sf, self)
+                message["success"] = True
+                message["msg"] = "Updated"
+                self.write(json.dumps(message))
+            else:
+                message["success"] = False
+                message["msg"] = valid_msg
+                self.write(json.dumps(message))
 
-
-    def list(self, id):
-        meta = DataTableModule.__entity_mapping__.get(id)
+    def list(self, id_):
+        meta = DataTableModule.__entity_mapping__.get(id_)
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
@@ -352,7 +370,7 @@ class DataTableHandler(IRequest):
 
         #全局搜索处理段落
         default_search_value = self.get_argument("sSearch")
-        default_search_fields = DataTableModule.__default_search_fields__.get(id)
+        default_search_fields = DataTableModule.__default_search_fields__.get(id_)
         default_search_sqlwhere = ""
         default_search_sqlwhere_params = dict()
         if default_search_value and default_search_fields:
@@ -399,12 +417,11 @@ class DataTableHandler(IRequest):
         results["aaData"] = [item.dict() for item in ds]
         self.write(json.dumps(results, cls=JsonEncoder))
 
-
     def parse_sort_params(self):
         params = dict()
-        colIndex = Utils.parse_int(self.get_argument("iSortCol_0"))
+        col_index = Utils.parse_int(self.get_argument("iSortCol_0"))
         direct = self.get_argument("sSortDir_0")
-        params[self.datatable_display_cols[colIndex]] = direct
+        params[self.datatable_display_cols[col_index]] = direct
         return params
 
 
@@ -499,6 +516,7 @@ class DataViewHandler(IRequest):
         if not name:
             self.set_status(403, "Error!")
         message = dict()
+        message["flag"] = "delete"
         message["success"] = False
         message["msg"] = "Miss DataProvider!"
         rec_id = self.get_argument("id")
@@ -515,29 +533,30 @@ class DataViewHandler(IRequest):
                     message["msg"] = "Deleted"
         self.write(json.dumps(message))
 
-    def update(self, id):
+    def update(self, id_):
         message = dict()
         message["success"] = False
         message["msg"] = "Miss DataProvider!"
         self.set_header("Content-Type", "text/json;charset=utf-8")
-        name = DataViewModule.__view_mapping__.get(id)
+        name = DataViewModule.__view_mapping__.get(id_)
         if not name:
             self.set_status(403, "Error!")
         custom_data_provider = ObjectPool.dataview_provider.get(name)
         rec_id = self.get_argument("id")
         if not rec_id:
+            message["flag"] = "add"
             if custom_data_provider:
                 obj = custom_data_provider()
                 if hasattr(obj, "add"):
-                    msg = obj.add(self)
-                    if msg:
-                        if Utils.parse_int(msg) > 0:
-                            message["success"] = True
-                            message["msg"] = msg
+                    last_id = obj.add(self)
+                    if last_id > 0:
+                        message["success"] = True
+                        message["msg"] = last_id
                     else:
                         message["success"] = False
                         message["msg"] = "Failure"
         else:
+            message["flag"] = "update"
             if custom_data_provider:
                 obj = custom_data_provider()
                 if hasattr(obj, "modify"):

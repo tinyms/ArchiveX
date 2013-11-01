@@ -166,9 +166,11 @@ def datatable_provider(entity_name):
     受装饰的类可以实现下面任意方法
     def total(query,req) -> return query
     def dataset(query,req) -> return query
-    def add(id,sf,req)
-    def modify(id,sf,req)
-    def delete(id,sf,req)
+    def before_add(entity_obj,sf,req) 保存之前作一些校验动作,返回提示信息,entity_obj已经填充了表单传过来的数据
+    def before_modify(entity_obj,sf,req) 修改之前作一些校验动作,返回提示信息
+    def after_add(entity_obj,sf,req) ->return last inserted id,entity_obj已经填充了表单传过来的数据
+    def after_modify(entity_obj,sf,req)
+    def after_delete(id,sf,req)
     """
 
     def ref_pattern(cls):
@@ -182,7 +184,7 @@ def dataview_provider(view_name):
     """
     def count(default_search_val,http_req) -> return int
     def list(default_search_val,start,limit, http_req) -> return [dict,dict..], start,limit: query.offset(display_start).limit(display_length)
-    def add(http_req) -> return err msg
+    def add(http_req) -> ->last inserted id
     def modify(id,http_req) -> return err msg
     def delete(id,http_req) -> return err msg
     """

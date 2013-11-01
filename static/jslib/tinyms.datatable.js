@@ -106,6 +106,8 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
         return self.__dataTable;
     };
     this.switchTableAndEditFormPanel = function (is_panel) {
+        $("#" + self.id + "_form").resetForm();
+        $("#" + self.id + "_form #id").val("");
         if (is_panel) {
             //var form_html = "<input type='hidden' id='id' name='id'/>";
             //form_html += $("#" + self.id + "_EditFormTemplate").html();
@@ -117,7 +119,6 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
             $("#" + self.id + "_wrap").hide();
             $("#" + self.id + "_panel").show();
         } else {
-            $("#" + self.id + "_form").resetForm();
             $("#" + self.id + "_wrap").show();
             $("#" + self.id + "_panel").hide();
         }
@@ -160,13 +161,14 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
                 "success": function (data, statusText, xhr, $form) {
                     if (data.success) {
                         toastr.success("保存成功!")
-                        if (data.msg == "Updated") {
+                        if(data.flag=="add"){
+                            $("#" + self.id + "_form #id").val(data.msg);
                             if (typeof(datatable_data_add) != "undefined") {
-                                return datatable_data_add(self.id, null);
+                                return datatable_data_add(self.id, data.msg);
                             }
-                        } else if (data.msg == "Newed") {
+                        }else if(data.flag == "update"){
                             if (typeof(datatable_data_update) != "undefined") {
-                                return datatable_data_update(self.id, $("#" + self.id + "_form #id").val(), null);
+                                return datatable_data_update(self.id, $("#" + self.id + "_form #id").val(), data.msg);
                             }
                         }
                         if (state == "clear") {
@@ -174,11 +176,11 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
                         }
                         self.Refresh();
                     }else{
-                        toastr.error("保存失败!")
+                        toastr.error("保存失败! "+data.msg);
                     }
                 },
                 "error": function () {
-                    toastr.error("服务器内部错误!")
+                    toastr.error("服务器内部错误!");
                 }
             });
         },

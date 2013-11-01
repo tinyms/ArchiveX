@@ -67,15 +67,15 @@ class Archives(Entity, Simplify):
     #紧急联系人电话
     emergency_contact_phone = Column(String(20))
     #邮箱
-    email = Column(String(65), unique=True)
+    email = Column(String(255))
     #移动电话
     mobile_phone = Column(String(20))
     #奖罚
-    reward_punishment = Column(String(100))
+    reward_punishment = Column(String(500))
     #自我评价
     self_evaluation = Column(String(500))
     #职业理想
-    dream_job = Column(String(100))
+    dream_job = Column(String(500))
     #其它说明
     other_description = Column(String(500))
     #部门ID
