@@ -57,7 +57,8 @@ class ArchivesDataProvider():
 
     def before_modify(self, entity_obj, sf, req):
         if entity_obj.email:
-            num = sf.query(func.count(Archives.id)).filter(Archives.email == entity_obj.email).scalar()
+            num = sf.query(func.count(Archives.id)).filter(Archives.email == entity_obj.email) \
+                .filter(Archives.id != entity_obj.id).scalar()
             if num > 0:
                 return "EmailExists"
         return ""

@@ -43,6 +43,12 @@
             }
         }
 
+        function datatable_form_init(id){
+            if(id=="AccountDataTable"){
+                $("#"+id+"_form #archives_id").val("");
+            }
+        }
+
         {% if auth({'tinyms.entity.role.points.view'}) %}
         function assign_security_points(elem, role_id) {
             var row = RoleDataTable_.GetRow(role_id);
@@ -208,14 +214,14 @@
                                             <div class="form-group">
                                             <label for="password" class="col-lg-3 control-label">密码</label>
                                             <div class="col-lg-8">
-                                            <input type="password" class="form-control" id="password" name="password" minlength="6">
+                                            <input type="password" class="form-control" id="password" name="password" minlength="8">
                                             </div>
                                             </div>
 
                                             <div class="form-group">
                                             <label for="repassword" class="col-lg-3 control-label">密码确认</label>
                                             <div class="col-lg-8">
-                                            <input type="password" class="form-control" id="repassword" name="repassword" minlength="6" equalTo="#password">
+                                            <input type="password" class="form-control" id="repassword" name="repassword" minlength="8" equalTo="#password">
                                             </div>
                                             </div>
 

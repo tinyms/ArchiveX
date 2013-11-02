@@ -215,6 +215,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
             if (current_row != null) {
                 self.switchTableAndEditFormPanel(true);
                 try {
+                    console.log(current_row);
                     for (k in current_row) {
                         $("#" + self.id + "_form #" + k).val(current_row[k]);
                     }

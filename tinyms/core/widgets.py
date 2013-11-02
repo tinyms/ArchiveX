@@ -550,31 +550,30 @@ class DataViewHandler(IRequest):
         if not name:
             self.set_status(403, "Error!")
         custom_data_provider = ObjectPool.dataview_provider.get(name)
+        obj = None
+        if custom_data_provider:
+            obj = custom_data_provider()
         rec_id = self.get_argument("id")
         if not rec_id:
             message["flag"] = "add"
-            if custom_data_provider:
-                obj = custom_data_provider()
-                if hasattr(obj, "add"):
-                    last_id = obj.add(self)
-                    if last_id > 0:
-                        message["success"] = True
-                        message["msg"] = last_id
-                    else:
-                        message["success"] = False
-                        message["msg"] = "Failure"
+            if hasattr(obj, "add"):
+                msg = obj.add(self)
+                if type(msg) == int:
+                    message["success"] = True
+                    message["msg"] = msg
+                else:
+                    message["success"] = False
+                    message["msg"] = msg
         else:
             message["flag"] = "update"
-            if custom_data_provider:
-                obj = custom_data_provider()
-                if hasattr(obj, "modify"):
-                    msg = obj.modify(rec_id, self)
-                    if msg:
-                        message["success"] = False
-                        message["msg"] = msg
-                    else:
-                        message["success"] = True
-                        message["msg"] = "Updated"
+            if hasattr(obj, "modify"):
+                msg = obj.modify(rec_id, self)
+                if msg:
+                    message["success"] = False
+                    message["msg"] = msg
+                else:
+                    message["success"] = True
+                    message["msg"] = "Updated"
 
         self.write(json.dumps(message))
 

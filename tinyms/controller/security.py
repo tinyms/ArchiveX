@@ -182,11 +182,13 @@ class AccountDataProvider():
     def add(self, http_req):
         login_name = http_req.get_argument("login_name")
         if not login_name:
-            return "UserLoginIdNotAllowedBlank"
+            return "UserLoginIdNotBlank"
         password = http_req.get_argument("password")
+        if not password:
+            return "PasswordNotBlank"
         repassword = http_req.get_argument("repassword")
-        if not password or password != repassword:
-            return "PasswordIsNotSame"
+        if password != repassword:
+            return "PasswordNotSame"
         bind_target_user = http_req.get_argument("archives_id")
         enabled = Utils.parse_int(http_req.get_argument("enabled"))
         account_id = AccountHelper.create(login_name, password, bind_target_user, enabled)
