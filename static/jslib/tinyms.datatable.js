@@ -1,7 +1,7 @@
 /**
  * User: tinyms
  * Date: 13-9-2
- * @plugins:
+ * @config:
  * function datatable_sortable(id){}
  * function datatable_server_params(id,aoData){} //aoData is list(dict)
  * function datatable_server_data(id, data, textStatus, jqXHR){}

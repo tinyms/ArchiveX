@@ -429,10 +429,10 @@ class Plugin():
     @staticmethod
     def load():
         Plugin.ObjectPool.clear()
-        path = os.path.join(os.getcwd(), "plugins")
+        path = os.path.join(os.getcwd(), "config")
         wid = os.walk(path)
         plugins = []
-        print("Search plugins modules..")
+        print("Search config modules..")
         for rootDir, pathList, fileList in wid:
             if rootDir.find("__pycache__") != -1:
                 continue
@@ -445,10 +445,10 @@ class Plugin():
 
         print(plugins)
         print("Instance all plugin class.")
-        for (name, dir) in plugins:
+        for (name, dir_) in plugins:
             try:
                 acquire_lock()
-                file, filename, desc = find_module(name, [dir])
+                file, filename, desc = find_module(name, [dir_])
                 prev = sys.modules.get(name)
                 if prev:
                     del sys.modules[name]

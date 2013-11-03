@@ -31,10 +31,15 @@ class AjaxTest():
         print(self.param("abc"))
         return [2,5,1,12]
 
-@route(r"/")
+@route(r"/ball")
 class WelcomeHandler(IRequest):
     def get(self):
         self.redirect("/static/index.html")
+
+@route(r"/")
+class WelcomeHandler(IRequest):
+    def get(self):
+        self.redirect("/login")
 
 @ajax("single_order")
 class SingleOrder():
