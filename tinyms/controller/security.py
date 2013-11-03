@@ -129,9 +129,9 @@ class FindArchivesAutoComplete():
         q = cnn.query(Archives.id, Archives.name, Archives.email)
         q = q.filter(or_(Archives.name.like('%' + search_word + '%'), Archives.email.like('%' + search_word + '%'),
                          Archives.alias.like('%' + search_word + '%'), Archives.code.like('%' + search_word + '%')))
-        all = q.limit(10).all()
+        all_ = q.limit(10).all()
         items = list()
-        for row in all:
+        for row in all_:
             item = dict()
             item["id"] = row[0]
             item["name"] = row[1]

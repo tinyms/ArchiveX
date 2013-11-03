@@ -37,7 +37,7 @@ class IRequest(RequestHandler):
             static_url=self.static_url,
             xsrf_form_html=self.xsrf_form_html,
             reverse_url=self.reverse_url,
-            auth = self.auth # Add to auth current user security points
+            auth=self.auth # Add to auth current user security points
         )
         namespace.update(self.ui)
         return namespace
@@ -74,7 +74,7 @@ class IRequest(RequestHandler):
         temp = set()
         if not self.get_current_user():
             return temp
-        cache = CacheManager.get(500,30*1000)
+        cache = CacheManager.get(500, 30 * 1000)
         points = cache.get(IRequest.__key_account_points__ % self.get_current_user())
         if points:
             print("Exists Cache Account Points")
@@ -131,6 +131,7 @@ class IAuthRequest(IRequest):
     def prepare(self):
         if not self.get_current_user():
             self.redirect("/login")
+
 
 @route(r"/api/(.*)/(.*)")
 class ApiHandler(IRequest):
@@ -228,14 +229,14 @@ class AjaxHandler(IRequest):
 
 @route("/autocomplete/(.*)")
 class AutoCompleteHandler(IRequest):
-    def post(self, id):
-        cls = ObjectPool.autocomplete_keys.get(id)
+    def post(self, id_):
+        cls = ObjectPool.autocomplete_keys.get(id_)
         self.set_header("Content-Type", "text/json;charset=utf-8")
         if cls:
             obj = cls()
-            if obj and hasattr(obj,"data"):
+            if hasattr(obj, "data"):
                 search_word = self.get_argument("search_word")
-                data = obj.data(self,search_word)
+                data = obj.data(self, search_word)
                 self.write(json.dumps(data, cls=JsonEncoder))
         else:
             self.write(json.dumps(list(), cls=JsonEncoder))

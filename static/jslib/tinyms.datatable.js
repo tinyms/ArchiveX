@@ -107,7 +107,7 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
     };
     this.switchTableAndEditFormPanel = function (is_panel) {
         $("#" + self.id + "_form").resetForm();
-        $("#" + self.id + "_form #id").val("");
+        $("#" + self.id + "_form input[type='hidden']").val("");
         if (is_panel) {
             //var form_html = "<input type='hidden' id='id' name='id'/>";
             //form_html += $("#" + self.id + "_EditFormTemplate").html();

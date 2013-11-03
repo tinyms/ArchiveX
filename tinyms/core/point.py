@@ -155,6 +155,7 @@ def ui(name):
 def autocomplete(id_):
     """
     自动完成数据源
+    def data(req, search_word)
     """
 
     def ref_ac(cls):
