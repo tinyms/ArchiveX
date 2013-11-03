@@ -187,7 +187,7 @@ class AjaxHandler(IRequest):
             else:
                 obj = cls()
                 if hasattr(obj, "__export__") and type(obj.__export__) == list:
-                    return self.render("core/ajax.tpl",
+                    return self.render("widgets/ajax.tpl",
                                        module_name=obj.__class__.__module__,
                                        class_name=obj.__class__.__qualname__,
                                        key=key,

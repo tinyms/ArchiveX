@@ -7,7 +7,10 @@ from tinyms.core.point import IWebConfig
 
 
 class DefaultWebConfig(IWebConfig):
-    def get_database_driver(self):
+    def database_driver(self):
         return create_engine("sqlite+pysqlite:///arch.data", echo=True)
-        #return create_engine("postgresql+psycopg2://postgres:1@localhost/ArchiveX", echo=True)
+        #return create_engine("postgresql+psycopg2://postgres:1@localhost/ArchX", echo=True)
+
+    def debug(self):
+        return True
 

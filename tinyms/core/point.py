@@ -4,8 +4,10 @@ from functools import wraps
 from tinyms.core.entity import SecurityPoint
 from tinyms.core.common import Utils
 
+
 #for plugin to extends
-class EmptyClass(): pass
+class EmptyClass():
+    pass
 
 
 class ObjectPool():
@@ -23,11 +25,14 @@ class ObjectPool():
 
 
 class IWebConfig():
-    def get_server_port(self):
+    def server_port(self):
         return 80
 
-    def get_database_driver(self):
+    def database_driver(self):
         return None
+
+    def debug(self):
+        return False
 
     def settings(self, ws_setting):
         """

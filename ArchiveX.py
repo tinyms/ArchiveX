@@ -30,12 +30,15 @@ port = 80
 web_configs = Plugin.get(IWebConfig)
 if web_configs:
     for web_config in web_configs:
-        if hasattr(web_config, "get_server_port"):
-            port = web_config.get_server_port()
+        if hasattr(web_config,"debug"):
+            ws_settings["debug"] = web_config.debug()
+        if hasattr(web_config, "server_port"):
+            port = web_config.server_port()
         if hasattr(web_config, "settings"):
             web_config.settings(ws_settings)
-        if hasattr(web_config, "get_database_driver"):#Only one in application
-            SessionFactory.__engine__ = web_config.get_database_driver()
+        #Only one in application
+        if hasattr(web_config, "database_driver"):
+            SessionFactory.__engine__ = web_config.database_driver()
             SessionFactory.create_tables()
             Loader.init()
 

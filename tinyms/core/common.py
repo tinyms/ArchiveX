@@ -444,7 +444,7 @@ class Plugin():
                     plugins.append((os.path.splitext(file)[0], rootDir))
 
         print(plugins)
-        print("Instance all plugin class.")
+        print("Instance all Config class.")
         for (name, dir_) in plugins:
             try:
                 acquire_lock()
@@ -465,4 +465,4 @@ class Plugin():
                         Plugin.ObjectPool[attr.__base__] = [attr()]
                     else:
                         Plugin.ObjectPool[attr.__base__].append(attr())
-        print("Plugin init completed.")
+        print("Config init completed.")
