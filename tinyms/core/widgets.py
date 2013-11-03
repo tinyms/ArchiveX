@@ -5,7 +5,7 @@ from tornado.web import UIModule
 from tornado.util import import_object
 from sqlalchemy import func
 from tinyms.core.common import Utils, JsonEncoder
-from tinyms.core.point import ui, route, ObjectPool, EmptyClass
+from tinyms.core.annotation import ui, route, ObjectPool, EmptyClass
 from tinyms.core.orm import SessionFactory
 from tinyms.core.web import IRequest
 from tinyms.core.entity import Term, TermTaxonomy, Role

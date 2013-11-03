@@ -1,6 +1,6 @@
 __author__ = 'tinyms'
 from tinyms.core.web import IAuthRequest
-from tinyms.core.point import route
+from tinyms.core.annotation import route
 
 @route("/workbench/dashboard")
 class Dashboard(IAuthRequest):

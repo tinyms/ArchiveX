@@ -3,7 +3,7 @@ __author__ = 'tinyms'
 import json
 from tornado.web import RequestHandler
 from tinyms.core.common import JsonEncoder
-from tinyms.core.point import EmptyClass, ObjectPool, route
+from tinyms.core.annotation import EmptyClass, ObjectPool, route
 from tinyms.core.cache import CacheManager
 from tinyms.dao.account import AccountHelper
 

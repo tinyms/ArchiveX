@@ -5,11 +5,12 @@ from sqlalchemy import func
 from tinyms.core.common import Utils
 from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import Role, Archives, Account, SecurityPoint
-from tinyms.core.point import ObjectPool, reg_point
+from tinyms.core.annotation import ObjectPool, reg_point
 from tinyms.dao.category import CategoryHelper
 from tinyms.core.setting import AppSettingHelper
 
 
+#Web服务器加载时，初始化必要数据
 class Loader():
     @staticmethod
     def init():
@@ -23,7 +24,12 @@ class Loader():
             return
         Loader.create_root_account(role_id)
         Loader.create_base_securitypoints()
-        Loader.assign_points_to__superadmin(role_id)
+        Loader.assign_points_to_superadmin(role_id)
+        #自定义加载
+        for cls in ObjectPool.server_starups:
+            obj = cls()
+            if hasattr(obj, "load"):
+                obj.load()
 
     @staticmethod
     def create_root_account(role_id):
@@ -62,7 +68,7 @@ class Loader():
         return role_.id
 
     @staticmethod
-    def assign_points_to__superadmin(role_id):
+    def assign_points_to_superadmin(role_id):
         cnn = SessionFactory.new()
         role_ = cnn.query(Role).get(role_id)
         changes = list()
@@ -117,5 +123,10 @@ class Loader():
         #档案管理
         reg_point("tinyms.entity.setting.system", "系统设置", "设置", "全局设置")
         reg_point("tinyms.entity.setting.user", "系统设置", "设置", "用户自定义设置")
+
+        for cls in ObjectPool.user_security_points:
+            obj = cls()
+            if hasattr(obj, "reg"):
+                obj.reg()
 
 

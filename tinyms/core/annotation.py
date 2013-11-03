@@ -11,7 +11,9 @@ class EmptyClass():
 
 
 class ObjectPool():
+    server_starups = list()
     points = list()
+    user_security_points = list()
     api = dict()
     ajax = dict()
     url_patterns = list()
@@ -43,7 +45,27 @@ class IWebConfig():
         return
 
 
+def server_starup():
+    """
+    Web服务器启动的时候.类需要实现下列方法
+    def load(),无返回值，在此方法内编写自定义逻辑
+    """
+
+    def ref_pattern(cls):
+        if ObjectPool.server_starups.count(cls) == 0:
+            ObjectPool.server_starups.append(cls)
+        return cls
+
+    return ref_pattern
+
 def reg_point(key, category="", group_="", description=""):
+    """
+    :param key: 必须唯一，如果在系统中重复将被忽略掉
+    :param category:分类
+    :param group_:分类下的分组
+    :param description:此安全点的用途
+    :return:无返回值
+    """
     if not key:
         return
     for sp in ObjectPool.points:
@@ -57,9 +79,26 @@ def reg_point(key, category="", group_="", description=""):
     ObjectPool.points.append(point)
 
 
-def route(pattern):
+def points():
     """
-    url mapping.
+    用户注册自己的安全点.类需要实现下列方法
+    def reg(),无返回值，请在此方法内使用reg_point方法进行安全点注册
+    """
+
+    def ref_pattern(cls):
+        if ObjectPool.user_security_points.count(cls) == 0:
+            ObjectPool.user_security_points.append(cls)
+        return cls
+
+    return ref_pattern
+
+
+def route(pattern):
+
+    """
+    路由设置
+    :param pattern: /path/(.*) 或者 /path/abc 等等
+    :return:
     """
 
     def ref_pattern(cls):

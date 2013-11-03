@@ -2,7 +2,7 @@ __author__ = 'tinyms'
 
 from sqlalchemy import func
 
-from tinyms.core.point import route, api
+from tinyms.core.annotation import route, api
 from tinyms.core.web import IRequest
 from tinyms.core.common import Utils
 from tinyms.core.orm import SessionFactory

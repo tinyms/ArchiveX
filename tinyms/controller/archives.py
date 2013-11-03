@@ -4,7 +4,7 @@ from sqlalchemy import func
 
 from tinyms.core.common import Utils
 from tinyms.core.web import IAuthRequest
-from tinyms.core.point import route, datatable_provider
+from tinyms.core.annotation import route, datatable_provider
 from tinyms.core.entity import WorkExperience, LearningExperience, TrainingExperience, Archives
 from tinyms.core.setting import AppSettingHelper
 

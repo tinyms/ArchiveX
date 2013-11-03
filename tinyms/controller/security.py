@@ -4,7 +4,7 @@ import json
 from sqlalchemy import or_
 from tinyms.core.common import Utils
 from tinyms.core.web import IAuthRequest
-from tinyms.core.point import route, ajax, auth, dataview_provider, autocomplete
+from tinyms.core.annotation import route, ajax, auth, dataview_provider, autocomplete
 from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import SecurityPoint, Role, Account, Archives
 from tinyms.dao.account import AccountHelper

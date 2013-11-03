@@ -6,7 +6,7 @@ import json
 
 from tinyms.core.web import IRequest, route
 from tinyms.core.common import Utils
-from tinyms.core.point import api, ajax, auth, sidebar
+from tinyms.core.annotation import api, ajax, auth, sidebar
 from tinyms.core.common import Postgres
 from lottery.parse import MatchAnalyzeThread
 

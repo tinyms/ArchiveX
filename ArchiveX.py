@@ -10,7 +10,7 @@ from tornado.ioloop import IOLoop
 from tornado.web import Application
 
 from tinyms.core.common import Plugin, Utils
-from tinyms.core.point import IWebConfig, ObjectPool
+from tinyms.core.annotation import IWebConfig, ObjectPool
 from tinyms.core.orm import SessionFactory
 from tinyms.core.loader import Loader
 

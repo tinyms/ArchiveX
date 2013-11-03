@@ -1,6 +1,6 @@
 __author__ = 'tinyms'
 
-from tinyms.core.point import ajax,ObjectPool
+from tinyms.core.annotation import ajax,ObjectPool
 from tinyms.dao.category import CategoryHelper
 from tinyms.dao.account import AccountHelper
 from tinyms.core.common import Utils

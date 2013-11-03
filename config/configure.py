@@ -3,7 +3,7 @@ __author__ = 'tinyms'
 __export__ = ["DefaultWebConfig"]
 
 from sqlalchemy import create_engine
-from tinyms.core.point import IWebConfig
+from tinyms.core.annotation import IWebConfig
 
 
 class DefaultWebConfig(IWebConfig):

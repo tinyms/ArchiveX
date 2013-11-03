@@ -7,7 +7,7 @@ from tinyms.core.common import Utils
 from tinyms.core.web import IAuthRequest
 from tinyms.core.entity import Account
 from tinyms.core.orm import SessionFactory
-from tinyms.core.point import ObjectPool, route, setting, api
+from tinyms.core.annotation import ObjectPool, route, setting, api
 from tinyms.core.setting import UserSettingHelper, AppSettingHelper
 
 
