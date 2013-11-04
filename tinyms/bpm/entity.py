@@ -25,6 +25,7 @@ class BPMProcessDef(Entity, Simplify):
 
 #流程实例
 @many_to_one("BPMProcessDef")
+@many_to_one("Archives")
 class BPMProcessInstance(Entity, Simplify):
     #序列化
     bin = Column(LargeBinary(), nullable=False)
@@ -57,6 +58,8 @@ class BPMWorklist(Entity, Simplify):
     expired = Column(Integer(), default=0)
     create_time = Column(DateTime(), nullable=False)
     finish_time = Column(DateTime())
+    #完成者 from Archives
+    worker = Column(Integer())
 
 @many_to_one("BPMWorklist")
 @many_to_one("Archives")

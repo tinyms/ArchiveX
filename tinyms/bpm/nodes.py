@@ -21,6 +21,9 @@ class Node():
         self.type = type_
         self.process_vars = dict()
         self.start = False
+        self.current_user = 0
+        self.to = None
+        self.cc = None
 
     #执行节点
     def execute(self):
