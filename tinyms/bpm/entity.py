@@ -53,7 +53,8 @@ class BPMWorklist(Entity, Simplify):
     task_name = Column(String(255), nullable=False)
     forms = Column(Text(), nullable=False)
     #多少小时内过期，则流程自动结束
-    expired = Column(Integer())
+    valid_time_space = Column(Integer(), default=0)
+    expired = Column(Integer(), default=0)
     create_time = Column(DateTime(), nullable=False)
     finish_time = Column(DateTime())
 

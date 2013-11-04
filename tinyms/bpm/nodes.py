@@ -20,6 +20,7 @@ class Node():
         self.action = act
         self.type = type_
         self.process_vars = dict()
+        self.start = False
 
     #执行节点
     def execute(self):
