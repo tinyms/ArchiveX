@@ -145,8 +145,8 @@ class FindArchivesAutoComplete():
 class AccountDataProvider():
     def count(self, default_search_val, http_req):
         db_cnn = SessionFactory.new()
-        q = db_cnn.query(Account, Archives.name, Archives.email)\
-            .outerjoin(Archives,Account.archives_id == Archives.id)\
+        q = db_cnn.query(Account, Archives.name, Archives.email) \
+            .outerjoin(Archives, Account.archives_id == Archives.id) \
             .filter(Account.login_name != "root")
         if default_search_val:
             q = q.filter(or_(Account.login_name.like('%' + default_search_val + '%'),
