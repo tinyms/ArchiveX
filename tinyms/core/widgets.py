@@ -172,6 +172,7 @@ class DataTableModule(DataTableBaseModule):
         self.titles = prop.get("titles")#title list
         self.entity_full_name = prop.get("entity")#entity name
         autoform = prop.get("autoform")
+        toolbar_add = prop.get("toolbar_add")
         self.search_fields = prop.get("search_fields")#default search field name,and text type,
         self.point = EmptyClass()
         self.point.list = prop.get("point_list")
@@ -201,6 +202,7 @@ class DataTableModule(DataTableBaseModule):
         opt["point"] = self.point
         opt["id"] = self.dom_id
         opt["autoform"] = autoform
+        opt["toolbar_add"] = toolbar_add
         opt["thTags"] = tag
         opt["entity_name_md5"] = self.datatable_key
         if autoform:
@@ -328,7 +330,7 @@ class DataTableHandler(IRequest):
             obj = self.wrap_entity(entity())
             if hasattr(custom_filter_obj, "before_add"):
                 valid_msg = custom_filter_obj.before_add(obj, sf, self)
-            #检查没有数据上的问题才执行保存动作
+                #检查没有数据上的问题才执行保存动作
             if not valid_msg:
                 sf.add(obj)
                 sf.commit()
@@ -438,7 +440,7 @@ class DataViewModule(DataTableBaseModule):
         self.cols = prop.get("cols")#entity field list
         self.titles = prop.get("titles")#title list
         self.dataview_name = prop.get("view")#仅仅只是一个Key，不做他用,全站唯一
-        self.editable = prop.get("editable")
+        self.toolbar_add = prop.get("toolbar_add")
         self.point = EmptyClass()
         self.point.list = prop.get("point_list")
         self.point.add = prop.get("point_add")
@@ -464,10 +466,10 @@ class DataViewModule(DataTableBaseModule):
         opt["id"] = self.dom_id
         opt["thTags"] = tag
         opt["entity_name_md5"] = self.dataview_key
-        if not self.editable:
-            opt["editable"] = True
+        if not self.toolbar_add:
+            opt["toolbar_add"] = True
         else:
-            opt["editable"] = self.editable
+            opt["toolbar_add"] = self.toolbar_add
         html_col = list()
 
         index = 0
@@ -629,33 +631,34 @@ class FormEnd(IWidget):
 
 @ui("datagrid_form_start")
 class DataGridFormStart(IWidget):
-    def render(self, id, css_cls="form-horizontal"):
+    def render(self, id_, css_cls="form-horizontal"):
         html = list()
         html.append(
-            '<form class="%s" role="form" id="%s_form"><input type="hidden" name="id" id="id"/>' % (css_cls, id))
+            '<form class="%s" role="form" id_="%s_form"><input type="hidden" name="id_" id_="id_"/>' % (css_cls, id_))
         html.append('<div class="form-group"><div class="col-lg-9 col-lg-offset-3">')
         html.append(
-            '<input type="button" class="btn btn-white btn-sm " id="%s_form_return"  onclick="%s_.form.cancel(this);" value="返回"/>' % (
-                id, id))
+            '<input type="button" class="btn btn-white btn-sm " id_="%s_form_return"  onclick="%s_.form.cancel(this);" value="返回"/>' % (
+                id_, id_))
         html.append('</div></div>')
         return "".join(html)
 
 
 @ui("datagrid_form_end")
-class DataGridFormStart(IWidget):
-    def render(self, id):
+class DataGridFormEnd(IWidget):
+    def render(self, id_):
         html = list()
-        html.append('<div class="form-group"><div class="col-lg-9 col-lg-offset-3">')
-        html.append(
-            '<input type="button" class="btn btn-primary btn-sm" id="%s_form_save" onclick="%s_.form.save(this,%s);" value="保存"></button>' % (
-                id, id, "''"))
-        html.append(
-            ' <input type="button" class="btn btn-white btn-sm" id="%s_form_save_continue" onclick="%s_.form.save(this,%s);" value="保存并继续"></button>' % (
-                id, id, "'clear'"))
-        html.append(
-            ' <input type="button" class="btn btn-white btn-sm" id="%s_form_reset" onclick="%s_.form.reset(this);" value="重填"></button>' % (
-                id, id))
-        html.append('</div></div>')
+        if AccountHelper.auth(self.current_user, {self.point.add, self.point.update, self.point.delete}):
+            html.append('<div class="form-group"><div class="col-lg-9 col-lg-offset-3">')
+            html.append(
+                '<input type="button" class="btn btn-primary btn-sm" id_="%s_form_save" onclick="%s_.form.save(this,%s);" value="保存"></button>' % (
+                    id_, id_, "''"))
+            html.append(
+                ' <input type="button" class="btn btn-white btn-sm" id_="%s_form_save_continue" onclick="%s_.form.save(this,%s);" value="保存并继续"></button>' % (
+                    id_, id_, "'clear'"))
+            html.append(
+                ' <input type="button" class="btn btn-white btn-sm" id_="%s_form_reset" onclick="%s_.form.reset(this);" value="重填"></button>' % (
+                    id_, id_))
+            html.append('</div></div>')
         html.append('</form>')
         return "".join(html)
 

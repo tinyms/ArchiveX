@@ -24,7 +24,7 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
     this.cols = cols_;
     this.config = {};
     this.request_url = "/datatable/" + self.entityName + "/";
-    this.editable = true;
+    this.is_add = true;
     this.Create = function () {
         var len = this.cols.length;
         for (var k = 0; k < len; k++) {
@@ -92,12 +92,12 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
             }
         };
         self.__dataTable = $('#' + self.id).dataTable(self.config);
-        if(self.editable){
+        if(self.is_add){
             $('#' + self.id + '_length label').append(" <button class='btn btn-sm btn-white' id='" + self.id + "_NewRowBtn'><i class='icon-plus'></i>新增</button>");
+            $("#" + self.id + "_NewRowBtn").click(function () {
+                self.switchTableAndEditFormPanel(true);
+            });
         }
-        $("#" + self.id + "_NewRowBtn").click(function () {
-            self.switchTableAndEditFormPanel(true);
-        });
         return self.__dataTable;
     };
     this.dataTable = function () {
