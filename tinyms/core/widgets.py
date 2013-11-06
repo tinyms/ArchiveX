@@ -146,7 +146,7 @@ class RoleListComboBox(IWidget):
 
 class DataTableBaseModule(IWidget):
     def javascript_files(self):
-        items = list();
+        items = list()
         items.append("/static/jslib/datatable/js/jquery.dataTables.1.9.4.modified.js")
         #items.append("/static/jslib/datatable/extras/tabletools/js/ZeroClipboard.js")
         #items.append("/static/jslib/datatable/extras/tabletools/js/TableTools.min.js")
@@ -173,19 +173,20 @@ class DataTableModule(DataTableBaseModule):
         self.entity_full_name = prop.get("entity")#entity name
         autoform = prop.get("autoform")
         toolbar_add = prop.get("toolbar_add")
-        self.search_fields = prop.get("search_fields")#default search field name,and text type,
-        self.point = EmptyClass()
-        self.point.list = prop.get("point_list")
-        self.point.add = prop.get("point_add")
-        self.point.update = prop.get("point_update")
-        self.point.delete = prop.get("point_delete")
+        search_fields = prop.get("search_fields")#default search field name,and text type,
+        search_tip = prop.get("search_tip")
+        point = EmptyClass()
+        point.list = prop.get("point_list")
+        point.add = prop.get("point_add")
+        point.update = prop.get("point_update")
+        point.delete = prop.get("point_delete")
 
         if not self.entity_full_name:
             return "Require entity full name."
         self.datatable_key = Utils.md5(self.entity_full_name)
-        DataTableModule.__security_points__[self.datatable_key] = self.point
-        if self.search_fields:
-            DataTableModule.__default_search_fields__[self.datatable_key] = self.search_fields
+        DataTableModule.__security_points__[self.datatable_key] = point
+        if search_fields:
+            DataTableModule.__default_search_fields__[self.datatable_key] = search_fields
         else:
             DataTableModule.__default_search_fields__[self.datatable_key] = []
         sub = dict()
@@ -199,10 +200,16 @@ class DataTableModule(DataTableBaseModule):
         tag += "<th>#</th>"
 
         opt = dict()
-        opt["point"] = self.point
+        opt["point"] = point
         opt["id"] = self.dom_id
         opt["autoform"] = autoform
-        opt["toolbar_add"] = toolbar_add
+        if not search_tip:
+            search_tip = ""
+        opt["search_tip"] = search_tip
+        if not toolbar_add:
+            opt["toolbar_add"] = True
+        else:
+            opt["toolbar_add"] = toolbar_add
         opt["thTags"] = tag
         opt["entity_name_md5"] = self.datatable_key
         if autoform:
@@ -225,7 +232,6 @@ class DataTableModule(DataTableBaseModule):
         metas = obj.cols_meta()
         col_defs = list()
         for meta in metas:
-
             if meta["name"] == "id":
                 continue
             col_def = dict()
@@ -250,35 +256,35 @@ class DataTableModule(DataTableBaseModule):
 
 @route(r"/datatable/(.*)/(.*)")
 class DataTableHandler(IRequest):
-    def post(self, id, act):
-        point = DataTableModule.__security_points__.get(id)
+    def post(self, id_, act):
+        point = DataTableModule.__security_points__.get(id_)
         message = dict()
         if act == "list":
             if not self.auth({point.list}):
                 self.write(dict())
             else:
-                self.list(id)
+                self.list(id_)
         elif act == "save":
             if not self.auth({point.update}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
                 self.write(json.dumps(message))
             else:
-                self.update(id)
+                self.update(id_)
         elif act == "saveNext":
             if not self.auth({point.update}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
                 self.write(json.dumps(message))
             else:
-                self.update(id)
+                self.update(id_)
         elif act == "delete":
             if not self.auth({point.delete}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
                 self.write(json.dumps(message))
             else:
-                self.delete(id)
+                self.delete(id_)
 
     def delete(self, id_):
         self.set_header("Content-Type", "text/json;charset=utf-8")
@@ -441,6 +447,8 @@ class DataViewModule(DataTableBaseModule):
         self.titles = prop.get("titles")#title list
         self.dataview_name = prop.get("view")#仅仅只是一个Key，不做他用,全站唯一
         self.toolbar_add = prop.get("toolbar_add")
+        editable = prop.get("editable")
+        search_tip = prop.get("search_tip")
         self.point = EmptyClass()
         self.point.list = prop.get("point_list")
         self.point.add = prop.get("point_add")
@@ -466,6 +474,13 @@ class DataViewModule(DataTableBaseModule):
         opt["id"] = self.dom_id
         opt["thTags"] = tag
         opt["entity_name_md5"] = self.dataview_key
+        if not search_tip:
+            search_tip = ""
+        opt["search_tip"] = search_tip
+        if not editable:
+            opt["editable"] = True
+        else:
+            opt["editable"] = editable
         if not self.toolbar_add:
             opt["toolbar_add"] = True
         else:
@@ -485,35 +500,35 @@ class DataViewModule(DataTableBaseModule):
 
 @route(r"/dataview/(.*)/(.*)")
 class DataViewHandler(IRequest):
-    def post(self, id, act):
-        point = DataViewModule.__security_points__.get(id)
+    def post(self, id_, act):
+        point = DataViewModule.__security_points__.get(id_)
         message = dict()
         if act == "list":
             if not self.auth({point.list}):
                 self.write(dict())
             else:
-                self.list(id)
+                self.list(id_)
         elif act == "save":
             if not self.auth({point.update}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
                 self.write(json.dumps(message))
             else:
-                self.update(id)
+                self.update(id_)
         elif act == "saveNext":
             if not self.auth({point.update}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
                 self.write(json.dumps(message))
             else:
-                self.update(id)
+                self.update(id_)
         elif act == "delete":
             if not self.auth({point.delete}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
                 self.write(json.dumps(message))
             else:
-                self.delete(id)
+                self.delete(id_)
 
     def delete(self, id):
         self.set_header("Content-Type", "text/json;charset=utf-8")
@@ -574,9 +589,8 @@ class DataViewHandler(IRequest):
 
         self.write(json.dumps(message))
 
-
-    def list(self, id):
-        name = DataViewModule.__view_mapping__.get(id)
+    def list(self, id_):
+        name = DataViewModule.__view_mapping__.get(id_)
         if not name:
             self.set_status(403, "Error!")
 
@@ -607,8 +621,8 @@ class DataViewHandler(IRequest):
 
 @ui("panel_start")
 class PanelStart(IWidget):
-    def render(self, id, css_cls="panel-body"):
-        return '<div id="%s_panel" class="%s">' % (id, css_cls)
+    def render(self, id_, css_cls="panel-body"):
+        return '<div id="%s_panel" class="%s">' % (id_, css_cls)
 
 
 @ui("panel_end")
@@ -619,8 +633,8 @@ class PanelEnd(IWidget):
 
 @ui("form_start")
 class FormStart(IWidget):
-    def render(self, id, css_cls="form-horizontal"):
-        return '<form class="%s" role="form" id="%s_form"><input type="hidden" name="id" id="id"/>' % (css_cls, id)
+    def render(self, id_, css_cls="form-horizontal"):
+        return '<form class="%s" role="form" id="%s_form"><input type="hidden" name="id" id="id"/>' % (css_cls, id_)
 
 
 @ui("form_end")
@@ -634,10 +648,10 @@ class DataGridFormStart(IWidget):
     def render(self, id_, css_cls="form-horizontal"):
         html = list()
         html.append(
-            '<form class="%s" role="form" id_="%s_form"><input type="hidden" name="id_" id_="id_"/>' % (css_cls, id_))
+            '<form class="%s" role="form" id="%s_form"><input type="hidden" name="id" id="id"/>' % (css_cls, id_))
         html.append('<div class="form-group"><div class="col-lg-9 col-lg-offset-3">')
         html.append(
-            '<input type="button" class="btn btn-white btn-sm " id_="%s_form_return"  onclick="%s_.form.cancel(this);" value="返回"/>' % (
+            '<input type="button" class="btn btn-white btn-sm " id="%s_form_return"  onclick="%s_.form.cancel(this);" value="返回"/>' % (
                 id_, id_))
         html.append('</div></div>')
         return "".join(html)
@@ -645,18 +659,30 @@ class DataGridFormStart(IWidget):
 
 @ui("datagrid_form_end")
 class DataGridFormEnd(IWidget):
-    def render(self, id_):
+    def render(self, id_, target, type_="table"):
+        """
+        :param id_: dom id
+        :param target: DataTable's entity property Or DataView's view property value
+        :param type_: 'table' or 'view'
+        :return:
+        """
+        key = Utils.md5(target)
+        point = None
+        if type_ == "table":
+            point = DataTableModule.__security_points__.get(key)
+        elif type_ == "view":
+            point = DataViewModule.__security_points__.get(key)
         html = list()
-        if AccountHelper.auth(self.current_user, {self.point.add, self.point.update, self.point.delete}):
+        if AccountHelper.auth(self.current_user, {point.add, point.update, point.delete}):
             html.append('<div class="form-group"><div class="col-lg-9 col-lg-offset-3">')
             html.append(
-                '<input type="button" class="btn btn-primary btn-sm" id_="%s_form_save" onclick="%s_.form.save(this,%s);" value="保存"></button>' % (
+                '<input type="button" class="btn btn-primary btn-sm" id="%s_form_save" onclick="%s_.form.save(this,%s);" value="保存"></button>' % (
                     id_, id_, "''"))
             html.append(
-                ' <input type="button" class="btn btn-white btn-sm" id_="%s_form_save_continue" onclick="%s_.form.save(this,%s);" value="保存并继续"></button>' % (
+                ' <input type="button" class="btn btn-white btn-sm" id="%s_form_save_continue" onclick="%s_.form.save(this,%s);" value="保存并继续"></button>' % (
                     id_, id_, "'clear'"))
             html.append(
-                ' <input type="button" class="btn btn-white btn-sm" id_="%s_form_reset" onclick="%s_.form.reset(this);" value="重填"></button>' % (
+                ' <input type="button" class="btn btn-white btn-sm" id="%s_form_reset" onclick="%s_.form.reset(this);" value="重填"></button>' % (
                     id_, id_))
             html.append('</div></div>')
         html.append('</form>')

@@ -26,6 +26,7 @@ function {{opt["id"]}}_actionbar_render(col,v,type,row){
 $(document).ready(function () {
     $("#{{opt['id']}}_panel").hide();
 	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},{{opt["id"]}}_actionbar_render);
+    {{opt["id"]}}_.search_tip = "{{ opt['search_tip'] }}";
     {% if opt["toolbar_add"] %}
     {{opt["id"]}}_.is_add = true;
     {% else %}

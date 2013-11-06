@@ -97,6 +97,7 @@
 						cols=['name','sex','post','marital_status','educational_background','id_card','mobile_phone','email','org_id'],
 						titles=['名称','性别','职位','婚姻','学历','身份证','手机','邮箱','所属'],
                         search_fields=['name','email','mobile_phone','current_address','id_card'],
+                        search_tip="可搜索姓名、邮箱、手机号码、当前住址、身份证号码",
 						autoform=False,
 						point_list = "tinyms.entity.archives.list",
 						point_add = "tinyms.entity.archives.add",
@@ -483,22 +484,19 @@
                                         </div>
                                     </div>
                                 </div>
-                              <div class="row">
-                            <div class="col-lg-9 col-lg-offset-3">
-                            <input type="button" class="btn btn-primary btn-sm" id="ArchivesDataTable_form_save" onclick="ArchivesDataTable_.form.save(this,'');" value="保存"></button>
-                            <input type="button" class="btn btn-white btn-sm" id="ArchivesDataTable_form_save_continue" onclick="ArchivesDataTable_.form.save(this,'clear');" value="保存并继续"></button>
-                            <input type="button" class="btn btn-white btn-sm" id="ArchivesDataTable_form_reset" onclick="ArchivesDataTable_.form.reset(this);" value="重填"></button>
-                            </div>
-                            <div class="col-lg-10"></div>
-                            </div>
-                            {% module form_end() %}
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        {% module datagrid_form_end("ArchivesDataTable","tinyms.core.entity.Archives") %}
+                                    </div>
+                                </div>
                           </div>
                           <div class="tab-pane" id="Archives_WorkExperience">
                               {% module DataTable(id="WorkExperienceDataTable",
                                 entity="tinyms.core.entity.WorkExperience",
                                 cols=['start_date','end_date','work_unit','post'],
-                                titles=['开始日期','结束日期','工作单位或部门','职务'],
+                                titles=['开始日期','结束日期','工作单位及部门','职务'],
                                 search_fields=["work_unit","post"],
+                                search_tip="可搜索工作单位及部门、职务",
                                 autoform=False,
                                 point_list = "tinyms.entity.archives.list",
                                 point_add = "tinyms.entity.archives.add",
@@ -506,13 +504,7 @@
                                 point_delete = "tinyms.entity.archives.delete"
                                 ) %}
                               {% module panel_start("WorkExperienceDataTable") %}
-                              {% module form_start("WorkExperienceDataTable") %}
-
-                                <div class="form-group">
-                                <div class="col-lg-9 col-lg-offset-3">
-                                <input type="button" class="btn btn-white btn-sm " id="WorkExperienceDataTable_form_return" onclick="WorkExperienceDataTable_.form.cancel(this);" value="返回"/>
-                                </div>
-                                </div>
+                              {% module datagrid_form_start("WorkExperienceDataTable") %}
 
                                 <div class="form-group">
                                 <label for="start_date" class="col-lg-3 control-label">开始日期</label>
@@ -543,16 +535,7 @@
                                 </div>
                                 </div>
 
-                                <div class="form-group">
-                                <div class="col-lg-9 col-lg-offset-3">
-                                <input type="button" class="btn btn-primary btn-sm" id="WorkExperienceDataTable_form_save" onclick="WorkExperienceDataTable_.form.save(this,'');" value="保存"></button>
-                                <input type="button" class="btn btn-white btn-sm" id="WorkExperienceDataTable_form_save_continue" onclick="WorkExperienceDataTable_.form.save(this,'clear');" value="保存并继续"></button>
-                                <input type="button" class="btn btn-white btn-sm" id="WorkExperienceDataTable_form_reset" onclick="WorkExperienceDataTable_.form.reset(this);" value="重填"></button>
-                                </div>
-                                <div class="col-lg-10"></div>
-                                </div>
-
-                              {% module form_end() %}
+                              {% module datagrid_form_end("WorkExperienceDataTable","tinyms.core.entity.WorkExperience") %}
                               {% module panel_end() %}
                           </div>
                           <div class="tab-pane" id="Archives_LearningExperience">
@@ -561,6 +544,7 @@
                                 cols=['start_date','end_date','school_name','specialized_field','finished'],
                                 titles=['开始日期','结束日期','学校名称','专业领域','毕(结、肆)业'],
                                 search_fields=["school_name","specialized_field","finished"],
+                                search_tip="可搜索学校名称、专业领域、毕(结、肆)业",
                                 autoform=False,
                                 point_list = "tinyms.entity.archives.list",
                                 point_add = "tinyms.entity.archives.add",
@@ -568,13 +552,7 @@
                                 point_delete = "tinyms.entity.archives.delete"
                                 ) %}
                               {% module panel_start("LearningExperienceDataTable") %}
-                              {% module form_start("LearningExperienceDataTable") %}
-
-                                <div class="form-group">
-                                <div class="col-lg-9 col-lg-offset-3">
-                                <input type="button" class="btn btn-white btn-sm " id="LearningExperienceDataTable_form_return" onclick="LearningExperienceDataTable_.form.cancel(this);" value="返回"/>
-                                </div>
-                                </div>
+                              {% module datagrid_form_start("LearningExperienceDataTable") %}
 
                                 <div class="form-group">
                                 <label for="start_date" class="col-lg-3 control-label">开始日期</label>
@@ -612,24 +590,16 @@
                                 </div>
                                 </div>
 
-                                <div class="form-group">
-                                <div class="col-lg-9 col-lg-offset-3">
-                                <input type="button" class="btn btn-primary btn-sm" id="LearningExperienceDataTable_form_save" onclick="LearningExperienceDataTable_.form.save(this,'');" value="保存"></button>
-                                <input type="button" class="btn btn-white btn-sm" id="LearningExperienceDataTable_form_save_continue" onclick="LearningExperienceDataTable_.form.save(this,'clear');" value="保存并继续"></button>
-                                <input type="button" class="btn btn-white btn-sm" id="LearningExperienceDataTable_form_reset" onclick="LearningExperienceDataTable_.form.reset(this);" value="重填"></button>
-                                </div>
-                                <div class="col-lg-10"></div>
-                                </div>
-
-                              {% module form_end() %}
+                              {% module datagrid_form_end("LearningExperienceDataTable","tinyms.core.entity.LearningExperience") %}
                               {% module panel_end() %}
                           </div>
                           <div class="tab-pane" id="Archives_TrainingExperience">
                               {% module DataTable(id="TrainingExperienceDataTable",
                                 entity="tinyms.core.entity.TrainingExperience",
                                 cols=['start_date','end_date','organization','certificate'],
-                                titles=['开始日期','结束日期','组织','证书'],
+                                titles=['开始日期','结束日期','培训机构','证书'],
                                 search_fields=["organization","certificate"],
+                                search_tip="可搜索培训机构、证书",
                                 autoform=False,
                                 point_list = "tinyms.entity.archives.list",
                                 point_add = "tinyms.entity.archives.add",
@@ -637,13 +607,7 @@
                                 point_delete = "tinyms.entity.archives.delete"
                                 ) %}
                               {% module panel_start("TrainingExperienceDataTable") %}
-                              {% module form_start("TrainingExperienceDataTable") %}
-
-                                <div class="form-group">
-                                <div class="col-lg-9 col-lg-offset-3">
-                                <input type="button" class="btn btn-white btn-sm " id="TrainingExperienceDataTable_form_return" onclick="TrainingExperienceDataTable_.form.cancel(this);" value="返回"/>
-                                </div>
-                                </div>
+                              {% module datagrid_form_start("TrainingExperienceDataTable") %}
 
                                 <div class="form-group">
                                 <label for="start_date" class="col-lg-3 control-label">开始日期</label>
@@ -660,7 +624,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                <label for="organization" class="col-lg-3 control-label">组织</label>
+                                <label for="organization" class="col-lg-3 control-label">培训机构</label>
                                 <div class="col-lg-8">
                                 <input type="text" class="form-control" id="organization" name="organization"  >
                                 </div>
@@ -674,19 +638,11 @@
                                 </div>
                                 </div>
 
-                                <div class="form-group">
-                                <div class="col-lg-9 col-lg-offset-3">
-                                <input type="button" class="btn btn-primary btn-sm" id="TrainingExperienceDataTable_form_save" onclick="TrainingExperienceDataTable_.form.save(this,'');" value="保存"></button>
-                                <input type="button" class="btn btn-white btn-sm" id="TrainingExperienceDataTable_form_save_continue" onclick="TrainingExperienceDataTable_.form.save(this,'clear');" value="保存并继续"></button>
-                                <input type="button" class="btn btn-white btn-sm" id="TrainingExperienceDataTable_form_reset" onclick="TrainingExperienceDataTable_.form.reset(this);" value="重填"></button>
-                                </div>
-                                <div class="col-lg-10"></div>
-                                </div>
-
-                              {% module form_end() %}
+                              {% module datagrid_form_end("TrainingExperienceDataTable","tinyms.core.entity.TrainingExperience") %}
                               {% module panel_end() %}
                           </div>
                         </div>
+
                         {% module panel_end() %}
                     </div>
                 </div>

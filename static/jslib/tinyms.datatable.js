@@ -25,6 +25,7 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
     this.config = {};
     this.request_url = "/datatable/" + self.entityName + "/";
     this.is_add = true;
+    this.search_tip = "";
     this.Create = function () {
         var len = this.cols.length;
         for (var k = 0; k < len; k++) {
@@ -96,6 +97,14 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
             $('#' + self.id + '_length label').append(" <button class='btn btn-sm btn-white' id='" + self.id + "_NewRowBtn'><i class='icon-plus'></i>新增</button>");
             $("#" + self.id + "_NewRowBtn").click(function () {
                 self.switchTableAndEditFormPanel(true);
+            });
+        }
+        if(self.search_tip.length>0){
+            $("#"+self.id+"_filter input").each(function(){
+                $(this).attr("data-toggle","popover");
+                $(this).attr("data-placement","auto");
+                $(this).attr("data-container","body");
+                $(this).attr("data-content",self.search_tip);
             });
         }
         return self.__dataTable;
@@ -171,6 +180,7 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
                         }
                         if (state == "clear") {
                             $("#" + self.id + "_form").resetForm();
+                            $("#" + self.id + "_form input[type='hidden']").val("");
                         }
                         self.Refresh();
                     }else{
@@ -184,6 +194,7 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
         },
         "reset": function (btn) {
             $("#" + self.id + "_form").resetForm();
+            $("#" + self.id + "_form input[type='hidden']").val("");
         }
     };
     this.RecordSetProvider = {
@@ -213,7 +224,6 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
             if (current_row != null) {
                 self.switchTableAndEditFormPanel(true);
                 try {
-                    console.log(current_row);
                     for (k in current_row) {
                         $("#" + self.id + "_form #" + k).val(current_row[k]);
                     }

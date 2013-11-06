@@ -94,13 +94,14 @@ class Simplify():
         for col in cols:
             meta = dict()
             meta["pk"] = col.primary_key
-            meta["fk"] = col.foreign_keys# is a set()
+            # is a set()
+            meta["fk"] = col.foreign_keys
             meta["name"] = col.key
             meta["nullable"] = col.nullable
             meta["unique"] = col.unique
             meta["autoincrement"] = col.autoincrement
             meta["default"] = col.default
-            if isinstance(col.type, String):
+            if isinstance(col.type, String) and col.type.length:
                 meta["length"] = col.type.length
             else:
                 meta["length"] = 0
