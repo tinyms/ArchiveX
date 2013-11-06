@@ -31,6 +31,8 @@
                 return MaritalStatusMap[v];
             }else if(k=="educational_background"){
                 return EducationalBackgroundMap[v];
+            }else if(k=="org_id"){
+                return OrgMap[v];
             }
         }
         return v;
@@ -92,8 +94,8 @@
                     <div class="panel-body">
                         {% module DataTable(id="ArchivesDataTable",
 						entity="tinyms.core.entity.Archives",
-						cols=['name','sex','post','marital_status','educational_background','id_card','mobile_phone','email'],
-						titles=['名称','性别','职位','婚姻状况','学历','身份证','手机','邮箱'],
+						cols=['name','sex','post','marital_status','educational_background','id_card','mobile_phone','email','org_id'],
+						titles=['名称','性别','职位','婚姻','学历','身份证','手机','邮箱','所属'],
                         search_fields=['name','email','mobile_phone','current_address','id_card'],
 						autoform=False,
 						point_list = "tinyms.entity.archives.list",
