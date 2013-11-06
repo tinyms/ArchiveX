@@ -203,7 +203,8 @@ class DataTableModule(DataTableBaseModule):
         opt["autoform"] = autoform
         opt["thTags"] = tag
         opt["entity_name_md5"] = self.datatable_key
-        opt["cols"] = self.cols
+        if autoform:
+            opt["cols"] = self.create_editform()
         html_col = list()
 
         index = 0
@@ -214,37 +215,35 @@ class DataTableModule(DataTableBaseModule):
             index += 1
 
         opt["col_defs"] = json.dumps(html_col)
+        self.create_editform()
         return self.render_string("widgets/datatable_html.html", opt=opt)
 
     def create_editform(self):
-        data = dict()
-        data["dom_id"] = self.dom_id
-        data["use_sys_editform"] = True
-        if not self.form_id:
-            obj = import_object(self.entity_full_name)()
-            metas = obj.cols_meta()
-            col_defs = list()
-            for meta in metas:
-                if meta["name"] == "id":
-                    continue
-                col_def = dict()
-                col_def["name"] = meta["name"]
-                col_def["type"] = ""
-                col_def["required"] = ""
-                if not meta["nullable"]:
-                    col_def["required"] = "required"
-                if meta["type"] == "int":
-                    col_def["type"] = "digits"
-                elif meta["type"] == "numeric":
-                    col_def["type"] = "number"
-                elif meta["type"] == "date":
-                    col_def["type"] = "date"
-                col_defs.append(col_def)
-            data["use_sys_editform"] = True
-            data["cols"] = col_defs
-        else:
-            data["use_sys_editform"] = False
-        return data
+        obj = import_object(self.entity_full_name)()
+        metas = obj.cols_meta()
+        col_defs = list()
+        for meta in metas:
+
+            if meta["name"] == "id":
+                continue
+            col_def = dict()
+            col_def["name"] = meta["name"]
+            col_def["type"] = ""
+            col_def["required"] = ""
+            if meta["length"] > 0:
+                col_def["length"] = 'maxlength="%s"' % meta["length"]
+            else:
+                col_def["length"] = 'maxlength=""'
+            if not meta["nullable"]:
+                col_def["required"] = "required"
+            if meta["type"] == "int":
+                col_def["type"] = "digits"
+            elif meta["type"] == "numeric":
+                col_def["type"] = "number"
+            elif meta["type"] == "date":
+                col_def["type"] = "date"
+            col_defs.append(col_def)
+        return col_defs
 
 
 @route(r"/datatable/(.*)/(.*)")

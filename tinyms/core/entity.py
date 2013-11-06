@@ -13,7 +13,7 @@ class Archives(Entity, Simplify):
     #别名、曾用名
     alias = Column(String(20))
     #性别
-    sex = Column(String(5))
+    sex = Column(Integer())
     #生日
     birthday = Column(Date())
     #体重(千克)

@@ -3,7 +3,7 @@ __author__ = 'tinyms'
 import json
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship, backref, class_mapper
-from sqlalchemy import Column, Integer, ForeignKey, Table
+from sqlalchemy import Column, Integer, ForeignKey, Table, String
 from sqlalchemy.orm import sessionmaker
 from tinyms.core.common import Utils
 
@@ -100,6 +100,10 @@ class Simplify():
             meta["unique"] = col.unique
             meta["autoincrement"] = col.autoincrement
             meta["default"] = col.default
+            if isinstance(col.type, String):
+                meta["length"] = col.type.length
+            else:
+                meta["length"] = 0
             type_name = col.type.__visit_name__
             if ["string", "text", "unicode", "unicode_text"].count(type_name) == 1:
                 type_name = "string"

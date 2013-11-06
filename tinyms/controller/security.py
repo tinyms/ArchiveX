@@ -137,7 +137,6 @@ class FindArchivesAutoComplete():
             item["name"] = row[1]
             item["email"] = row[2]
             items.append(item)
-        print(items)
         return items
 
 @datatable_provider("tinyms.core.entity.Role")

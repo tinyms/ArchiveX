@@ -33,9 +33,9 @@ $(document).ready(function () {
 <script id='{{ opt["id"] }}_EditFormTemplate' type="text/x-jsrender">
 	{% for col in opt["cols"] %}
 	<div class="form-group">
-		<label for="{{ col }}" class="col-lg-3 control-label">{{ col }}</label>
+		<label for="{{ col["name"] }}" class="col-lg-3 control-label">{{ col["name"] }}</label>
 		<div class="col-lg-8">
-		  <input type="text" class="form-control" id="{{ col }}" name="{{ col }}">
+		  <input type="text" class="form-control {{col['type']}}" id="{{ col['name'] }}" name="{{ col['name'] }}" {% raw col["length"] %}  {{col["required"]}}>
 		</div>
 	</div>
 	{% end %}
