@@ -4,7 +4,7 @@ import json
 from sqlalchemy import or_
 from tinyms.core.common import Utils
 from tinyms.core.web import IAuthRequest
-from tinyms.core.annotation import route, ajax, auth, dataview_provider, autocomplete
+from tinyms.core.annotation import route, ajax, auth, dataview_provider, autocomplete, datatable_provider
 from tinyms.core.orm import SessionFactory
 from tinyms.core.entity import SecurityPoint, Role, Account, Archives
 from tinyms.dao.account import AccountHelper
@@ -139,6 +139,16 @@ class FindArchivesAutoComplete():
             items.append(item)
         print(items)
         return items
+
+@datatable_provider("tinyms.core.entity.Role")
+class RoleDataProvider():
+    def total(self, query, req):
+        q = query.filter(Role.name != "SuperAdmin")
+        return q
+
+    def dataset(self, query, req):
+        q = query.filter(Role.name != "SuperAdmin")
+        return q
 
 #账户管理数据提供
 @dataview_provider("tinyms.core.view.AccountManager")

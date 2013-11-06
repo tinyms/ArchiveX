@@ -27,7 +27,7 @@ function {{opt["id"]}}_actionbar_render(col,v,type,row){
 }
 $(document).ready(function () {
     $("#{{opt['id']}}_panel").hide();
-	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},'None',{{opt["id"]}}_actionbar_render);
+	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},{{opt["id"]}}_actionbar_render);
     {{opt["id"]}}_.request_url = "/dataview/" + {{opt["id"]}}_.entityName + "/";
     {% if opt["editable"] %}
     {{opt["id"]}}_.editable = true;
@@ -37,7 +37,7 @@ $(document).ready(function () {
 	{{opt["id"]}}_.Create();
 });
 </script>
-{% if opt["use_sys_form"] %}
+{% if opt["autoform"] %}
 <script id='{{ opt["id"] }}_EditFormTemplate' type="text/x-jsrender">
 	{% for item in opt["cols"] %}
 	<div class="form-group">

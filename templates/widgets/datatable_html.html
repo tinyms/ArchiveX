@@ -25,32 +25,20 @@ function {{opt["id"]}}_actionbar_render(col,v,type,row){
 }
 $(document).ready(function () {
     $("#{{opt['id']}}_panel").hide();
-	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},'{{opt["edit_form_id"]}}',{{opt["id"]}}_actionbar_render);
+	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},{{opt["id"]}}_actionbar_render);
 	{{opt["id"]}}_.Create();
 });
 </script>
-{% if opt["use_sys_editform"] %}
+{% if opt["autoform"] %}
 <script id='{{ opt["id"] }}_EditFormTemplate' type="text/x-jsrender">
+	{% for col in opt["cols"] %}
 	<div class="form-group">
-	<div class="col-lg-9 col-lg-offset-3">
-	<input type="button" class="btn btn-white btn-sm " id="{{opt['id']}}_form_return"  onclick="{{opt['id']}}_.form.cancel(this);" value="返回"/>
-	</div>
-	</div>
-	{% for item in opt["cols"] %}
-	<div class="form-group">
-		<label for="{{ item['name'] }}" class="col-lg-3 control-label">{{ item['name'] }}</label>
+		<label for="{{ col }}" class="col-lg-3 control-label">{{ col }}</label>
 		<div class="col-lg-8">
-		  <input type="text" class="form-control" id="{{ item['name'] }}" name="{{ item['name'] }}" {{ item['required'] }} {{ item['type'] }}>
+		  <input type="text" class="form-control" id="{{ col }}" name="{{ col }}">
 		</div>
 	</div>
 	{% end %}
-	<div class="form-group">
-	<div class="col-lg-9 col-lg-offset-3">
-		<input type="button" class="btn btn-primary btn-sm" id="{{opt['id']}}_form_save" onclick="{{opt['id']}}_.form.save(this,'');" value="保存"></button>
-		<input type="button" class="btn btn-white btn-sm" id="{{opt['id']}}_form_save_continue" onclick="{{opt['id']}}_.form.save(this,'clear');" value="保存并继续"></button>
-		<input type="button" class="btn btn-white btn-sm" id="{{opt['id']}}_form_reset" onclick="{{opt['id']}}_.form.reset(this);" value="重填"></button>
-	</div>
-	<div class="col-lg-10"></div>
 	</div>
 </script>
 {% end %}

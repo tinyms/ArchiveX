@@ -193,10 +193,10 @@
                                 <div class="panel">
                                     <div class="panel-body">
                                         {% module DataView(id="AccountDataTable",
-                                        view_name="tinyms.core.view.AccountManager",
+                                        view="tinyms.core.view.AccountManager",
                                         cols=['login_name','name','email','enabled','last_logon_time','create_time'],
                                         titles=['ID','姓名','邮箱','激活','最后登录','创建时间'],
-                                        use_sys_form=True,
+                                        autoform=False,
                                         point_list = "tinyms.entity.account.list",
                                         point_add = "tinyms.entity.account.add",
                                         point_update = "tinyms.entity.account.update",
@@ -273,8 +273,8 @@
                             entity="tinyms.core.entity.Role",
                             cols=['name','description'],
                             titles=['名称','说明'],
-                            search_fields="name",
-                            form="RoleDataTable_EditFormTemplate",
+                            search_fields=["name"],
+                            autoform=False,
                             point_list = "tinyms.entity.role.list",
                             point_add = "tinyms.entity.role.add",
                             point_update = "tinyms.entity.role.update",

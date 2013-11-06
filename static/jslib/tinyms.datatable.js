@@ -15,11 +15,10 @@
  * function datatable_data_delete(id,pk){}
  * function datatable_data_delete_confirm_label(id);
  */
-function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
+function DataTableX(id_, entityName_, cols_, actionbar_render_) {
     var self = this;
     this.id = id_;
     this.__dataTable = null;
-    this.editFormId = editFormId_;
     this.actionbar_render = actionbar_render_;
     this.entityName = entityName_;
     this.cols = cols_;
@@ -92,7 +91,6 @@ function DataTableX(id_, entityName_, cols_, editFormId_,actionbar_render_) {
 
             }
         };
-        $('#' + self.id).data("EditFormId", self.editFormId);
         self.__dataTable = $('#' + self.id).dataTable(self.config);
         if(self.editable){
             $('#' + self.id + '_length label').append(" <button class='btn btn-sm btn-white' id='" + self.id + "_NewRowBtn'><i class='icon-plus'></i>新增</button>");

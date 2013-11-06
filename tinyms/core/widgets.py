@@ -171,7 +171,7 @@ class DataTableModule(DataTableBaseModule):
         self.cols = prop.get("cols")#entity field list
         self.titles = prop.get("titles")#title list
         self.entity_full_name = prop.get("entity")#entity name
-        self.form_id = prop.get("form")#Edit form id
+        autoform = prop.get("autoform")
         self.search_fields = prop.get("search_fields")#default search field name,and text type,
         self.point = EmptyClass()
         self.point.list = prop.get("point_list")
@@ -179,14 +179,12 @@ class DataTableModule(DataTableBaseModule):
         self.point.update = prop.get("point_update")
         self.point.delete = prop.get("point_delete")
 
-        if not self.form_id:
-            self.form_id = ""
         if not self.entity_full_name:
             return "Require entity full name."
         self.datatable_key = Utils.md5(self.entity_full_name)
         DataTableModule.__security_points__[self.datatable_key] = self.point
         if self.search_fields:
-            DataTableModule.__default_search_fields__[self.datatable_key] = self.search_fields.split(",")
+            DataTableModule.__default_search_fields__[self.datatable_key] = self.search_fields
         else:
             DataTableModule.__default_search_fields__[self.datatable_key] = []
         sub = dict()
@@ -202,12 +200,10 @@ class DataTableModule(DataTableBaseModule):
         opt = dict()
         opt["point"] = self.point
         opt["id"] = self.dom_id
+        opt["autoform"] = autoform
         opt["thTags"] = tag
         opt["entity_name_md5"] = self.datatable_key
-        opt["edit_form_id"] = self.form_id
-        form = self.create_editform()
-        opt["use_sys_editform"] = form["use_sys_editform"]
-        opt["cols"] = form.get("cols")
+        opt["cols"] = self.cols
         html_col = list()
 
         index = 0
@@ -442,7 +438,7 @@ class DataViewModule(DataTableBaseModule):
         self.dom_id = prop.get("id")#client dom id
         self.cols = prop.get("cols")#entity field list
         self.titles = prop.get("titles")#title list
-        self.dataview_name = prop.get("view_name")#仅仅只是一个Key，不做他用
+        self.dataview_name = prop.get("view")#仅仅只是一个Key，不做他用,全站唯一
         self.editable = prop.get("editable")
         self.point = EmptyClass()
         self.point.list = prop.get("point_list")
@@ -464,7 +460,7 @@ class DataViewModule(DataTableBaseModule):
 
         opt = dict()
         opt["cols"] = self.cols
-        opt["use_sys_form"] = prop.get("use_sys_form")
+        opt["autoform"] = prop.get("autoform")
         opt["point"] = self.point
         opt["id"] = self.dom_id
         opt["thTags"] = tag
