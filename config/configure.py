@@ -14,3 +14,5 @@ class DefaultWebConfig(IWebConfig):
     def debug(self):
         return True
 
+    def server_port(self):
+        return 8888
