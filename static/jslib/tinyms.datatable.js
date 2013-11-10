@@ -14,6 +14,7 @@
  * function datatable_data_update(id,pk,form_data){}
  * function datatable_data_delete(id,pk){}
  * function datatable_data_delete_confirm_label(id);
+ * function datatable_select_mode(id,values){}
  */
 function DataTableX(id_, entityName_, cols_, actionbar_render_) {
     var self = this;
@@ -25,11 +26,15 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
     this.config = {};
     this.request_url = "/datatable/" + self.entityName + "/";
     this.is_add = true;
+    this.select_mode = ""
     this.search_tip = "";
     this.Create = function () {
         var len = this.cols.length;
         for (var k = 0; k < len; k++) {
             var item = this.cols[k];
+            if(k==0&&item["mData"]=="id"){
+                continue;
+            }
             if (typeof(datatable_render) != "undefined") {
                 var func = function (col, v, type, row) {
                     return datatable_render(self.id, col, v, row);
@@ -148,6 +153,17 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
         }
         return null;
     };
+
+    this.Selected=function(elem){
+
+    }
+    this.GetSelectedValues=function(){
+        var values = []
+        $("#"+self.id+" td.datatable_select_col :input").each(function(){
+            values.push(parseInt($(this).val()));
+        });
+        return values;
+    }
     this.form = {
         "cancel": function (btn) {
             self.switchTableAndEditFormPanel(false);

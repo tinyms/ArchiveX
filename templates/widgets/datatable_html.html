@@ -6,6 +6,7 @@
 </div>
 <script type="text/javascript">
 var {{opt["id"]}}_ = null;
+var ddd= "{{opt["point"].view}}";
 function {{opt["id"]}}_actionbar_render(col,v,type,row){
     var action_btns = '<div style="width: 130px;">';
     {% if auth({opt["point"].view}) %}
@@ -25,10 +26,28 @@ function {{opt["id"]}}_actionbar_render(col,v,type,row){
 	{% end %}
 	return action_btns+"</div>";
 }
+
 $(document).ready(function () {
     $("#{{opt['id']}}_panel").hide();
     {% if auth({opt["point"].list}) %}
-        {{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},{{opt["id"]}}_actionbar_render);
+        var {{opt["id"]}}_col_defs_tmp = {% raw opt["col_defs"] %};
+        var {{opt["id"]}}_col_defs = [];
+        {% if opt["select_mode"]=="checkbox" %}
+            {{opt["id"]}}_col_defs.push({"mData": "id", "sClass":"datatable_col_sel", "sTitle": "", "mRender": function (col, v, type, row) {
+                var mode = "{{opt['select_mode']}}";
+                if(mode=="checkbox"){
+                   return "<input type='checkbox' style='width: 13px; height: 13px;' value='"+v+"' onclick='{{opt["id"]}}_.Selected(this);'/>";
+               }else if(mode=="radio"){
+                   return "<input type='radio' style='width: 13px; height: 13px;' value='"+v+"' onclick='{{opt["id"]}}_.Selected(this);'/>";
+               }
+               return "";
+            }});
+        {% end %}
+        $.each({{opt["id"]}}_col_defs_tmp,function(i,v){
+            {{opt["id"]}}_col_defs.push(v);
+        });
+        console.log({{opt["id"]}}_col_defs);
+        {{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{{opt["id"]}}_col_defs,{{opt["id"]}}_actionbar_render);
         {{opt["id"]}}_.search_tip = "{{ opt['search_tip'] }}";
         {% if not auth({opt["point"].add}) %}
             {{opt["id"]}}_.is_add = false;

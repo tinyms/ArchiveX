@@ -172,6 +172,7 @@ class DataTableModule(DataTableBaseModule):
         self.titles = prop.get("titles")#title list
         self.entity_full_name = prop.get("entity")#entity name
         autoform = prop.get("autoform")
+        select_mode = prop.get("select_mode")
         toolbar_add = prop.get("toolbar_add")
         search_fields = prop.get("search_fields")#default search field name,and text type,
         search_tip = prop.get("search_tip")
@@ -196,6 +197,8 @@ class DataTableModule(DataTableBaseModule):
         DataTableModule.__entity_mapping__[self.datatable_key] = sub
 
         tag = ""
+        if select_mode:
+            tag += "<th></th>"
         for title in self.titles:
             tag += "<th>" + title + "</th>"
         tag += "<th>#</th>"
@@ -204,6 +207,7 @@ class DataTableModule(DataTableBaseModule):
         opt["point"] = point
         opt["id"] = self.dom_id
         opt["autoform"] = autoform
+        opt["select_mode"] = select_mode
         if not search_tip:
             search_tip = ""
         opt["search_tip"] = search_tip
@@ -450,6 +454,7 @@ class DataViewModule(DataTableBaseModule):
         self.toolbar_add = prop.get("toolbar_add")
         editable = prop.get("editable")
         search_tip = prop.get("search_tip")
+        select_mode = prop.get("select_mode")
         self.point = EmptyClass()
         self.point.list = prop.get("point_list")
         self.point.view = prop.get("point_view")
@@ -475,6 +480,7 @@ class DataViewModule(DataTableBaseModule):
         opt["point"] = self.point
         opt["id"] = self.dom_id
         opt["thTags"] = tag
+        opt["select_mode"] = select_mode
         opt["entity_name_md5"] = self.dataview_key
         if not search_tip:
             search_tip = ""
