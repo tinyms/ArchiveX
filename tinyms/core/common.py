@@ -168,7 +168,7 @@ class JsonEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, decimal.Decimal):
             return float(o)
-        elif isinstance(o, datetime.date) or isinstance(o, datetime.datetime):
+        elif isinstance(o, datetime.date) or isinstance(o, datetime.datetime) or isinstance(o, datetime.time):
             return o.isoformat()
         super(JsonEncoder, self).default(o)
 
@@ -255,7 +255,8 @@ class Utils():
         time_text = Utils.parse_time_text(text)
         if not time_text:
             return None
-        return time.strptime(time_text, "%H:%M")
+        time_struct = time.strptime(time_text, "%H:%M")
+        return datetime.time(time_struct.tm_hour, time_struct.tm_min)
 
     @staticmethod
     def parse_date_text(text):

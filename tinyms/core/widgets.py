@@ -177,6 +177,7 @@ class DataTableModule(DataTableBaseModule):
         search_tip = prop.get("search_tip")
         point = EmptyClass()
         point.list = prop.get("point_list")
+        point.view = prop.get("point_view")
         point.add = prop.get("point_add")
         point.update = prop.get("point_update")
         point.delete = prop.get("point_delete")
@@ -241,7 +242,7 @@ class DataTableModule(DataTableBaseModule):
             if meta["length"] > 0:
                 col_def["length"] = 'maxlength="%s"' % meta["length"]
             else:
-                col_def["length"] = 'maxlength=""'
+                col_def["length"] = ''
             if not meta["nullable"]:
                 col_def["required"] = "required"
             if meta["type"] == "int":
@@ -451,6 +452,7 @@ class DataViewModule(DataTableBaseModule):
         search_tip = prop.get("search_tip")
         self.point = EmptyClass()
         self.point.list = prop.get("point_list")
+        self.point.view = prop.get("point_view")
         self.point.add = prop.get("point_add")
         self.point.update = prop.get("point_update")
         self.point.delete = prop.get("point_delete")

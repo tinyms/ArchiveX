@@ -8,7 +8,9 @@
 var {{opt["id"]}}_ = null;
 function {{opt["id"]}}_actionbar_render(col,v,type,row){
     var action_btns = '<div style="width: 130px;">';
+    {% if auth({opt["point"].view}) %}
 	action_btns += '<a class="btn-link" title="查看" onclick="{{opt["id"]}}_.RecordSetProvider.Modify(this,' + v + ');"><i class="icon-list-alt"></i></a>';
+    {% end %}
 	if (typeof(datatable_render_actionbar) != "undefined") {
 		action_btns += datatable_render_actionbar('{{opt["id"]}}', "id", v, row);
 	}
@@ -27,15 +29,17 @@ function {{opt["id"]}}_actionbar_render(col,v,type,row){
 }
 $(document).ready(function () {
     $("#{{opt['id']}}_panel").hide();
-	{{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},{{opt["id"]}}_actionbar_render);
-    {{opt["id"]}}_.request_url = "/dataview/" + {{opt["id"]}}_.entityName + "/";
-    {{opt["id"]}}_.search_tip = "{{ opt['search_tip'] }}";
-    {% if opt["toolbar_add"] %}
-    {{opt["id"]}}_.is_add = true;
-    {% else %}
-    {{opt["id"]}}_.is_add = false;
+    {% if auth({opt["point"].list}) %}
+        {{opt["id"]}}_ = new DataTableX('{{opt["id"]}}','{{opt["entity_name_md5"]}}',{% raw opt["col_defs"] %},{{opt["id"]}}_actionbar_render);
+        {{opt["id"]}}_.request_url = "/dataview/" + {{opt["id"]}}_.entityName + "/";
+        {{opt["id"]}}_.search_tip = "{{ opt['search_tip'] }}";
+        {% if not auth({opt["point"].add}) %}
+            {{opt["id"]}}_.is_add = false;
+        {% else %}
+            {{opt["id"]}}_.is_add = true;
+        {% end %}
+        {{opt["id"]}}_.Create();
     {% end %}
-	{{opt["id"]}}_.Create();
 });
 </script>
 {% if opt["autoform"] %}
