@@ -154,13 +154,24 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
         return null;
     };
 
-    this.Selected=function(elem){
-
+    this.CheckAll = function(chk){
+        var sel = $(chk).prop("checked");
+        if(sel){
+            $("#"+self.id+" td.datatable_col_sel :checkbox.checkable").each(function(){
+                $(this).prop("checked",true);
+            });
+        }else{
+            $("#"+self.id+" td.datatable_col_sel :checkbox.checkable").each(function(){
+                $(this).prop("checked",false);
+            });
+        }
     }
     this.GetSelectedValues=function(){
         var values = []
-        $("#"+self.id+" td.datatable_select_col :input").each(function(){
-            values.push(parseInt($(this).val()));
+        $("#"+self.id+" td.datatable_col_sel :checkbox.checkable").each(function(){
+            if($(this).prop("checked")){
+                values.push(parseInt($(this).val()));
+            }
         });
         return values;
     }

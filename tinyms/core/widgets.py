@@ -87,7 +87,6 @@ class SideBar(IWidget):
     def sort_menus(self, items):
         items.sort(key=lambda x: x[0])
 
-
 @ui("DataComboBox")
 class DataComboBoxModule(IWidget):
     def render(self, **prop):
@@ -159,6 +158,9 @@ class DataTableBaseModule(IWidget):
         #items.append("/static/jslib/datatable/extras/tabletools/css/TableTools.css")
         return items
 
+    def embedded_css(self):
+        return ".datatable_col_sel{width:20px;}"
+
 
 @ui("DataTable")
 class DataTableModule(DataTableBaseModule):
@@ -172,7 +174,7 @@ class DataTableModule(DataTableBaseModule):
         self.titles = prop.get("titles")#title list
         self.entity_full_name = prop.get("entity")#entity name
         autoform = prop.get("autoform")
-        select_mode = prop.get("select_mode")
+        checkable = prop.get("checkable")
         toolbar_add = prop.get("toolbar_add")
         search_fields = prop.get("search_fields")#default search field name,and text type,
         search_tip = prop.get("search_tip")
@@ -197,8 +199,8 @@ class DataTableModule(DataTableBaseModule):
         DataTableModule.__entity_mapping__[self.datatable_key] = sub
 
         tag = ""
-        if select_mode:
-            tag += "<th></th>"
+        if checkable:
+            tag += "<th><input type='checkbox' style='width: 13px; height: 13px;' onclick='%s_.CheckAll(this);'/></th>" % self.dom_id
         for title in self.titles:
             tag += "<th>" + title + "</th>"
         tag += "<th>#</th>"
@@ -207,7 +209,7 @@ class DataTableModule(DataTableBaseModule):
         opt["point"] = point
         opt["id"] = self.dom_id
         opt["autoform"] = autoform
-        opt["select_mode"] = select_mode
+        opt["checkable"] = checkable
         if not search_tip:
             search_tip = ""
         opt["search_tip"] = search_tip

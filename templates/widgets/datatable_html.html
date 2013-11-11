@@ -32,15 +32,10 @@ $(document).ready(function () {
     {% if auth({opt["point"].list}) %}
         var {{opt["id"]}}_col_defs_tmp = {% raw opt["col_defs"] %};
         var {{opt["id"]}}_col_defs = [];
-        {% if opt["select_mode"]=="checkbox" %}
-            {{opt["id"]}}_col_defs.push({"mData": "id", "sClass":"datatable_col_sel", "sTitle": "", "mRender": function (col, v, type, row) {
-                var mode = "{{opt['select_mode']}}";
-                if(mode=="checkbox"){
-                   return "<input type='checkbox' style='width: 13px; height: 13px;' value='"+v+"' onclick='{{opt["id"]}}_.Selected(this);'/>";
-               }else if(mode=="radio"){
-                   return "<input type='radio' style='width: 13px; height: 13px;' value='"+v+"' onclick='{{opt["id"]}}_.Selected(this);'/>";
-               }
-               return "";
+        {% if opt["checkable"] %}
+            {{opt["id"]}}_col_defs.push({"mData": "id", "bSortable":false, "sClass":"datatable_col_sel",
+            "sTitle": "<input type='checkbox' style='width: 13px; height: 13px;' onclick='{{opt["id"]}}_.CheckAll(this);'/>", "mRender": function (col, v, type, row) {
+                return "<input type='checkbox' style='width: 13px; height: 13px;' class='checkable' value='"+v+"' onclick='{{opt["id"]}}_.Selected(this);'/>";
             }});
         {% end %}
         $.each({{opt["id"]}}_col_defs_tmp,function(i,v){
