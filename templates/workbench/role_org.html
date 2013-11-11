@@ -69,6 +69,8 @@
 
         function show_user_roles(elem,account_id){
             $("#current_select_user_id").val(account_id);
+            var current_row = AccountDataTable_.GetRow(account_id);
+            $("#current_select_user_name").html(current_row.name);
             {% if auth({"tinyms.entity.account.role.view"}) %}
             tinyms.controller.security.AccountRoleEdit.list({id:account_id},function(b,data){
                 if(b){
@@ -197,7 +199,9 @@
                                         titles=['ID','姓名','邮箱','激活','最后登录','创建时间'],
                                         search_tip="可搜索帐号、姓名、邮箱",
                                         autoform=False,
+                                        checkable=False,
                                         point_list = "tinyms.entity.account.list",
+                                        point_view = "tinyms.entity.account.view",
                                         point_add = "tinyms.entity.account.add",
                                         point_update = "tinyms.entity.account.update",
                                         point_delete = "tinyms.entity.account.delete"
@@ -252,7 +256,7 @@
                             </div>
                             <div class="col-lg-3">
                                 <div class="panel" id="account_role_edit_panel">
-                                    <header class="panel-heading"><i id="current_select_user_login_id">可用</i> 角色</header>
+                                    <header class="panel-heading"><span style="color: red;" id="current_select_user_name"></span> 角色</header>
                                     <input id="current_select_user_id" type="hidden"/>
                                         <div class="list-group">
                                             {% for role in data['roles_for_account'] %}
@@ -277,6 +281,7 @@
                             search_tip="可搜索角色名称、用途",
                             autoform=False,
                             point_list = "tinyms.entity.role.list",
+                            point_view = "tinyms.entity.role.view",
                             point_add = "tinyms.entity.role.add",
                             point_update = "tinyms.entity.role.update",
                             point_delete = "tinyms.entity.role.delete"

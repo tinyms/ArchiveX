@@ -213,10 +213,6 @@ class DataTableModule(DataTableBaseModule):
         if not search_tip:
             search_tip = ""
         opt["search_tip"] = search_tip
-        if not toolbar_add:
-            opt["toolbar_add"] = True
-        else:
-            opt["toolbar_add"] = toolbar_add
         opt["thTags"] = tag
         opt["entity_name_md5"] = self.datatable_key
         if autoform:
@@ -453,8 +449,7 @@ class DataViewModule(DataTableBaseModule):
         self.cols = prop.get("cols")#entity field list
         self.titles = prop.get("titles")#title list
         self.dataview_name = prop.get("view")#仅仅只是一个Key，不做他用,全站唯一
-        self.toolbar_add = prop.get("toolbar_add")
-        editable = prop.get("editable")
+        checkable = prop.get("checkable")
         search_tip = prop.get("search_tip")
         select_mode = prop.get("select_mode")
         self.point = EmptyClass()
@@ -472,6 +467,8 @@ class DataViewModule(DataTableBaseModule):
         DataViewModule.__security_points__[self.dataview_key] = self.point
 
         tag = ""
+        if checkable:
+            tag += "<th><input type='checkbox' style='width: 13px; height: 13px;' onclick='%s_.CheckAll(this);'/></th>" % self.dom_id
         for title in self.titles:
             tag += "<th>" + title + "</th>"
         tag += "<th>#</th>"
@@ -484,17 +481,11 @@ class DataViewModule(DataTableBaseModule):
         opt["thTags"] = tag
         opt["select_mode"] = select_mode
         opt["entity_name_md5"] = self.dataview_key
+        opt["checkable"] = checkable
         if not search_tip:
             search_tip = ""
         opt["search_tip"] = search_tip
-        if not editable:
-            opt["editable"] = True
-        else:
-            opt["editable"] = editable
-        if not self.toolbar_add:
-            opt["toolbar_add"] = True
-        else:
-            opt["toolbar_add"] = self.toolbar_add
+
         html_col = list()
 
         index = 0

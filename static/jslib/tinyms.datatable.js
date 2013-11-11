@@ -166,6 +166,7 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
             });
         }
     }
+
     this.GetSelectedValues=function(){
         var values = []
         $("#"+self.id+" td.datatable_col_sel :checkbox.checkable").each(function(){
@@ -175,6 +176,7 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
         });
         return values;
     }
+
     this.form = {
         "cancel": function (btn) {
             self.switchTableAndEditFormPanel(false);
