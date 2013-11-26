@@ -168,8 +168,13 @@ class JsonEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, decimal.Decimal):
             return float(o)
-        elif isinstance(o, datetime.date) or isinstance(o, datetime.datetime) or isinstance(o, datetime.time):
-            return o.isoformat()
+        elif isinstance(o, datetime.date):
+            return Utils.format_datetime_short(o)
+        elif isinstance(o, datetime.datetime):
+            return Utils.format_datetime_short(o)
+        elif isinstance(o, datetime.time):
+            return Utils.format_time(o)
+
         super(JsonEncoder, self).default(o)
 
 
