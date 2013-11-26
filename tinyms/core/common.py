@@ -399,6 +399,18 @@ class Utils():
             return ""
         return date_obj.strftime('%Y-%m-%d')
 
+    @staticmethod
+    def format_time(datetime_obj):
+        if not datetime_obj:
+            return ""
+        if isinstance(datetime_obj, datetime.time):
+            curr_date = Utils.current_datetime()
+            dt = datetime.datetime.combine(curr_date, datetime_obj)
+            return dt.strftime('%H:%M')
+        elif isinstance(datetime_obj, datetime.datetime):
+            return datetime_obj.strftime('%H:%M')
+        return ""
+
 
 class Plugin():
     ObjectPool = dict()
