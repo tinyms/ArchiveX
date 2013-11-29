@@ -103,15 +103,14 @@ class RoleOrg(IAuthRequest):
 
     def role_categories(self):
         cnn = SessionFactory.new()
-        items = cnn.query(SecurityPoint.category).group_by(SecurityPoint.category).order_by(
-            SecurityPoint.id.asc()).all()
+        items = cnn.query(SecurityPoint.category).group_by(SecurityPoint.category).all()
         categories = [(cat[0]) for cat in items]
         return categories
 
     def role_groups(self, c):
         cnn = SessionFactory.new()
         items = cnn.query(SecurityPoint.group_).filter(SecurityPoint.category == c). \
-            group_by(SecurityPoint.group_).order_by(SecurityPoint.id.asc()).all()
+            group_by(SecurityPoint.group_).all()
         groups = [item[0] for item in items]
         return groups
 
