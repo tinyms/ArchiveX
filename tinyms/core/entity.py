@@ -147,7 +147,7 @@ class Role(Entity, Simplify):
 #安全点
 @many_to_many("Role")
 class SecurityPoint(Entity, Simplify):
-    key_ = Column(String(500), unique=True, nullable=False)
+    key_ = Column(String(60), unique=True, nullable=False)
     description = Column(Text)
     group_ = Column(String(60), nullable=False)
     category = Column(String(60), nullable=False)

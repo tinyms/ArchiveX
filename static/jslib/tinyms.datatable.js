@@ -87,7 +87,7 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
                 "sInfoEmpty": "没有数据",
                 "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
                 "sZeroRecords": "没有检索到数据",
-                "sSearch": "搜索:",
+                "sSearch": "快速搜索:",
                 "oPaginate": {
                     "sFirst": "首页",
                     "sPrevious": "前页",
@@ -253,7 +253,7 @@ function DataTableX(id_, entityName_, cols_, actionbar_render_) {
             if (current_row != null) {
                 self.switchTableAndEditFormPanel(true);
                 try {
-                    for (k in current_row) {
+                    for (var k in current_row) {
                         $("#" + self.id + "_form #" + k).val(current_row[k]);
                     }
                     if (typeof(datatable_form_fill) != "undefined") {
