@@ -175,7 +175,6 @@ class DataTableModule(DataTableBaseModule):
         self.entity_full_name = prop.get("entity")#entity name
         autoform = prop.get("autoform")
         checkable = prop.get("checkable")
-        toolbar_add = prop.get("toolbar_add")
         search_fields = prop.get("search_fields")#default search field name,and text type,
         search_tip = prop.get("search_tip")
         point = EmptyClass()
@@ -261,6 +260,7 @@ class DataTableModule(DataTableBaseModule):
 class DataTableHandler(IRequest):
     def post(self, id_, act):
         point = DataTableModule.__security_points__.get(id_)
+        print(point)
         message = dict()
         if act == "list":
             if not self.auth({point.list}):
@@ -329,17 +329,18 @@ class DataTableHandler(IRequest):
 
     def view(self, id_):
         message = dict()
-        message["success"] = True
+        message["success"] = False
         self.set_header("Content-Type", "text/json;charset=utf-8")
         meta = DataTableModule.__entity_mapping__.get(id_)
         if not meta:
             self.set_status(403, "Error!")
         entity = import_object(meta["name"])
         rec_id = self.get_argument("id")
-        if not rec_id:
+        if rec_id:
             sf = SessionFactory.new()
             item = sf.query(entity).get(rec_id)
             if item:
+                message["success"] = True
                 message["msg"] = item.dict()
                 self.write(message)
             else:
