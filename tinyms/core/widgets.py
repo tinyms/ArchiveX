@@ -19,7 +19,9 @@ class IWidget(UIModule):
 @ui("Version")
 class VersionModule(IWidget):
     def render(self, *args, **kwargs):
-        return "&copy; ArchX 2013, v1.0b"
+        from datetime import datetime
+        year = datetime.now().strftime("%Y")
+        return "&copy; TinyMS, Power by ArchX %s, v1.0" % year
 
 
 @ui("CurrentAccountName")
