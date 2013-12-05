@@ -3,12 +3,12 @@ __author__ = 'tinyms'
 import json
 from tornado.web import UIModule
 from tornado.util import import_object
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from tinyms.core.common import Utils, JsonEncoder
-from tinyms.core.annotation import ui, route, ObjectPool, EmptyClass
+from tinyms.core.annotation import ui, route, ObjectPool, EmptyClass, autocomplete
 from tinyms.core.orm import SessionFactory
 from tinyms.core.web import IRequest
-from tinyms.core.entity import Term, TermTaxonomy, Role
+from tinyms.core.entity import Term, TermTaxonomy, Role, Archives
 from tinyms.dao.account import AccountHelper
 
 
@@ -20,6 +20,7 @@ class IWidget(UIModule):
 class VersionModule(IWidget):
     def render(self, *args, **kwargs):
         from datetime import datetime
+
         year = datetime.now().strftime("%Y")
         return "&copy; TinyMS, Power by ArchX %s, v1.1" % year
 
@@ -88,6 +89,7 @@ class SideBar(IWidget):
 
     def sort_menus(self, items):
         items.sort(key=lambda x: x[0])
+
 
 @ui("DataComboBox")
 class DataComboBoxModule(IWidget):
@@ -879,3 +881,29 @@ class AutoComplete(IWidget):
 
     def embedded_javascript(self):
         return self.render_string("widgets/autocomplete.js")
+
+
+#查找账户自动完成
+@autocomplete("tinyms.core.ac.FindArchivesAutoComplete")
+class FindArchivesAutoComplete():
+    def data(self, search_word, req):
+        cnn = SessionFactory.new()
+        q = cnn.query(Archives.id, Archives.name, Archives.email)
+        q = q.filter(or_(Archives.name.like('%' + search_word + '%'), Archives.email.like('%' + search_word + '%'),
+                         Archives.alias.like('%' + search_word + '%'), Archives.code.like('%' + search_word + '%')))
+        all_ = q.limit(10).all()
+        items = list()
+        for row in all_:
+            item = dict()
+            item["id"] = row[0]
+            item["name"] = row[1]
+            item["email"] = row[2]
+            items.append(item)
+        return items
+
+    def text(self, id_, req):
+        sf = SessionFactory.new()
+        name = sf.query(Archives.name).filter(Archives.id == id_).scalar()
+        if name:
+            return name
+        return ""
