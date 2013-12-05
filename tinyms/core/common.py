@@ -286,7 +286,7 @@ class Utils():
     def parse_datetime_text(text):
         if not text:
             return ""
-        p = "\\d{2}-\\d{2}\\s{1}\\d{2}:\\d{2}"
+        p = "\\d{4}-\\d{2}-\\d{2}\\s{1}\\d{2}:\\d{2}"
         r = re.compile(p)
         matchs = r.findall(text)
         if len(matchs) > 0:
@@ -326,7 +326,7 @@ class Utils():
 
     @staticmethod
     def encode(obj):
-        return json.dumps(obj)
+        return json.dumps(obj, cls=JsonEncoder)
 
     @staticmethod
     def decode(text):

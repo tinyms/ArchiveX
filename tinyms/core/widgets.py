@@ -273,28 +273,28 @@ class DataTableHandler(IRequest):
             if not self.auth({point.view}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
             else:
                 self.view(id_)
         elif act == "save":
             if not self.auth({point.update}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
             else:
                 self.update(id_)
         elif act == "saveNext":
             if not self.auth({point.update}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
             else:
                 self.update(id_)
         elif act == "delete":
             if not self.auth({point.delete}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
             else:
                 self.delete(id_)
 
@@ -323,11 +323,11 @@ class DataTableHandler(IRequest):
                 custom_filter_obj.after_delete(cur_row, sf, self)
             message["success"] = True
             message["msg"] = "Deleted"
-            self.write(json.dumps(message))
+            self.write(Utils.encode(message))
         else:
             message["success"] = False
             message["msg"] = valid_msg
-            self.write(json.dumps(message))
+            self.write(Utils.encode(message))
 
     def view(self, id_):
         message = dict()
@@ -344,15 +344,15 @@ class DataTableHandler(IRequest):
             if item:
                 message["success"] = True
                 message["msg"] = item.dict()
-                self.write(message)
+                self.write(Utils.encode(message))
             else:
                 item = entity()
                 message["msg"] = item.dict()
-                self.write(message)
+                self.write(Utils.encode(message))
         else:
             item = entity()
             message["msg"] = item.dict()
-            self.write(message)
+            self.write(Utils.encode(message))
 
     def update(self, id_):
         message = dict()
@@ -381,11 +381,11 @@ class DataTableHandler(IRequest):
                     custom_filter_obj.after_add(obj, sf, self)
                 message["success"] = True
                 message["msg"] = obj.id
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
             else:
                 message["success"] = False
                 message["msg"] = valid_msg
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
         else:
             message["flag"] = "update"
             sf = SessionFactory.new()
@@ -399,11 +399,11 @@ class DataTableHandler(IRequest):
                     custom_filter_obj.after_modify(cur_row, sf, self)
                 message["success"] = True
                 message["msg"] = "Updated"
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
             else:
                 message["success"] = False
                 message["msg"] = valid_msg
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
 
     def list(self, id_):
         meta = DataTableModule.__entity_mapping__.get(id_)
@@ -547,28 +547,28 @@ class DataViewHandler(IRequest):
             if not self.auth({point.view}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
             else:
                 self.view(id_)
         elif act == "save":
             if not self.auth({point.update}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
             else:
                 self.update(id_)
         elif act == "saveNext":
             if not self.auth({point.update}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
             else:
                 self.update(id_)
         elif act == "delete":
             if not self.auth({point.delete}):
                 message["success"] = False
                 message["msg"] = "UnAuth"
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
             else:
                 self.delete(id_)
 
@@ -576,7 +576,7 @@ class DataViewHandler(IRequest):
         message = dict()
         message["success"] = True
         self.set_header("Content-Type", "text/json;charset=utf-8")
-        name = DataTableModule.__entity_mapping__.get(id_)
+        name = DataViewModule.__view_mapping__.get(id_)
         if not name:
             self.set_status(403, "Error!")
         custom_filter = ObjectPool.dataview_provider.get(name)
@@ -586,7 +586,7 @@ class DataViewHandler(IRequest):
             if hasattr(custom_filter_obj, "view"):
                 dict_item = custom_filter_obj.view(rec_id, self)
                 message["msg"] = dict_item
-                self.write(json.dumps(message))
+                self.write(Utils.encode(message))
         else:
             message["msg"] = dict()
             self.write(message)
@@ -612,7 +612,7 @@ class DataViewHandler(IRequest):
                 else:
                     message["success"] = True
                     message["msg"] = "Deleted"
-        self.write(json.dumps(message))
+        self.write(Utils.encode(message))
 
     def update(self, id_):
         message = dict()
@@ -648,7 +648,7 @@ class DataViewHandler(IRequest):
                     message["success"] = True
                     message["msg"] = "Updated"
 
-        self.write(json.dumps(message))
+        self.write(Utils.encode(message))
 
     def list(self, id_):
         name = DataViewModule.__view_mapping__.get(id_)
