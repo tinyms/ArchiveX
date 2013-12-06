@@ -184,17 +184,21 @@ class Utils():
         if not os.path.exists(f_name):
             return ""
         f = codecs.open(f_name, "r", "utf-8")
-        all = f.readlines()
+        all_ = f.readlines()
         f.close()
         if join:
-            return "".join(all)
+            return "".join(all_)
         return all
 
     @staticmethod
     def text_write(f_name, lines=[], suffix="\n"):
         f = codecs.open(f_name, "w+", "utf-8")
-        for line in lines:
-            f.write(line + suffix)
+        if isinstance(lines, list):
+            for line in lines:
+                f.write(line + suffix)
+        else:
+            f.write(lines)
+            f.write(suffix)
         f.close()
 
     @staticmethod

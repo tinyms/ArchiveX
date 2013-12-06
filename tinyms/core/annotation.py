@@ -11,6 +11,7 @@ class EmptyClass(object):
 
 
 class ObjectPool():
+    mode_dev = False
     server_starups = list()
     points = list()
     user_security_points = list()
@@ -57,6 +58,7 @@ def server_starup():
         return cls
 
     return ref_pattern
+
 
 def reg_point(key, category="", group_="", description=""):
     """

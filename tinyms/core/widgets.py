@@ -78,6 +78,7 @@ class SideBar(IWidget):
         context["archives_show"] = self.archives_show
         context["role_org_show"] = self.role_org_show
         context["sys_params_show"] = self.sys_params_show
+        context["dev"] = ObjectPool.mode_dev
         return self.render_string("workbench/sidebar.html", context=context)
 
     def children(self, path):
