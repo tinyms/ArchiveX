@@ -36,7 +36,7 @@ def entity_manager():
     def ref_pattern(cls):
         if not SessionFactory.entitys.get(cls):
             key = "%s.%s" % (cls.__module__, cls.__qualname__)
-            SessionFactory.entitys[key] = cls.__tablename__
+            SessionFactory.entitys[cls.__tablename__] = key
         return cls
 
     return ref_pattern

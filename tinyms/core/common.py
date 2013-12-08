@@ -12,7 +12,7 @@ import time
 import datetime
 import decimal
 from imp import find_module, load_module, acquire_lock, release_lock
-
+from tornado.template import Template
 import psycopg2
 import psycopg2.extras
 
@@ -211,6 +211,17 @@ class Utils():
     @staticmethod
     def trim(text):
         return "".join(text.split())
+
+    @staticmethod
+    def render(tpl_text, context):
+        """
+        render a template
+        :param tpl_text: template text
+        :param context: dict object
+        :return: str
+        """
+        tpl = Template(tpl_text)
+        return tpl.generate(context)
 
     @staticmethod
     def md5(s):

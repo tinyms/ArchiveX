@@ -1,14 +1,16 @@
 {% extends "master.html" %}
 {% block title %}Widgets{% end %}
 {% block header %}
+<script src="{{ static_url('jslib/mustache.js') }}"></script>
 <script type="text/javascript">
     var entitys = {% raw context["entity_map"]%};
     var table_cols = {% raw context["table_cols"]%};
+    var table_cols_text = {% raw context["table_cols_text"]%};
     function load_entitys_list(){
         var html = "";
         for(var key in entitys){
-            html += '<a href="#" class="list-group-item" onclick="builder(this,\''+entitys[key]+'\');">';
-            html += '<i class="icon-table"></i> '+key;
+            html += '<a href="#" class="list-group-item" onclick="builder(this,\''+key+'\');">';
+            html += '<i class="icon-table"></i> '+entitys[key];
             html += '</a>';
         }
         $("#entitys").html(html);
@@ -16,10 +18,40 @@
     function builder(elem, table_name){
         $("#entitys a").removeClass("bg-lighter");
         $(elem).addClass("bg-lighter");
-        console.log(table_cols[table_name]);
+        var domId = window.prompt("请输入控件ID:");
+        if(domId!=null&&domId.length>0){
+            var fields = [];
+            var all_cols = table_cols[table_name];
+            var len = all_cols.length;
+            for(var k=0; k<len;k++){
+                if(all_cols[k]=="id"){continue;}
+                fields.push({name:all_cols[k]});
+            }
+            $.get("/api/tinyms.dev.template/get",{},function(tpl){
+                var tpl_datatable = tpl["datatable"];
+                var tpl_dataview = tpl["dataview"];
+                var data_dataview = {
+                    "id":domId,
+                    "view_name":entitys[table_name],
+                    "point_prefix":entitys[table_name].toLowerCase(),
+                    "cols":table_cols_text[table_name],
+                    "fields":fields
+                };
+                var data_datatable = {
+                    "id":domId,
+                    "entity_name":entitys[table_name],
+                    "point_prefix":entitys[table_name].toLowerCase(),
+                    "cols":table_cols_text[table_name],
+                    "fields":fields
+                };
+                $("#data_view_tpl").text(Mustache.to_html(tpl_dataview,data_dataview));
+                $("#data_table_tpl").text(Mustache.to_html(tpl_datatable,data_datatable));
+            },"json");
+        }
     }
     $(document).ready(function(){
         load_entitys_list();
+        $('#tab_widgets a:first').tab('show');
     });
 </script>
 {% end %}
@@ -41,15 +73,33 @@
             <div class="col-lg-8">
             <section class="panel">
                 <header class="panel-heading text-right">
-                  <ul class="nav nav-tabs pull-left">
-                    <li class="active"><a href="#tb_dataview" data-toggle="tab"><i class="icon-comments icon-large text-default"></i>DataView</a></li>
+                  <ul class="nav nav-tabs pull-left" id="tab_widgets">
+                    <li><a href="#tb_dataview" data-toggle="tab"><i class="icon-comments icon-large text-default"></i>DataView</a></li>
                     <li><a href="#tb_datatable" data-toggle="tab"><i class="icon-user icon-large text-default"></i>DataTable</a></li>
                   </ul>
                 </header>
                 <div class="panel-body">
                   <div class="tab-content">
-                    <div class="tab-pane fade" id="tb_dataview">DataView</div>
-                    <div class="tab-pane fade" id="tb_datatable">DataTable</div>
+                    <div class="tab-pane fade" id="tb_dataview">
+                        <form class="form-horizontal" role="form">
+                            <div class="form-group">
+                            <label for="data_view_tpl" class="col-lg-3 control-label">Template</label>
+                            <div class="col-lg-8">
+                            <textarea id="data_view_tpl" class="form-control" rows="20"></textarea>
+                            </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="tb_datatable">
+                        <form class="form-horizontal" role="form">
+                            <div class="form-group">
+                            <label for="data_table_tpl" class="col-lg-3 control-label">Template</label>
+                            <div class="col-lg-8">
+                            <textarea id="data_table_tpl" class="form-control" rows="20"></textarea>
+                            </div>
+                            </div>
+                        </form>
+                    </div>
                   </div>
                 </div>
             </section>

@@ -22,7 +22,7 @@ class VersionModule(IWidget):
         from datetime import datetime
 
         year = datetime.now().strftime("%Y")
-        return "&copy; TinyMS, Power by ArchX %s, v1.1" % year
+        return "&copy; TinyMS, Power by ArchX %s, v1.2" % year
 
 
 @ui("CurrentAccountName")
