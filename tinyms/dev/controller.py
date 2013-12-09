@@ -60,7 +60,7 @@ class WidgetsTemplateApi():
           {% module datagrid_form_start("{{id}}") %}
             {{#fields}}
             <div class="form-group">
-            <label for="start_date" class="col-lg-3 control-label">Label</label>
+            <label for="start_date" class="col-lg-3 control-label">{{name}}</label>
             <div class="col-lg-8">
             <input type="text" class="form-control" id="{{name}}" name="{{name}}">
             </div>
@@ -86,7 +86,7 @@ class WidgetsTemplateApi():
           {% module datagrid_form_start("{{id}}") %}
             {{#fields}}
             <div class="form-group">
-            <label for="start_date" class="col-lg-3 control-label">Label</label>
+            <label for="start_date" class="col-lg-3 control-label">{{name}}</label>
             <div class="col-lg-8">
             <input type="text" class="form-control" id="{{name}}" name="{{name}}">
             </div>
