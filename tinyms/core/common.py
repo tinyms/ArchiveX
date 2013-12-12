@@ -11,6 +11,7 @@ import urllib.parse
 import time
 import datetime
 import decimal
+import uuid
 from imp import find_module, load_module, acquire_lock, release_lock
 from tornado.template import Template
 import psycopg2
@@ -213,6 +214,10 @@ class Utils():
         return "".join(text.split())
 
     @staticmethod
+    def uniq_index():
+        return uuid.uuid1()
+
+    @staticmethod
     def render(tpl_text, context):
         """
         render a template
@@ -400,6 +405,12 @@ class Utils():
         if len(matchs) > 0:
             return matchs[0]
         return ""
+
+    @staticmethod
+    def format_year_month(date_obj):
+        if not date_obj:
+            return ""
+        return date_obj.strftime('%Y-%m')
 
     @staticmethod
     def format_datetime(date_obj):

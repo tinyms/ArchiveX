@@ -1,6 +1,7 @@
 __author__ = 'tinyms'
 
 import os
+import uuid
 from tornado.web import RequestHandler
 from tinyms.core.common import Utils
 from tinyms.core.annotation import EmptyClass, ObjectPool, route
@@ -230,6 +231,36 @@ class AjaxHandler(IRequest):
                     else:
                         self.write(result)
 
+@route("/upload")
+class FileUpload(IAuthRequest):
+    def post(self, *args, **kwargs):
+        self.set_header("Content-Type", "text/json;charset=utf-8")
+        #build path
+        upload_path = "/upload/%s/%s" % (Utils.format_year_month(Utils.current_datetime()),
+                                         Utils.current_datetime().date().day)
+        path = self.get_webroot_path()+upload_path
+        Utils.mkdirs(path)
+        files = self.request.files
+        items = list()
+        for key in files:
+            item = dict()
+            meta = files[key]
+            file_name = meta["filename"]
+            ext_name = os.path.splitext(file_name)
+            name_ = Utils.uniq_index()
+            if not ext_name:
+                new_file_name = name_
+            else:
+                new_file_name = "%s.%s" % (name_, ext_name)
+            save_path = "%s/%s" % (path, new_file_name)
+            with open(save_path, "wb") as uploader:
+                uploader.write(meta["body"])
+            item["local_name"] = file_name
+            item["ext_name"] = ext_name
+            item["upload_path"] = "%s/%s" % (upload_path, new_file_name)
+            item["archives_id"] = self.get_current_user()
+            items.append(item)
+        self.write(Utils.encode(["OK"]))
 
 @route("/autocomplete/(.*)")
 class AutoCompleteHandler(IRequest):
