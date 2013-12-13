@@ -1,5 +1,5 @@
 __author__ = 'tinyms'
-
+#coding=UTF8
 from inspect import isfunction
 from tornado.util import import_object
 

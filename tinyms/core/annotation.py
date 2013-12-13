@@ -1,5 +1,5 @@
 __author__ = 'tinyms'
-
+#coding=UTF8
 from functools import wraps
 from tinyms.core.entity import SecurityPoint
 from tinyms.core.common import Utils
@@ -73,7 +73,7 @@ def reg_point(key, category="", group_="", description=""):
     for sp in ObjectPool.points:
         if sp.key_ == key:
             return
-    point = SecurityPoint()
+    point = EmptyClass()
     point.key_ = key
     point.description = description
     point.group_ = group_

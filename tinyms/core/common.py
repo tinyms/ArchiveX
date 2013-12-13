@@ -1,168 +1,168 @@
 __author__ = 'tinyms'
-
+#coding=UTF8
 import os
 import sys
 import re
 import codecs
 import hashlib
 import json
-import urllib.request
-import urllib.parse
+#import urllib.request
+#import urllib.parse
 import time
 import datetime
 import decimal
 import uuid
 from imp import find_module, load_module, acquire_lock, release_lock
 from tornado.template import Template
-import psycopg2
-import psycopg2.extras
-
-
-class Postgres():
-    DATABASE_NAME = "postgres"
-    USER_NAME = "postgres"
-    PASSWORD = ""
-
-    @staticmethod
-    #Connect to Postgres Database
-    def open():
-        return psycopg2.connect(database=Postgres.DATABASE_NAME,
-                                user=Postgres.USER_NAME,
-                                password=Postgres.PASSWORD)
-
-    @staticmethod
-    def update(sql, params, return_col_name=None):
-
-        """
-        for Insert,Update,Delete
-        :param sql:
-        :param params:
-        :param return_col_name: last insert row id etc.
-        :return:
-        """
-        if return_col_name:
-            sql += " RETURNING %s" % return_col_name
-        cnn = None
-        try:
-            cnn = Postgres.open()
-            cur = cnn.cursor()
-            cur.execute(sql, params)
-            if return_col_name:
-                result = cur.fetchone()[0]
-            else:
-                result = True
-            cnn.commit()
-        except psycopg2.DatabaseError as e:
-            print("Error %s" % e)
-            cnn.rollback()
-            result = False
-        finally:
-            if cnn:
-                cnn.close()
-
-        return result
-
-    @staticmethod
-    #Batch Insert,Update,Delete
-    def update_many(sql, arr_params):
-        try:
-            cnn = Postgres.open()
-            cur = cnn.cursor()
-            cur.executemany(sql, arr_params)
-            cnn.commit()
-        except psycopg2.DatabaseError as e:
-            print("Error %s" % e)
-        finally:
-            if cnn:
-                cnn.close()
-
-    @staticmethod
-    #Query DataSet
-    def many(sql, params=(), callback=None):
-        dataset = list()
-        cnn = None
-        try:
-            cnn = Postgres.open()
-            cur = cnn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            cur.execute(sql, params)
-            rows = cur.fetchall()
-            for row in rows:
-                c = row.copy()
-                if callback:
-                    callback(c)
-                dataset.append(c)
-            cur.close()
-        except psycopg2.DatabaseError as e:
-            print("Error %s" % e)
-        finally:
-            if cnn:
-                cnn.close()
-        return dataset
-
-    @staticmethod
-    #First Row Data
-    def row(sql, params, callback=None):
-        items = Postgres.many(sql, params, callback)
-        if len(items) > 0:
-            return items[0]
-        return None
-
-    @staticmethod
-    #First Column Data
-    def col(sql, params, callback=None):
-        items = Postgres.many(sql, params, callback)
-        cols = list()
-        for item in items:
-            values = [i for i in item.values()]
-            if len(values) > 0:
-                cols.append(values[0])
-        return cols
-
-    @staticmethod
-    #First Row And First Column
-    def one(sql, params=(), callback=None):
-        first_col = Postgres.col(sql, params, callback)
-        if len(first_col) > 0:
-            return first_col[0]
-        return None
-
-    @staticmethod
-    #Store Proc, Return Single Result
-    def proc_one(name, params, callback=None):
-        first_col = Postgres.proc_many(name, params, callback)
-        if len(first_col) > 0:
-            return first_col[0]
-        return None
-
-    @staticmethod
-    #Store Proc, Return DataSet
-    def proc_many(name, params, callback=None):
-        dataset = list()
-        cnn = None
-        try:
-            cnn = Postgres.open()
-            cur = cnn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            rows = cur.callproc(name, params)
-            for row in rows:
-                c = row.copy()
-                if callback:
-                    callback(c)
-                dataset.append(c)
-            cur.close()
-        except psycopg2.DatabaseError as e:
-            print("Error %s" % e)
-        finally:
-            if cnn:
-                cnn.close()
-        return dataset
-
-    @staticmethod
-    #Return all cols name from current Query cursor
-    def col_names(cur):
-        names = list()
-        for col in cur.description:
-            names.append(col.name)
-        return names
+# import psycopg2
+# import psycopg2.extras
+#
+#
+# class Postgres():
+#     DATABASE_NAME = "postgres"
+#     USER_NAME = "postgres"
+#     PASSWORD = ""
+#
+#     @staticmethod
+#     #Connect to Postgres Database
+#     def open():
+#         return psycopg2.connect(database=Postgres.DATABASE_NAME,
+#                                 user=Postgres.USER_NAME,
+#                                 password=Postgres.PASSWORD)
+#
+#     @staticmethod
+#     def update(sql, params, return_col_name=None):
+#
+#         """
+#         for Insert,Update,Delete
+#         :param sql:
+#         :param params:
+#         :param return_col_name: last insert row id etc.
+#         :return:
+#         """
+#         if return_col_name:
+#             sql += " RETURNING %s" % return_col_name
+#         cnn = None
+#         try:
+#             cnn = Postgres.open()
+#             cur = cnn.cursor()
+#             cur.execute(sql, params)
+#             if return_col_name:
+#                 result = cur.fetchone()[0]
+#             else:
+#                 result = True
+#             cnn.commit()
+#         except psycopg2.DatabaseError as e:
+#             print("Error %s" % e)
+#             cnn.rollback()
+#             result = False
+#         finally:
+#             if cnn:
+#                 cnn.close()
+#
+#         return result
+#
+#     @staticmethod
+#     #Batch Insert,Update,Delete
+#     def update_many(sql, arr_params):
+#         try:
+#             cnn = Postgres.open()
+#             cur = cnn.cursor()
+#             cur.executemany(sql, arr_params)
+#             cnn.commit()
+#         except psycopg2.DatabaseError as e:
+#             print("Error %s" % e)
+#         finally:
+#             if cnn:
+#                 cnn.close()
+#
+#     @staticmethod
+#     #Query DataSet
+#     def many(sql, params=(), callback=None):
+#         dataset = list()
+#         cnn = None
+#         try:
+#             cnn = Postgres.open()
+#             cur = cnn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+#             cur.execute(sql, params)
+#             rows = cur.fetchall()
+#             for row in rows:
+#                 c = row.copy()
+#                 if callback:
+#                     callback(c)
+#                 dataset.append(c)
+#             cur.close()
+#         except psycopg2.DatabaseError as e:
+#             print("Error %s" % e)
+#         finally:
+#             if cnn:
+#                 cnn.close()
+#         return dataset
+#
+#     @staticmethod
+#     #First Row Data
+#     def row(sql, params, callback=None):
+#         items = Postgres.many(sql, params, callback)
+#         if len(items) > 0:
+#             return items[0]
+#         return None
+#
+#     @staticmethod
+#     #First Column Data
+#     def col(sql, params, callback=None):
+#         items = Postgres.many(sql, params, callback)
+#         cols = list()
+#         for item in items:
+#             values = [i for i in item.values()]
+#             if len(values) > 0:
+#                 cols.append(values[0])
+#         return cols
+#
+#     @staticmethod
+#     #First Row And First Column
+#     def one(sql, params=(), callback=None):
+#         first_col = Postgres.col(sql, params, callback)
+#         if len(first_col) > 0:
+#             return first_col[0]
+#         return None
+#
+#     @staticmethod
+#     #Store Proc, Return Single Result
+#     def proc_one(name, params, callback=None):
+#         first_col = Postgres.proc_many(name, params, callback)
+#         if len(first_col) > 0:
+#             return first_col[0]
+#         return None
+#
+#     @staticmethod
+#     #Store Proc, Return DataSet
+#     def proc_many(name, params, callback=None):
+#         dataset = list()
+#         cnn = None
+#         try:
+#             cnn = Postgres.open()
+#             cur = cnn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+#             rows = cur.callproc(name, params)
+#             for row in rows:
+#                 c = row.copy()
+#                 if callback:
+#                     callback(c)
+#                 dataset.append(c)
+#             cur.close()
+#         except psycopg2.DatabaseError as e:
+#             print("Error %s" % e)
+#         finally:
+#             if cnn:
+#                 cnn.close()
+#         return dataset
+#
+#     @staticmethod
+#     #Return all cols name from current Query cursor
+#     def col_names(cur):
+#         names = list()
+#         for col in cur.description:
+#             names.append(col.name)
+#         return names
 
 
 class JsonEncoder(json.JSONEncoder):
@@ -180,6 +180,9 @@ class JsonEncoder(json.JSONEncoder):
 
 
 class Utils():
+    def __init__(self):
+        pass
+
     @staticmethod
     def text_read(f_name, join=True):
         if not os.path.exists(f_name):
@@ -192,7 +195,7 @@ class Utils():
         return all
 
     @staticmethod
-    def text_write(f_name, lines=[], suffix="\n"):
+    def text_write(f_name, lines=list(), suffix="\n"):
         f = codecs.open(f_name, "w+", "utf-8")
         if isinstance(lines, list):
             for line in lines:
@@ -202,12 +205,12 @@ class Utils():
             f.write(suffix)
         f.close()
 
-    @staticmethod
-    def url_with_params(url):
-        r1 = urllib.parse.urlsplit(url)
-        if r1.query != "":
-            return True
-        return False
+    # @staticmethod
+    # def url_with_params(url):
+    #     r1 = urllib.parse.urlsplit(url)
+    #     if r1.query != "":
+    #         return True
+    #     return False
 
     @staticmethod
     def trim(text):
@@ -352,16 +355,16 @@ class Utils():
     def decode(text):
         return json.loads(text)
 
-    @staticmethod
-    def download(url, save_path):
-        try:
-            f = urllib.request.urlopen(url, timeout=15)
-            data = f.read()
-            with open(save_path, "wb") as cache:
-                cache.write(data)
-        except urllib.error.URLError as ex:
-            info = sys.exc_info()
-            print(info[0], ":", info[1], ex)
+    # @staticmethod
+    # def download(url, save_path):
+    #     try:
+    #         f = urllib.request.urlopen(url, timeout=15)
+    #         data = f.read()
+    #         with open(save_path, "wb") as cache:
+    #             cache.write(data)
+    #     except urllib.error.URLError as ex:
+    #         info = sys.exc_info()
+    #         print(info[0], ":", info[1], ex)
 
     @staticmethod
     def matrix_reverse(arr):
@@ -382,11 +385,11 @@ class Utils():
                 combine_file = os.path.join(folder, target_file_name + "." + key)
                 if os.path.exists(combine_file):
                     os.remove(combine_file)
-                all = list()
-                for file in files:
-                    path = os.path.join(folder, file)
-                    all.append(Utils.text_read(path))
-                Utils.text_write(combine_file, all)
+                all_ = list()
+                for file_ in files:
+                    path = os.path.join(folder, file_)
+                    all_.append(Utils.text_read(path))
+                Utils.text_write(combine_file, all_)
         pass
 
     @staticmethod
@@ -444,6 +447,9 @@ class Utils():
 
 
 class Plugin():
+    def __init__(self):
+        pass
+
     ObjectPool = dict()
 
     @staticmethod
@@ -480,33 +486,36 @@ class Plugin():
         for rootDir, pathList, fileList in wid:
             if rootDir.find("__pycache__") != -1:
                 continue
-            for file in fileList:
-                if file.find("__init__.py") != -1:
+            for file_ in fileList:
+                if file_.find("__init__.py") != -1:
                     continue
                     #re \\.py[c]?$
-                if file.endswith(".py") or file.endswith(".pyc"):
-                    plugins.append((os.path.splitext(file)[0], rootDir))
+                if file_.endswith(".py") or file_.endswith(".pyc"):
+                    plugins.append((os.path.splitext(file_)[0], rootDir))
 
         print(plugins)
         print("Instance all Config class.")
         for (name, dir_) in plugins:
             try:
                 acquire_lock()
-                file, filename, desc = find_module(name, [dir_])
+                file_, filename, desc = find_module(name, [dir_])
                 prev = sys.modules.get(name)
                 if prev:
                     del sys.modules[name]
-                module_ = load_module(name, file, filename, desc)
+                module_ = load_module(name, file_, filename, desc)
             finally:
-                if file:
-                    file.close()
                 release_lock()
 
             if hasattr(module_, "__export__"):
                 attrs = [getattr(module_, x) for x in module_.__export__]
                 for attr in attrs:
-                    if not Plugin.ObjectPool.get(attr.__base__):
-                        Plugin.ObjectPool[attr.__base__] = [attr()]
-                    else:
-                        Plugin.ObjectPool[attr.__base__].append(attr())
+                    #父类 py3 is __base__, py2 is __bases__ = ()
+                    parents = attr.__bases__
+                    if len(parents) > 0:
+                        parent = parents[0]
+                        print(parent)
+                        if not Plugin.ObjectPool.get(parent):
+                            Plugin.ObjectPool[parent] = [attr()]
+                        else:
+                            Plugin.ObjectPool[parent].append(attr())
         print("Config init completed.")

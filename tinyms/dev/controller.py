@@ -1,3 +1,4 @@
+#coding=UTF8
 __author__ = 'tinyms'
 
 from sqlalchemy.engine import reflection

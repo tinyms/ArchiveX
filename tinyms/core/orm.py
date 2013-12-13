@@ -1,5 +1,5 @@
 __author__ = 'tinyms'
-
+#coding=UTF8
 import json
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship, backref, class_mapper
@@ -37,7 +37,7 @@ class SessionFactory():
 def entity_manager():
     def ref_pattern(cls):
         if not SessionFactory.entitys.get(cls):
-            key = "%s.%s" % (cls.__module__, cls.__qualname__)
+            key = "%s.%s" % (cls.__module__, cls.__name__)
             SessionFactory.entitys[cls.__tablename__] = key
         return cls
 

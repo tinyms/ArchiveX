@@ -1,8 +1,10 @@
 __author__ = 'tinyms'
-
+#coding=UTF8
 from sqlalchemy import join, Column, Integer, String, DateTime, Text, Date, Numeric
-from tinyms.core.orm import Entity, Simplify, many_to_one, many_to_many, entity_manager
 from sqlalchemy.orm import column_property
+
+from tinyms.core.orm import Entity, Simplify, many_to_one, many_to_many, entity_manager
+
 
 
 #人员档案
@@ -19,15 +21,15 @@ class Archives(Entity, Simplify):
     #生日
     birthday = Column(Date())
     #体重(千克)
-    weight = Column(Numeric(2, 2))
+    weight = Column(String(20))
     #身高(厘米)
-    height = Column(Numeric(2, 2))
+    height = Column(String(20))
     #民族
     nation = Column(String(65))
     #籍贯
     hometown = Column(String(10))
     #视力
-    vision = Column(Numeric(2, 2))
+    vision = Column(String(20))
     #职位
     post = Column(Integer())
     #健康状况
@@ -35,7 +37,7 @@ class Archives(Entity, Simplify):
     #婚姻状况
     marital_status = Column(Integer())
     #身份证
-    id_card = Column(String(20))
+    id_card = Column(String(25))
     #户籍所在地
     household_register = Column(String(100))
     #学历

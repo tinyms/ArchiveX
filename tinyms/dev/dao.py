@@ -1,3 +1,4 @@
+#coding=UTF8
 __author__ = 'tinyms'
 
 import os
@@ -30,14 +31,14 @@ class ProjectApi():
             items.append("from %s.common import *" % name)
             Utils.text_write(pack_file, items)
             #create sample py, example: controller.py, dao.py, common.py, entity.py
-        items.clear()
+        items = list()
         controller_file = abs_path + name + "/controller.py"
         if not os.path.exists(controller_file):
             items.append("from tinyms.core.common import Utils")
             items.append("from tinyms.core.web import IAuthRequest")
             items.append("from tinyms.core.annotation import route, ui")
             Utils.text_write(controller_file, items)
-        items.clear()
+        items = list()
         dao_file = abs_path + name + "/dao.py"
         if not os.path.exists(dao_file):
             items.append("from tinyms.core.common import Utils")
@@ -46,13 +47,13 @@ class ProjectApi():
             pkg = "from tinyms.core.annotation import autocomplete, datatable_provider, dataview_provider, ajax, api"
             items.append(pkg)
             Utils.text_write(dao_file, items)
-        items.clear()
+        items = list()
         common_file = abs_path + name + "/common.py"
         if not os.path.exists(common_file):
             items.append("from tinyms.core.common import Utils")
             items.append("from tinyms.core.annotation import reg_point, points, setting, server_starup")
             Utils.text_write(common_file, items)
-        items.clear()
+        items = list()
         entity_file = abs_path + name + "/entity.py"
         if not os.path.exists(entity_file):
             a = "from sqlalchemy import Column, Integer, String, DateTime, Text, Date, Numeric"

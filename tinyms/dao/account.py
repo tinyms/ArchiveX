@@ -1,3 +1,4 @@
+#coding=UTF8
 from tinyms.core.setting import AppSettingHelper
 
 __author__ = 'tinyms'
@@ -66,7 +67,7 @@ class AccountHelper():
         return tmp
 
     @staticmethod
-    def auth(account_id=None, points={}):
+    def auth(account_id, points=set()):
         if len(points & AccountHelper.points(account_id)) > 0:
             return True
         return False

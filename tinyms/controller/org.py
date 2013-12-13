@@ -1,5 +1,5 @@
 __author__ = 'tinyms'
-
+#coding=UTF8
 from tinyms.core.annotation import ajax,ObjectPool
 from tinyms.dao.category import CategoryHelper
 from tinyms.dao.account import AccountHelper

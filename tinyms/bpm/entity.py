@@ -1,5 +1,5 @@
 __author__ = 'tinyms'
-
+#coding=UTF8
 from sqlalchemy import Column, Integer, String, Text, LargeBinary, DateTime
 from tinyms.core.orm import Simplify, Entity, many_to_one, many_to_many
 

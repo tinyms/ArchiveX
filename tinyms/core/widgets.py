@@ -1,3 +1,4 @@
+#coding=UTF8
 __author__ = 'tinyms'
 
 import json
@@ -22,7 +23,7 @@ class VersionModule(IWidget):
         from datetime import datetime
 
         year = datetime.now().strftime("%Y")
-        return "&copy; TinyMS, Power by ArchX %s, v1.2" % year
+        return "&copy; TinyMS, Power by ArchX %s, v1.3" % year
 
 
 @ui("CurrentAccountName")
@@ -204,7 +205,8 @@ class DataTableModule(DataTableBaseModule):
 
         tag = ""
         if checkable:
-            tag += "<th><input type='checkbox' style='width: 13px; height: 13px;' onclick='%s_.CheckAll(this);'/></th>" % self.dom_id
+            tag += "<th><input type='checkbox' style='width: 13px; height: 13px;' onclick='%s_.CheckAll(this);'/></th>"\
+                   % self.dom_id
         for title in self.titles:
             tag += "<th>" + title + "</th>"
         tag += "<th>#</th>"
@@ -505,7 +507,8 @@ class DataViewModule(DataTableBaseModule):
 
         tag = ""
         if checkable:
-            tag += "<th><input type='checkbox' style='width: 13px; height: 13px;' onclick='%s_.CheckAll(this);'/></th>" % self.dom_id
+            tag += "<th><input type='checkbox' style='width: 13px; height: 13px;' onclick='%s_.CheckAll(this);'/></th>"\
+                   % self.dom_id
         for title in self.titles:
             tag += "<th>" + title + "</th>"
         tag += "<th>#</th>"
@@ -831,6 +834,7 @@ class TermTaxonomyJavascript(TermTaxonomyComboBox):
         map_ = dict()
         for item in data:
             map_[item[0]] = item[1]
+        print(data)
         js += json.dumps(map_)
         return js
 

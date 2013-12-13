@@ -1,5 +1,5 @@
 __author__ = 'tinyms'
-
+#coding=UTF8
 import os
 import tempfile
 from hashlib import md5
@@ -10,13 +10,16 @@ try:
 except ImportError:  # pragma: no cover
     import pickle
 
+
 class CacheManager(object):
     __disk_path__ = ""
+
     @staticmethod
     def get(threshold=500, default_timeout=300):
         if not CacheManager.__disk_path__:
-            return SimpleCache(threshold,default_timeout)
-        return FileSystemCache(threshold,default_timeout)
+            return SimpleCache(threshold, default_timeout)
+        return FileSystemCache(threshold, default_timeout)
+
 
 class BaseCache(object):
     """Baseclass for the cache systems.  All the cache systems implement this
@@ -46,8 +49,7 @@ class BaseCache(object):
         """
         return True
 
-    def del_group(self,key_prefix):
-
+    def del_group(self, key_prefix):
         """
         key is '/group/key' or 'group.key' etc.
         key_prefix is '/group' or group
@@ -95,9 +97,6 @@ class BaseCache(object):
 
 class NullCache(BaseCache):
     """A cache that doesn't cache.  This can be useful for unit testing.
-
-    :param default_timeout: a dummy parameter that is ignored but exists
-                            for API compatibility with other caches.
     """
 
 
@@ -146,7 +145,7 @@ class SimpleCache(BaseCache):
     def delete(self, key):
         return self._cache.pop(key, None) is not None
 
-    def del_group(self,key_prefix):
+    def del_group(self, key_prefix):
         keys = set()
         for k in self._cache:
             if k.startswith(key_prefix):
@@ -155,10 +154,12 @@ class SimpleCache(BaseCache):
             self.delete(key)
         return True
 
+
 class FileSystemCache(BaseCache):
     #: used for temporary files by the FileSystemCache
     _fs_transaction_suffix = '.__archivex_cache'
     _groups = {}
+
     def __init__(self, cache_dir, threshold=500, default_timeout=300, mode=0o600):
         BaseCache.__init__(self, default_timeout)
         self._path = cache_dir
@@ -171,7 +172,8 @@ class FileSystemCache(BaseCache):
         """
         return a list of (fully qualified) cache filenames
         """
-        return [os.path.join(self._path, fn) for fn in os.listdir(self._path) if not fn.endswith(self._fs_transaction_suffix)]
+        return [os.path.join(self._path, fn) for fn in os.listdir(self._path) if
+                not fn.endswith(self._fs_transaction_suffix)]
 
     def _prune(self):
         entries = self._list_files()
@@ -201,8 +203,8 @@ class FileSystemCache(BaseCache):
         if fn:
             return fn
         else:
-            hash = md5(key.encode('utf-8')).hexdigest()
-            fullpath = os.path.join(self._path, hash)
+            hash_ = md5(key.encode('utf-8')).hexdigest()
+            fullpath = os.path.join(self._path, hash_)
             self._groups[key] = fullpath
             return fullpath
 
@@ -250,7 +252,7 @@ class FileSystemCache(BaseCache):
         else:
             return True
 
-    def del_group(self,key_prefix):
+    def del_group(self, key_prefix):
         for k in self._groups:
             if k.startswith(key_prefix):
                 try:
@@ -259,8 +261,8 @@ class FileSystemCache(BaseCache):
                     return False
         return True
 
-# c = CacheManager.create()
-# c.add("/category/org",[1,2,3,4])
-# c.add("/category/roles",(2,3,4,5,6))
-# print(c.get("/category/org"),c.get("/category/roles"))
-# print(c.del_group("/category"))
+        # c = CacheManager.create()
+        # c.add("/category/org",[1,2,3,4])
+        # c.add("/category/roles",(2,3,4,5,6))
+        # print(c.get("/category/org"),c.get("/category/roles"))
+        # print(c.del_group("/category"))

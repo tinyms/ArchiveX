@@ -1,7 +1,6 @@
 __author__ = 'tinyms'
-
+#coding=UTF8
 import os
-import uuid
 from tornado.web import RequestHandler
 from tinyms.core.common import Utils
 from tinyms.core.annotation import EmptyClass, ObjectPool, route
@@ -38,7 +37,8 @@ class IRequest(RequestHandler):
             static_url=self.static_url,
             xsrf_form_html=self.xsrf_form_html,
             reverse_url=self.reverse_url,
-            auth=self.auth # Add to auth current user security points
+            # Add to auth current user security points
+            auth=self.auth
         )
         namespace.update(self.ui)
         return namespace
@@ -61,9 +61,9 @@ class IRequest(RequestHandler):
         account id, int
         :return:
         """
-        id = self.get_secure_cookie(IRequest.__key_account_id__)
+        id_ = self.get_secure_cookie(IRequest.__key_account_id__)
         if id:
-            return int(id)
+            return int(id_)
         return None
 
     def get_current_account_points(self):
@@ -93,13 +93,15 @@ class IRequest(RequestHandler):
             return name
         return ""
 
-    def wrap_entity(self, entity_object, excude_keys=["id"]):
+    def wrap_entity(self, entity_object, excude_keys=None):
         """
         把参数值填充到对象对应属性中，针对ORM中的Entity
-        :param obj:
+        :param entity_object:
         :param excude_keys:
         :return:
         """
+        if not excude_keys:
+            excude_keys = ["id"]
         dict_ = dict()
         args = self.request.arguments
         for key in args.keys():
@@ -174,7 +176,7 @@ class ApiHandler(IRequest):
                     setattr(obj, "body", self.request.body)
                     setattr(obj, "files", self.request.files)
                     setattr(obj, "__params__", self.wrap_params_to_dict())
-                    setattr(obj, "param", lambda key: obj.__params__.get(key))
+                    setattr(obj, "param", lambda key_: obj.__params__.get(key_))
                     func = getattr(obj, method_name)
                     result = func()
                     self.write(Utils.encode(result))
@@ -195,7 +197,7 @@ class AjaxHandler(IRequest):
                 if hasattr(obj, "__export__") and type(obj.__export__) == list:
                     return self.render("widgets/ajax.tpl",
                                        module_name=obj.__class__.__module__,
-                                       class_name=obj.__class__.__qualname__,
+                                       class_name=obj.__class__.__name__,
                                        key=key,
                                        methods=obj.__export__)
                 else:
@@ -231,6 +233,7 @@ class AjaxHandler(IRequest):
                     else:
                         self.write(result)
 
+
 @route("/upload")
 class FileUpload(IAuthRequest):
     def post(self, *args, **kwargs):
@@ -238,7 +241,7 @@ class FileUpload(IAuthRequest):
         #build path
         upload_path = "/upload/%s/%s" % (Utils.format_year_month(Utils.current_datetime()),
                                          Utils.current_datetime().date().day)
-        path = self.get_webroot_path()+upload_path
+        path = self.get_webroot_path() + upload_path
         Utils.mkdirs(path)
         files = self.request.files
         items = list()
@@ -261,6 +264,7 @@ class FileUpload(IAuthRequest):
             item["archives_id"] = self.get_current_user()
             items.append(item)
         self.write(Utils.encode(["OK"]))
+
 
 @route("/autocomplete/(.*)")
 class AutoCompleteHandler(IRequest):

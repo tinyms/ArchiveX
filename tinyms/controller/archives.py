@@ -1,5 +1,5 @@
 __author__ = 'tinyms'
-
+#coding=UTF8
 from sqlalchemy import func
 
 from tinyms.core.common import Utils

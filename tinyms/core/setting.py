@@ -1,5 +1,5 @@
 __author__ = 'tinyms'
-
+#coding=UTF8
 import json
 
 from tinyms.core.orm import SessionFactory
