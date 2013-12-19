@@ -26,4 +26,4 @@ class DefaultWebConfig(IWebConfig):
         return True
 
     def server_port(self):
-        return 8080
+        return 8888

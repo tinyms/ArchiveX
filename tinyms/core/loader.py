@@ -80,8 +80,13 @@ class Loader():
                 p.description = point.description
                 changes.append(p)
             else:
-                cnn.add(point)
-                point.roles.append(role_)
+                new_point = SecurityPoint()
+                new_point.key_ = point.key_
+                new_point.category = point.category
+                new_point.group_ = point.group_
+                new_point.description = point.description
+                cnn.add(new_point)
+                new_point.roles.append(role_)
         cnn.commit()
 
     @staticmethod

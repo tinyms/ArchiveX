@@ -472,7 +472,7 @@ class Plugin():
         else:
             arr = Plugin.ObjectPool.get(type_)
             for t in arr:
-                name = "%s.%s" % (t.__class__.__module__, t.__class__.__qualname__)
+                name = "%s.%s" % (t.__class__.__module__, t.__class__.__name__)
                 if name.lower() == class_full_name.lower():
                     return t
 
@@ -509,11 +509,9 @@ class Plugin():
             if hasattr(module_, "__export__"):
                 attrs = [getattr(module_, x) for x in module_.__export__]
                 for attr in attrs:
-                    #父类 py3 is __base__, py2 is __bases__ = ()
                     parents = attr.__bases__
                     if len(parents) > 0:
                         parent = parents[0]
-                        print(parent)
                         if not Plugin.ObjectPool.get(parent):
                             Plugin.ObjectPool[parent] = [attr()]
                         else:
